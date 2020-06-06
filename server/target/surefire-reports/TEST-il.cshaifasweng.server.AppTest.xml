@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="il.cshaifasweng.server.AppTest" time="0.045" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="il.cshaifasweng.server.AppTest" time="0.031" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="14"/>
     <property name="sun.cpu.isalist" value="amd64"/>
     <property name="sun.jnu.encoding" value="Cp1252"/>
-    <property name="java.class.path" value="C:\Users\dani3\Documents\GitHub\OCSFMediatorExample\server\target\test-classes;C:\Users\dani3\Documents\GitHub\OCSFMediatorExample\server\target\classes;C:\Users\dani3\.m2\repository\junit\junit\4.11\junit-4.11.jar;C:\Users\dani3\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\dani3\.m2\repository\il\cshaifasweng\OCSFMediatorExample\entities\0.0.1-SNAPSHOT\entities-0.0.1-SNAPSHOT.jar;"/>
+    <property name="java.class.path" value="C:\Users\dani3\Documents\GitHub\TestSys---TeamAmerica\server\target\test-classes;C:\Users\dani3\Documents\GitHub\TestSys---TeamAmerica\server\target\classes;C:\Users\dani3\.m2\repository\junit\junit\4.11\junit-4.11.jar;C:\Users\dani3\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\dani3\Documents\GitHub\TestSys---TeamAmerica\entities\target\entities-0.0.1-SNAPSHOT.jar;"/>
     <property name="java.vm.vendor" value="Oracle Corporation"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="user.variant" value=""/>
@@ -16,9 +16,9 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-14\bin"/>
-    <property name="sun.java.command" value="C:\Users\dani3\AppData\Local\Temp\surefire16031146266536722727\surefirebooter14040850048094776923.jar C:\Users\dani3\AppData\Local\Temp\surefire16031146266536722727 2020-06-06T17-16-28_274-jvmRun1 surefire5405381176159645056tmp surefire_09427906736219695704tmp"/>
+    <property name="sun.java.command" value="C:\Users\dani3\AppData\Local\Temp\surefire12610074769498241857\surefirebooter7740331125046404793.jar C:\Users\dani3\AppData\Local\Temp\surefire12610074769498241857 2020-06-06T21-50-47_182-jvmRun1 surefire16007882941873628595tmp surefire_0277121112758684941tmp"/>
     <property name="jdk.debug" value="release"/>
-    <property name="surefire.test.class.path" value="C:\Users\dani3\Documents\GitHub\OCSFMediatorExample\server\target\test-classes;C:\Users\dani3\Documents\GitHub\OCSFMediatorExample\server\target\classes;C:\Users\dani3\.m2\repository\junit\junit\4.11\junit-4.11.jar;C:\Users\dani3\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\dani3\.m2\repository\il\cshaifasweng\OCSFMediatorExample\entities\0.0.1-SNAPSHOT\entities-0.0.1-SNAPSHOT.jar;"/>
+    <property name="surefire.test.class.path" value="C:\Users\dani3\Documents\GitHub\TestSys---TeamAmerica\server\target\test-classes;C:\Users\dani3\Documents\GitHub\TestSys---TeamAmerica\server\target\classes;C:\Users\dani3\.m2\repository\junit\junit\4.11\junit-4.11.jar;C:\Users\dani3\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\dani3\Documents\GitHub\TestSys---TeamAmerica\entities\target\entities-0.0.1-SNAPSHOT.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
     <property name="user.home" value="C:\Users\dani3"/>
     <property name="user.language" value="en"/>
@@ -26,12 +26,12 @@
     <property name="java.version.date" value="2020-03-17"/>
     <property name="java.home" value="C:\Program Files\Java\jdk-14"/>
     <property name="file.separator" value="\"/>
-    <property name="basedir" value="C:\Users\dani3\Documents\GitHub\OCSFMediatorExample\server"/>
+    <property name="basedir" value="C:\Users\dani3\Documents\GitHub\TestSys---TeamAmerica\server"/>
     <property name="java.vm.compressedOopsMode" value="32-bit"/>
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\dani3\AppData\Local\Temp\surefire16031146266536722727\surefirebooter14040850048094776923.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\dani3\AppData\Local\Temp\surefire12610074769498241857\surefirebooter7740331125046404793.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="14+36-1461"/>
@@ -45,7 +45,7 @@
     <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
     <property name="java.io.tmpdir" value="C:\Users\dani3\AppData\Local\Temp\"/>
     <property name="java.version" value="14"/>
-    <property name="user.dir" value="C:\Users\dani3\Documents\GitHub\OCSFMediatorExample\server"/>
+    <property name="user.dir" value="C:\Users\dani3\Documents\GitHub\TestSys---TeamAmerica\server"/>
     <property name="os.arch" value="amd64"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
     <property name="sun.os.patch.level" value=""/>
