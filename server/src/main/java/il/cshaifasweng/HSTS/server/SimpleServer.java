@@ -1,6 +1,7 @@
 package il.cshaifasweng.HSTS.server;
 
 import il.cshaifasweng.HSTS.server.ocsf.AbstractServer;
+import il.cshaifasweng.HSTS.server.ConnectToDB;
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.server.ocsf.ConnectionToClient;
 
@@ -9,9 +10,13 @@ import java.util.*;
 
 public class SimpleServer extends AbstractServer {
 
+	public ConnectToDB dbConnector;	   
+	
 	public SimpleServer(int port) {
 		super(port);
-		
+		System.out.println("HHHHHHHHHHHHHHHHHHHHH \n HHHHHHHHHHHHHHHHH \n elp!!");
+		this.dbConnector = new ConnectToDB();
+		dbConnector.connectToDB();
 	}
 
 	@Override
