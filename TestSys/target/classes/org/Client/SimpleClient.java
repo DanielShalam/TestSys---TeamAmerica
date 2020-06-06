@@ -13,6 +13,9 @@ import Server.ServerMain.Carrier;
 public class SimpleClient extends AbstractClient {
 	
 	private static SimpleClient client = null;
+	
+	public boolean isAnswerReturned = false;
+	public Carrier answerCarrier = new Carrier();
 
 	private SimpleClient(String host, int port) {
 		super(host, port);
@@ -22,17 +25,19 @@ public class SimpleClient extends AbstractClient {
 	protected void handleMessageFromServer(Object msg) {
 		
 		System.out.println("Received Message From SimpleServer");
-	
+		
 		
 		Carrier msgFromSimpleServer = null;
 		msgFromSimpleServer = (Carrier)msg;
+		this.answerCarrier =  msgFromSimpleServer;
+		if (this.answerCarrier!= null) {
+			System.out.println("key set to true");
+			this.isAnswerReturned = true;
+		}
 		
-		String userReceviedName = msgFromSimpleServer.carrierMessageMap.get("userName");
-		String userReceviedPass = msgFromSimpleServer.carrierMessageMap.get("pass");
-		String userReceviedRole = msgFromSimpleServer.carrierMessageMap.get("role");
 		
-		System.out.println("data From SimpleServer :" +  userReceviedName +" "+ userReceviedPass +" "+ userReceviedRole);
 		
+		//TODO how to send to logInContoroller
 		
 	
 		
@@ -43,8 +48,9 @@ public class SimpleClient extends AbstractClient {
 	
 	protected void handleMessageFromLogInController(String userName, String pass) {
 		Carrier logInCarrier =  new Carrier();
-		logInCarrier.setUserName(userName);
-		logInCarrier.setPass(pass);
+		logInCarrier.carrierMessageMap.put("userName", userName);
+		logInCarrier.carrierMessageMap.put("pass", pass);
+	
 		
 		try {
 			this.sendToServer(logInCarrier);
@@ -60,5 +66,9 @@ public class SimpleClient extends AbstractClient {
 		}
 		return client;
 	}
+	
+	
+	
+	
 
 }

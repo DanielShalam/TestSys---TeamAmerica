@@ -23,20 +23,18 @@ public class SimpleServer extends AbstractServer {
 		
 		Carrier msgFromClient = null;
 		msgFromClient = (Carrier)msg;
-		String UserNameFromClient = msgFromClient.getUserName();
-		String PassFromClient = msgFromClient.getPass();	
-		//String strMsg = msgFromClient.getMessage();
-		
-		System.out.println("user is " + UserNameFromClient);
-		System.out.println("pass is " + PassFromClient);
-		
+		String UserNameFromClient = msgFromClient.carrierMessageMap.get("userName");
+		String PassFromClient = msgFromClient.carrierMessageMap.get("pass");
 		int checkedRole = UserController.getRole(UserNameFromClient, PassFromClient);
+		
 		System.out.println("checkedRole is " + checkedRole);
+		
 		Carrier msg2SimpleClient = new Carrier();
 		msg2SimpleClient.carrierMessageMap.put("userName", "Daniel"); 
 		msg2SimpleClient.carrierMessageMap.put("pass", "Alexey");
 		msg2SimpleClient.carrierMessageMap.put("role", "1");
-		
+		System.out.println("user is " + UserNameFromClient);
+		System.out.println("pass is " + PassFromClient);
 		try{
 			client.sendToClient(msg2SimpleClient);
 		}
