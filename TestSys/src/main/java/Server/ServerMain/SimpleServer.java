@@ -1,13 +1,14 @@
 package Server.ServerMain;
 
 import Server.ocsf.AbstractServer;
+import Server.ServerMain.Carrier;
 import Server.ocsf.ConnectionToClient;
 
 
 
 import java.io.IOException;
 
-
+import java.util.*; 
 public class SimpleServer extends AbstractServer {
 
 	public SimpleServer(int port) {
@@ -29,6 +30,20 @@ public class SimpleServer extends AbstractServer {
 		System.out.println("user is " + UserNameFromClient);
 		System.out.println("pass is " + PassFromClient);
 		
+		int checkedRole = UserController.getRole(UserNameFromClient, PassFromClient);
+		System.out.println("checkedRole is " + checkedRole);
+		Carrier msg2SimpleClient = new Carrier();
+		msg2SimpleClient.carrierMessageMap.put("userName", "Daniel"); 
+		msg2SimpleClient.carrierMessageMap.put("pass", "Alexey");
+		msg2SimpleClient.carrierMessageMap.put("role", "1");
+		
+		try{
+			client.sendToClient(msg2SimpleClient);
+		}
+		catch(IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 	

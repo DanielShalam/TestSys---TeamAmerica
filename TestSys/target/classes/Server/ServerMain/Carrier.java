@@ -1,5 +1,5 @@
 package Server.ServerMain;
-
+import java.util.*; 
 import java.io.Serializable;
 import java.util.List;
 
@@ -11,7 +11,14 @@ public class Carrier implements Serializable {
   //  private Questions question = null;
   // List<Questions> questionList = null;
     private String userName = null;
-	private String pass = null;	
+	private String pass = null;
+	private int role=1;
+	
+	public Map< String, String> carrierMessageMap = new HashMap< String, String>();
+	
+	
+	
+	
 
 
 	public String getUserName() {

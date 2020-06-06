@@ -5,6 +5,7 @@ Server\ocsf\ConnectionToClient.class
 Server\ocsf\AbstractConnectionFactory.class
 Server\ServerMain\SimpleServer.class
 Server\ocsf\ObservableServer.class
+Server\ServerMain\UserController.class
 org\TestSys\ocsf\AdaptableClient.class
 Server\ocsf\ObservableOriginatorServer.class
 Server\ServerMain\Carrier.class

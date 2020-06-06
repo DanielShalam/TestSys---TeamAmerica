@@ -2,6 +2,7 @@ package org.TestSys;
 
 
 
+import java.util.*; 
 import java.io.IOException;
 
 import org.TestSys.ocsf.AbstractClient;
@@ -19,6 +20,22 @@ public class SimpleClient extends AbstractClient {
 
 	@Override
 	protected void handleMessageFromServer(Object msg) {
+		
+		System.out.println("Received Message From SimpleServer");
+	
+		
+		Carrier msgFromSimpleServer = null;
+		msgFromSimpleServer = (Carrier)msg;
+		
+		String userReceviedName = msgFromSimpleServer.carrierMessageMap.get("userName");
+		String userReceviedPass = msgFromSimpleServer.carrierMessageMap.get("pass");
+		String userReceviedRole = msgFromSimpleServer.carrierMessageMap.get("role");
+		
+		System.out.println("data From SimpleServer :" +  userReceviedName +" "+ userReceviedPass +" "+ userReceviedRole);
+		
+		
+	
+		
 		
 		// TODO
 	}
