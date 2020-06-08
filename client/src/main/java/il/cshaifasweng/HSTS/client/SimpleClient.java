@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import il.cshaifasweng.HSTS.client.ocsf.AbstractClient;
 import il.cshaifasweng.HSTS.entities.Carrier;
+import il.cshaifasweng.HSTS.entities.CarrierType;
 
 
 public class SimpleClient extends AbstractClient {
@@ -32,19 +33,14 @@ public class SimpleClient extends AbstractClient {
 			this.isAnswerReturned = true;
 		}
 		
-		
-		
 		//TODO how to send to logInContoroller
-		
-	
-		
-		
 		// TODO
 	}
 	
 	
 	protected void handleMessageFromLogInController(String userName, String pass) {
 		Carrier logInCarrier =  new Carrier();
+		logInCarrier.carrierType = CarrierType.USER;
 		logInCarrier.carrierMessageMap.put("userName", userName);
 		logInCarrier.carrierMessageMap.put("pass", pass);
 	
