@@ -12,8 +12,7 @@ public class Carrier implements Serializable {
   // List<Questions> questionList = null;
 	
 	public CarrierType carrierType;
-	public Map< String, String> carrierMessageMap = new HashMap< String, String>();
-	
+	public Map<String,Object> carrierMessageMap = new HashMap<String,Object>();
 	
 	/* return true if message is empty */
 	public boolean isValid() {
