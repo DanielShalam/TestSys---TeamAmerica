@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>TestSys</artifactId>
-		<groupId>org.haifa</groupId>
+		<groupId>il.cshaifasweng.HSTS</groupId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>il.cshaifasweng.HSTS</groupId>

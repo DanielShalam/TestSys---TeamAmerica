@@ -5,17 +5,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>TestSys</artifactId>
-		<groupId>org.haifa</groupId>
+		<groupId>il.cshaifasweng.HSTS</groupId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-
 	<groupId>il.cshaifasweng.HSTS</groupId>
 	<artifactId>server</artifactId>
-	<packaging>jar</packaging>
-        
-	<name>server</name>
-	<!-- FIXME change it to the project's website -->
-	<url>http://www.example.com</url>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>

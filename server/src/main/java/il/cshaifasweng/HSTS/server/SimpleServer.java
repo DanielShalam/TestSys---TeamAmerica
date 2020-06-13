@@ -46,7 +46,7 @@ public class SimpleServer extends AbstractServer {
 		System.out.println("checkedRole is " + checkedRole);
 		
 		Carrier msg2SimpleClient = new Carrier();
-		msg2SimpleClient.carrierType = CarrierType.User 
+		msg2SimpleClient.carrierType = CarrierType.User;
 		msg2SimpleClient.carrierMessageMap.put("userName", "Daniel"); 
 		msg2SimpleClient.carrierMessageMap.put("pass", "Alexey");
 		msg2SimpleClient.carrierMessageMap.put("role", "1");
@@ -60,7 +60,7 @@ public class SimpleServer extends AbstractServer {
 			e.printStackTrace();
 		}
 	}
-	
+
 	
 	//// fucntion to handle Message where Carrier type is QUESTION
 	protected void handleQuestionMessage(Carrier carrier, ConnectionToClient client) {
@@ -72,7 +72,7 @@ public class SimpleServer extends AbstractServer {
 				Question question = ServerQuestionController.getQuestionById(question_id);
 				
 				Carrier msg2SimpleClient = new Carrier();
-				msg2SimpleClient.carrierType = CarrierType.Question 
+				msg2SimpleClient.carrierType = CarrierType.Question;
 				msg2SimpleClient.carrierMessageMap.put("message", "Get By Id"); 
 				msg2SimpleClient.carrierMessageMap.put("Question", question); 
 				client.sendToClient(msg2SimpleClient);

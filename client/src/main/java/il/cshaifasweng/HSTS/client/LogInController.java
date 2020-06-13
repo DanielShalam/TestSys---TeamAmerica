@@ -9,12 +9,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 
-
-
-
 public class LogInController {
 	
-	 
 	private SimpleClient client;
 	private Carrier localCarrier = null;
 	String userReceviedName = null;
@@ -34,9 +30,9 @@ public class LogInController {
     		if (client.isAnswerReturned==true){
     			
     			localCarrier = client.answerCarrier;
-    			userReceviedName = localCarrier.carrierMessageMap.get("userName");
-    			userReceviedPass = localCarrier.carrierMessageMap.get("pass");
-    			userReceviedRole = localCarrier.carrierMessageMap.get("role");
+    			userReceviedName = (String) localCarrier.carrierMessageMap.get("userName");
+    			userReceviedPass = (String) localCarrier.carrierMessageMap.get("pass");
+    			userReceviedRole = (String) localCarrier.carrierMessageMap.get("role");
     			
     			System.out.println("data From SimpleServer :" +  userReceviedName +" "+ userReceviedPass +" "+ userReceviedRole);
     			
