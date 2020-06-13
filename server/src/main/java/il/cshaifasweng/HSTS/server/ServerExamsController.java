@@ -1,7 +1,12 @@
 package il.cshaifasweng.HSTS.server;
 
-import il.ac.haifa.cs.sweng.Hibernate.ConnectToDB;
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
+
 import il.cshaifasweng.HSTS.entities.Exam;
+import il.cshaifasweng.HSTS.entities.Question;
 
 public class ServerExamsController {
 
@@ -20,24 +25,21 @@ public class ServerExamsController {
 				exam.getStudentInstructions(),
 				exam.getTeacherInstructions(),
 				exam.getCreatorId(),
-				exam.getAssignedDuration);
+				exam.getAssignedDuration());
 		
 		commitExamToDB(newExam);
 	}
 	
 	public int commitExamToDB(Exam exam) {
-		ConnectToDB.session.beginTransaction();
-		ConnectToDB.session.save(exam);
+		ConnectToDB.save(exam);
 		exam.setExamId();
-		ConnectToDB.session.save(exam);
-		ConnectToDB.session.flush();
-		ConnectToDB.session.clear();
-		ConnectToDB.session.getTransaction().commit();
+		
+		return 1;
 	}
 	
 	public Exam getExamById(int id) {	
 		// Get exam by its id
-		Exam exam = (Exam) ConnectToDB.session.get(Exam.class , id%MAX_NUM_OF_EXAMS);
+		Exam exam = ConnectToDB.getById(Exam.class, id);
 		return exam;
 	}
 	
@@ -47,12 +49,13 @@ public class ServerExamsController {
     	return eList;	
 	}
 	
-	public List<Exam> getExamsByCreator(int teacher_id) {
-		// Get all the exams of some teacher by its id
-		
-		Criteria criteria = session.createCriteria(Exam.class);
-		List<Exam> eList = criteria.add(Restrictions.eq("creatorId", teacher_id)).list();
-
-    	return eList;	
-	}
+//	public List<Exam> getExamsByCreator(int teacher_id) {
+//		// Get all the exams of some teacher by its id
+//		
+//		ConnectToDB.getBySomeKey(type, key, value)
+//		Criteria criteria = ConnectToDB.session.createCriteria(Exam.class);
+//		List<Exam> eList = criteria.add(Restrictions.eq("creatorId", teacher_id)).list();
+//
+//    	return eList;	
+//	}
 }

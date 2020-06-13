@@ -9,11 +9,13 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.service.ServiceRegistry;
 
 import il.cshaifasweng.HSTS.entities.User;
@@ -29,7 +31,7 @@ public class ConnectToDB {
 	
 	private static Session session;
 	private static ServiceRegistry serviceRegistry;
-	
+    
 	private static SessionFactory getSessionFactory() throws HibernateException {
 		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
 		
@@ -52,6 +54,26 @@ public class ConnectToDB {
 		TypedQuery<T> allQuery = session.createQuery(allCriteriaQuery);
 		return allQuery.getResultList();
 	}
+	
+    public static <T> T getById(final Class<T> type, int id){
+    		return (T) session.get(type, id);
+    }
+    
+    public static <T> T getByUser(String user){
+		return (T) session.get(User.class, user);
+    }
+    
+//    public static <T> T getBySomeKey(final Class<T> type, String key, int value){
+//    	
+//    	Criteria criteria = session.createCriteria(type);
+//		List<T> return_list = criteria.add(Restrictions.eq(key, value)).list();
+//    	
+//        return (T) session.save(return_list);
+//      }
+    
+    public static <T> T save(final T o){
+        return (T) session.save(o);
+      }
 
 	public static void printUsers() throws Exception {
 

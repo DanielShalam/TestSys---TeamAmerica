@@ -10,7 +10,7 @@ public class UserController {
 	// TODO return role as enum when the client controllers will be ready
 	
 	public static int getRole(String userName, String pass) {
-		User user = (User) ConnectToDB.session.get(User.class , userName);
+		User user = ConnectToDB.getByUser(userName);
 		if (user == null) {		// If the use does not exist
 			// return Role.INVALID;
 			return 1;
