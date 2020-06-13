@@ -3,6 +3,8 @@ package il.cshaifasweng.HSTS.server;
 import il.cshaifasweng.HSTS.server.ocsf.AbstractServer;
 import il.cshaifasweng.HSTS.server.ConnectToDB;
 import il.cshaifasweng.HSTS.entities.Carrier;
+import il.cshaifasweng.HSTS.entities.CarrierType;
+
 import il.cshaifasweng.HSTS.server.ocsf.ConnectionToClient;
 
 import java.io.IOException;
@@ -25,6 +27,18 @@ public class SimpleServer extends AbstractServer {
 		
 		Carrier msgFromClient = null;
 		msgFromClient = (Carrier)msg;
+		switch(msgFromClient.carrierType){
+			case(CarrierType.User ):
+				handleUserMessage(msgFromClient, client);
+			
+			case(CarrierType.QUESTION ):
+				handleQuestionMessage(msgFromClient, client);
+		}
+	}
+	
+	
+	//// fucntion to handle Message where Carrier type is USER
+	protected void handleUserMessage(Carrier carrier, ConnectionToClient client) {
 		String UserNameFromClient = msgFromClient.carrierMessageMap.get("userName");
 		String PassFromClient = msgFromClient.carrierMessageMap.get("pass");
 		int checkedRole = UserController.getRole(UserNameFromClient, PassFromClient);
@@ -32,6 +46,7 @@ public class SimpleServer extends AbstractServer {
 		System.out.println("checkedRole is " + checkedRole);
 		
 		Carrier msg2SimpleClient = new Carrier();
+		msg2SimpleClient.carrierType = CarrierType.User 
 		msg2SimpleClient.carrierMessageMap.put("userName", "Daniel"); 
 		msg2SimpleClient.carrierMessageMap.put("pass", "Alexey");
 		msg2SimpleClient.carrierMessageMap.put("role", "1");
@@ -44,7 +59,28 @@ public class SimpleServer extends AbstractServer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+	}
+	
+	
+	//// fucntion to handle Message where Carrier type is QUESTION
+	protected void handleQuestionMessage(Carrier carrier, ConnectionToClient client) {
+		String msg = carrier.carrierMessageMap.get("message");
+		
+		switch(msg) {
+			case "Get By Id":
+				int question_id = carrier.carrierMessageMap.get("id");
+				Question question = ServerQuestionController.getQuestionById(question_id);
+				
+				Carrier msg2SimpleClient = new Carrier();
+				msg2SimpleClient.carrierType = CarrierType.Question 
+				msg2SimpleClient.carrierMessageMap.put("message", "Get By Id"); 
+				msg2SimpleClient.carrierMessageMap.put("Question", question); 
+				client.sendToClient(msg2SimpleClient);
+				
+			case "Insert New":
+				Question new_question = carrier.carrierMessageMap.get("Question");
+				ServerQuestionController.createBeforeCommit(new_question);
+		}
 	}
 	
 	
@@ -66,9 +102,5 @@ public class SimpleServer extends AbstractServer {
 			server.listen();
 		}
 	}
-	
-
-	
-	
 
 }

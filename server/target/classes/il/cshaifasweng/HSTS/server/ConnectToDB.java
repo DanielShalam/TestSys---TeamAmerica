@@ -124,7 +124,7 @@ public class ConnectToDB {
 		//session.save(user13);
 		
 		session.flush();
-		
+		/*
 		// initialize questions data
 		String[] answers = {"Minecraft","Call of duty","Warms","FIFA"};
 		int correct_answer = 1;
@@ -163,10 +163,11 @@ public class ConnectToDB {
 		session.save(question_6);
 		
 		session.flush();
-		
+		*/
 	}
 
 	public static void connectToDB() {
+		
 		try {
 
 			SessionFactory sessionFactory = getSessionFactory();
@@ -175,11 +176,11 @@ public class ConnectToDB {
 
 			Carrier carry = new Carrier();
 			
-		//	initData();
-		//	session.getTransaction().commit();
-		//	printUsers();
+			initData();
+			session.getTransaction().commit();
+			printUsers();
 			//printQuestions();
-		
+			
 		} catch (Exception exception) {
 			if (session != null) {
 				session.getTransaction().rollback();
@@ -189,8 +190,9 @@ public class ConnectToDB {
 		} finally {
 			if (session != null) {
 				StandardServiceRegistryBuilder.destroy(serviceRegistry);
-				session.close();
+				
 				session.getSessionFactory().close();
+				session.close();
 			}
 		}
 	}
