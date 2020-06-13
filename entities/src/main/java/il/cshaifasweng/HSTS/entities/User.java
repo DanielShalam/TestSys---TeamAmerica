@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -16,29 +17,57 @@ import javax.persistence.Table;
 
 
 
+
 @Entity
 @Table(name="user_table")
 public class User implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int user_id;		//primary key
-
+	
+	@Column(name = "first_name")
 	private String first_name;
+	
+	@Column(name = "last_name")
 	private String last_name;
+	
+	@Column(name = "user_role")
 	private Role role;
+	
+	@Column(name = "password")
 	private String password;
-
-		
+	
+	// teacher courses relation - Bidirectional
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy="teacher")	// mapping owner side
+	private List<Course> coursesTeaching;
+	
+	// teacher questions relation - Unidirectional
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy="teacherId")	// mapping owner side
+	private List<Question> questionsWritten;
+	
+	// teacher exams relation - Unidirectional
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy="teacherId")	// mapping owner side
+	private List<Exam> examsWritten;
+	
+	// student courses
+	@ManyToMany(mappedBy = "studentList",
+			cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+			targetEntity = Course.class	)
+	private List<Course> coursesStudying;
+	
+	
 	public User(String firstName, String lastName, String password, Role role) {
 		this.first_name = firstName;
 		this.last_name = lastName;
 		this.password = password;
 		this.setRole(role);
+		this.questionsWritten = new ArrayList<Question>();
+		this.examsWritten = new ArrayList<Exam>();
+		this.coursesTeaching = new ArrayList<Course>();
+		this.coursesStudying = new ArrayList<Course>();
 	}
 	
 	public User() {
@@ -79,6 +108,29 @@ public class User implements Serializable {
 	public void setRole(Role role) {
 		this.role = role;
 	}
-
 	
+	/* adding a list of existing courses to student
+	   and adding the student to each course */
+	public void addCoursesToStudent(Course... courses) {
+		for (Course course : courses) {
+			coursesStudying.add(course);
+			course.getStudentList().add(this); 
+		}
+	}
+	
+	public List<Course> getCoursesStudying(){
+		return coursesStudying;
+	}
+	
+	public List<Course> getCoursesTeaching(){
+		return coursesTeaching;
+	}
+	
+	public List<Exam> getExamsWritten(){
+		return examsWritten;
+	}
+	
+	public List<Question> getQuestionsWritten(){
+		return questionsWritten;
+	}
 }	

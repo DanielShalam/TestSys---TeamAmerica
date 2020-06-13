@@ -1,11 +1,16 @@
 package il.cshaifasweng.HSTS.entities;
 
 import java.io.Serializable;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 
@@ -22,14 +27,7 @@ public class Question implements Serializable {
 	// question_id is composed of course_id (2 digits) + question_num (3 digits)
 	@Column(name = "question_id")
 	private int question_id;
-	
-	// Pay attention to this one: name is a reserved keyword in MySQL.
-	@Column(name = "course_id")
-	private int course_id;
-	
-	@Column(name = "lecturer_id")
-	private int lecturer_id;
-	
+			
 	@Column(name = "question")
 	private String question;
 	
@@ -44,36 +42,36 @@ public class Question implements Serializable {
 	
 	@Column(name = "used_in_test")
 	private boolean used_in_test;
-
-	public Question(int course_id, String question, String[] answers, String instructions, int correct_answer, int lecturer_id) {
-		this.course_id = course_id;
+	
+	// teacher question relation - Unidirectional
+	@Column(name = "teacher_id")
+	private int teacherId;
+	
+	// course question relation - Unidirectional
+	@Column(name = "course_id")
+	private int courseId;
+	
+	public Question(int courseId, String question, String[] answers, String instructions, 
+					int correct_answer, int teacherId) {
 		this.question = question;
 		this.answers = answers;
 		this.instructions = instructions;
 		this.correct_answer = correct_answer;
-		this.lecturer_id = lecturer_id;
 		this.used_in_test = false;	
-		setQuestionId();
+		this.teacherId = teacherId;
+		this.courseId = courseId;
 	}
 	
 	public Question() {
 		
 	}
 	
-	public void setLecturerId(int lecturerId) {
-		this.lecturer_id = lecturerId;
-	}
-	
-	public int getLecturerId() {
-		return lecturer_id;
-	}
-	
 	public int getCourseId() {
-		return this.course_id;
-	}	
-
-	public void setCourseId(int id) {
-		this.course_id = id;
+		return courseId;
+	}
+	
+	public int getTeacherId() {
+		return teacherId;
 	}
 	
 	public int getQuestionNum() {
@@ -108,9 +106,6 @@ public class Question implements Serializable {
 		this.answers = answers;
 	}
 	
-	public void setLecturer(int lecturer_id) {
-		this.lecturer_id = lecturer_id;
-	}
 	
 	public int getCorrectAnswer() {
 		return this.correct_answer;
@@ -133,8 +128,8 @@ public class Question implements Serializable {
 	}
 	
 	// only done when object is persistence
-	private void setQuestionId() {
-		question_id = course_id*1000 + question_num;
+	public void setQuestionId() {
+		question_id = courseId *1000 + question_num;
 	}
 	
 	public int getQuestionId() {
@@ -142,7 +137,4 @@ public class Question implements Serializable {
 	}
 	
 	
-	
-
-
 }

@@ -20,7 +20,7 @@ public class ServerQuestionController {
 				question.getAnswers(),
 				question.getInstructions(),
 				question.getCorrectAnswer(),
-				question.getLecturerId());
+				question.getTeacherId());
 		
 		commitQuestionToDB(newQuestion);
 	}

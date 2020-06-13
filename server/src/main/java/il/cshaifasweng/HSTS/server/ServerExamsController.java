@@ -1,5 +1,7 @@
 package il.cshaifasweng.HSTS.server;
 
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -16,18 +18,20 @@ public class ServerExamsController {
 	public ServerExamsController() {
 		
 	}
+
 	
 	public void createBeforeCommit(Exam exam) {
 		Exam newExam = new Exam(
+				exam.getTeacherId(),
 				exam.getCourseId(),
 				exam.getQuestionList(),
 				exam.getAnswerList(),
 				exam.getStudentInstructions(),
 				exam.getTeacherInstructions(),
-				exam.getCreatorId(),
 				exam.getAssignedDuration());
 		
 		commitExamToDB(newExam);
+		newExam.setExamId();
 	}
 	
 	public int commitExamToDB(Exam exam) {

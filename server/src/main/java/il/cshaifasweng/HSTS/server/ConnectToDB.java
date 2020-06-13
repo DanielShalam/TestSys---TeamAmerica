@@ -18,11 +18,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.service.ServiceRegistry;
 
-import il.cshaifasweng.HSTS.entities.User;
-import il.cshaifasweng.HSTS.entities.Question;
-import il.cshaifasweng.HSTS.entities.Carrier;
-import il.cshaifasweng.HSTS.entities.Exam;
-import il.cshaifasweng.HSTS.entities.Role;
+
 import il.cshaifasweng.HSTS.entities.*;
 
 
@@ -38,6 +34,9 @@ public class ConnectToDB {
 		configuration.addAnnotatedClass(User.class);
 		configuration.addAnnotatedClass(Question.class);
 		configuration.addAnnotatedClass(Exam.class);
+		configuration.addAnnotatedClass(Course.class);
+		configuration.addAnnotatedClass(Examination.class);
+		configuration.addAnnotatedClass(AddTimeRequest.class);
 		/* TODO - add Entities here: "configuration.addAnnotatedClass..." */
 		
 		serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
@@ -79,8 +78,10 @@ public class ConnectToDB {
         return (T) session.save(o);
       }
 
-	public static void printUsers() throws Exception {
-
+	
+public static void printUsers() throws Exception {
+		
+		System.out.format("Users list: \n\n");
 		List<User> usersList = getAll(User.class);
 		for (User user : usersList) {
 			printUser(user);	
@@ -89,13 +90,58 @@ public class ConnectToDB {
 	}
 	
 	public static void printUser(User user) throws Exception {
+		Role role = user.getRole();
 		System.out.format(
-				"User Details:  User Id: %-3s, First name: %-12s  , Surename: %-11s, Password: %-12s\n",
-				user.getUserId(), user.getFirstName(), user.getLastname(), user.getPassword());
+				"User Details:  User Id: %-3s  First name: %-12s Surename: %-20s  Role: %-10s  Password: %-12s\n",
+				user.getUserId(), user.getFirstName(), user.getLastname(),user.getRole(), user.getPassword());
+		if (role == Role.STUDENT) {
+			System.out.format("Courses studying - ");
+			printCourses(user.getCoursesStudying());
+		}
+		if (role == Role.TEACHER) {
+			System.out.format("Courses Teaching - ");
+			printCourses(user.getCoursesTeaching());
+		}
 	}
 	
+	public static void printCourses(List<Course> coursesList) throws Exception {
+
+		System.out.format("Course list:\n");
+		for (Course course : coursesList) {
+			printCourse(course);	
+		}
+		System.out.format("\n");
+	}
 	
-	public static void printquestions() throws Exception {
+	public static void printCourses() throws Exception {
+
+		System.out.format("\nCourse list:\n\n");
+		List<Course> coursesList = getAll(Course.class);
+		for (Course course : coursesList) {
+			printCourse(course);	
+		}
+		System.out.format("\n");
+	}
+	
+	public static void printCourse(Course course) throws Exception {
+		// course_name , subject_id,  student_list, theacher_id, 
+		
+		System.out.format("Course name:  %-25s", course.getCourseName());
+		System.out.format("course ID  :  %-7s", course.getCourseId());
+		System.out.format("Subject ID :  %-7s", course.getSubjectId());
+		System.out.format("Teacher ID:   %-7s\n", course.getTeacherId());
+	}
+	
+	public static void printQuestions(List<Question> questionsList) throws Exception {
+		System.out.format("\nQuestion list:\n\n");
+		for (Question question : questionsList) {
+			printQuestion(question);			
+		}
+		System.out.format("\n");
+	}
+	
+	public static void printQuestions() throws Exception {
+		System.out.format("\nQuestion list:\n\n");
 		List<Question> questionsList = getAll(Question.class);
 		for (Question question : questionsList) {
 			printQuestion(question);			
@@ -104,82 +150,126 @@ public class ConnectToDB {
 	}
 	
 	public static void printQuestion(Question question) throws Exception {
-		System.out.format("question ID:  %d\t",question.getQuestionId());
-		System.out.format("course ID  :  %d\n",question.getCourseId());
-		System.out.format("instructions  :  %s\n",question.getInstructions());
-		System.out.format("question:  %s\n", question.getQuestion());
+		System.out.format("Question ID:  %-8s",question.getQuestionId());
+		System.out.format("Tourse ID  :  %-5s",question.getCourseId());
+		System.out.format("Teacher ID  :  %-5s\n",question.getTeacherId());
+		System.out.format("Instructions  :  %s\n",question.getInstructions());
+		System.out.format("Question:  %-30s\n", question.getQuestion());
 		String[] answers = question.getAnswers();
-		System.out.format("answer1:  %s  \t",answers[0]);
-		System.out.format("answer2:  %s\n",answers[1]);
-		System.out.format("answer3:  %s  \t",answers[2]);
-		System.out.format("answer4:  %s\n",answers[3]);
-		System.out.format("correct answer:  %d\n",question.getCorrectAnswer());
-		System.out.format("\n");
+		System.out.format("answer1:  %-15s",answers[0]);
+		System.out.format("answer2:  %-15s\n",answers[1]);
+		System.out.format("answer3:  %-15s",answers[2]);
+		System.out.format("answer4:  %-15s\n",answers[3]);
+		System.out.format("correct answer:  %d\n\n",question.getCorrectAnswer());
 	}
 	
 	
 	private static void initData() throws Exception {
 		
-		// initialize users data
-		User user1 = new User("Donald", "Trump", "duckface", Role.STUDENT);
-		User user2 = new User("Barak", "Obama", "plonter", Role.TEACHER);
-		User user3 = new User("Professor", "X", "wheels", Role.PRINCIPLE);
-		User user4 = new User("Rudy", "Giuliani", "theBigApple", Role.TEACHER);
-		User user5 = new User("John", "Rockefeller", "stillRichest", Role.STUDENT);
-		User user6 = new User("Mayer", "Amschel Rothschild", "conspiracy101", Role.STUDENT); 
-		User user7 = new User("Linus", "Torvalds", "Linux", Role.TEACHER);
-		User user8 = new User("kyle", "broflovski", "ginGer", Role.STUDENT);
-		User user9 = new User("Gregory", "House", "meningitis", Role.STUDENT);
-		User user10 = new User("raymond", "reddington", "TheCabal",Role.STUDENT);
-		User user11 = new User("Rick", "Sanchez", "MeeSeeks",Role.STUDENT);
-		User user12 = new User("Abigail", "Lawnmower", "GrassIsGreen",Role.STUDENT);
-		//User user13 = new User("Sonny", "Mythroast", "chickenPie",Role.STUDENT);
+		// initialize users data	
+		User principle = new User("Professor", "X", "wheels", Role.PRINCIPLE);
 		
-		session.save(user1);
-		session.save(user2);
-		session.save(user3);
-		session.save(user4);
-		session.save(user5);
-		session.save(user6);
-		session.save(user7);
-		session.save(user8);
-		session.save(user9);
-		session.save(user10);
-		session.save(user11);
-		session.save(user12);
-		//session.save(user13);
+		User teacher_1 = new User("Barak", "Obama", "plonter", Role.TEACHER);
+		User teacher_2 = new User("Rudy", "Giuliani", "theBigApple", Role.TEACHER);
+		User teacher_3 = new User("Linus", "Torvalds", "Linux", Role.TEACHER);
+		
+		User student_1 = new User("Donald", "Trump", "duckface", Role.STUDENT);
+		User student_2 = new User("John", "Rockefeller", "stillRichest", Role.STUDENT);
+		User student_3 = new User("Mayer", "Amschel Rothschild", "conspiracy101", Role.STUDENT); 
+		User student_4 = new User("kyle", "broflovski", "ginGer", Role.STUDENT);
+		User student_5 = new User("Gregory", "House", "meningitis", Role.STUDENT);
+		User student_6 = new User("raymond", "reddington", "TheCabal",Role.STUDENT);
+		User student_7 = new User("Rick", "Sanchez", "MeeSeeks",Role.STUDENT);
+		User student_8 = new User("Abigail", "Lawnmower", "GrassIsGreen",Role.STUDENT);
+		User student_9 = new User("Sonny", "Mythroast", "chickenPie",Role.STUDENT);
+		
+		session.save(teacher_1);
+		session.save(teacher_2);
+		session.save(teacher_3);
+		session.save(principle);
+		session.save(student_1);
+		session.save(student_2);
+		session.save(student_3);
+		session.save(student_4);
+		session.save(student_5);
+		session.save(student_6);
+		session.save(student_7);
+		session.save(student_8);
+		session.save(student_9);
 		
 		session.flush();
-		/*
+		
+		// initialize courses data
+		Course course_1 = new Course("introduction to CS", 1, teacher_3);
+		Course course_2 = new Course("Algorithms", 1, teacher_1);
+		Course course_3 = new Course("OOP", 2, teacher_3);
+		Course course_4 = new Course("Data structures", 2, teacher_2);
+		
+		session.save(course_1);
+		session.save(course_2);
+		session.save(course_3);
+		session.save(course_4);
+		
+		session.flush();
+		
+		// enroll students to courses - with: "public void addCoursesToStudent(Course... courses)"
+		student_1.addCoursesToStudent(course_1,course_3);
+		student_2.addCoursesToStudent(course_2,course_3);
+		student_3.addCoursesToStudent(course_3,course_4);
+		student_4.addCoursesToStudent(course_2);
+		student_5.addCoursesToStudent(course_1,course_2,course_4);
+		student_6.addCoursesToStudent(course_3);
+		student_7.addCoursesToStudent(course_4,course_3);
+		student_8.addCoursesToStudent(course_1,course_2,course_3,course_4);
+		student_9.addCoursesToStudent(course_2,course_3);
+		
+		session.save(student_1);
+		session.save(student_2);
+		session.save(student_3);
+		session.save(student_4);
+		session.save(student_5);
+		session.save(student_6);
+		session.save(student_7);
+		session.save(student_8);
+		session.save(student_9);
+		
+		session.flush();
+		
+		
 		// initialize questions data
-		String[] answers = {"Minecraft","Call of duty","Warms","FIFA"};
+		String[] answers = {"Minecraft","Call of duty","Worms","FIFA"};
 		int correct_answer = 1;
 		String question = "Which game did Rick and Morty play in the final episode of season 3?";
 		String instructions = "Watch rick and mortey";
-		Question question_1 = new Question(1, question, answers, instructions, correct_answer,1);
+		Question question_1 = new Question(course_1.getCourseId(), question, answers, instructions, 
+											correct_answer,teacher_1.getUserId());
 		
 		String[] answers2 = {"Pickle","Portal gun","Morites shirt","He doesn't travel through the different universes"};
 		correct_answer = 2;
 		question = "Which item helps Rick travel through the different universes?";
 		instructions = "Watch rick and mortey";
-		Question question_2 = new Question(1, question, answers2, instructions, correct_answer,1);
+		Question question_2 = new Question(course_2.getCourseId(), question, answers2, instructions,
+											correct_answer,teacher_1.getUserId());
 		
 		String[] answers3 = {"Green","Black","Yellow","Red"};
 		correct_answer = 3;
-		Question question_3 = new Question(1, "What is the color of Morties shirt?", answers3, "Watch rick and mortey", correct_answer,1);
-		
+		Question question_3 = new Question(course_3.getCourseId(), "What is the color of Morties shirt?", answers3,
+											"Watch rick and mortey", correct_answer,teacher_2.getUserId());
 		
 		String[] answers4 = {"Gerry smit","Rick sanchez","Bird man","He don't have a father"};
 		correct_answer = 1;
-		Question question_4 = new Question(2, "What is the name of Morties father?", answers4, "Watch rick and mortey", correct_answer,1);
+		Question question_4 = new Question(course_4.getCourseId(), "What is the name of Morties father?", answers4,
+											"Watch rick and mortey", correct_answer,teacher_2.getUserId());
 		
 		String[] answers5 = {"Tomato","Onion","Pickle","Rice"};
 		correct_answer = 3;
-		Question question_5 = new Question(3, "In Season 3, Episode 3 Rick turn himself into?", answers5, "Watch rick and mortey", correct_answer,1);
+		Question question_5 = new Question(course_1.getCourseId(), "In Season 3, Episode 3 Rick turn himself into?", 
+											answers5, "Watch rick and mortey", correct_answer,teacher_3.getUserId());
 		
 		String[] answers6 = {"T-999","N-97","C-137","D-142"};
 		correct_answer = 3;
-		Question question_6 = new Question(4, "What is Rick's \"universe number\"?", answers6, "Watch rick and mortey", correct_answer,1);
+		Question question_6 = new Question(course_2.getCourseId(), "What is Rick's \"universe number\"?", answers6, 
+											"Watch rick and mortey", correct_answer,teacher_3.getUserId());
 		
 		session.save(question_1);
 		session.save(question_2);
@@ -188,9 +278,20 @@ public class ConnectToDB {
 		session.save(question_5);
 		session.save(question_6);
 		
+		question_1.setQuestionId();
+		question_2.setQuestionId();
+		question_3.setQuestionId();
+		question_4.setQuestionId();
+		question_5.setQuestionId();
+		question_6.setQuestionId();
+		
 		session.flush();
-		*/
+		
 	}
+
+
+	
+	
 
 	public static void connectToDB() {
 		

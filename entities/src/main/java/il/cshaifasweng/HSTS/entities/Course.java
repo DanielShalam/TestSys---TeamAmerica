@@ -1,18 +1,29 @@
 package il.cshaifasweng.HSTS.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 
+
+// TODO - use singleton 
+
 @Entity
-@Table(name = "question_table")
+@Table(name = "course_table")
 public class Course implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -20,30 +31,55 @@ public class Course implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int courseId;
-	
+
 	@Column(name = "course_name")
 	private String courseName;
-	
-	
+
 	@Column(name = "subject_id")
 	private int subjectId;
-	
-	@Column(name = "teacher_id")
-	private int teacherId;
-	
-	@Column(name = "stuednt_list")
+
+	// owning side
+	@ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.MERGE}, targetEntity = User.class ) 
+	@JoinTable( name="courses_students", joinColumns = @JoinColumn(name ="course_id"),
+				inverseJoinColumns = @JoinColumn(name = "student_id") ) 
 	private List<User> studentList;
-	
-	public Course(String courseName,int subjectId,int teacherId,List<User> studentList) {
+	 
+	// teacher courses relation - Bidirectional
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "teacher_id")
+	private User teacher;
+
+	// course questions relation - Unidirectional
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "courseId") // mapping owner side
+	private List<Question> questionList;
+
+	public Course(String courseName, int subjectId, User teacher) {
 		this.courseName = courseName;
 		this.subjectId = subjectId;
-		this.teacherId = teacherId;
-		this.studentList = studentList;
+		setTeacher(teacher);
+		this.studentList = new ArrayList<User>();
+		this.questionList = new ArrayList<Question>();		
+	}
+
+	public Course() {
+
 	}
 	
-	public Course() {
-		
+	/* add teacher to course 
+	   add course to teachers course list */
+	public void setTeacher(User teacher) {
+		this.teacher = teacher;
+		teacher.getCoursesTeaching().add(this);		
 	}
+	
+	public List<Question>  getQuestionList(){
+		return questionList;
+	}
+	
+	public int getTeacherId() {
+		return teacher.getUserId();
+	}
+	
 	
 	public int getCourseId() {
 		return courseId;
@@ -65,20 +101,9 @@ public class Course implements Serializable {
 		this.subjectId = subjectId;
 	}
 
-	public int getTeacherId() {
-		return teacherId;
-	}
-
-	public void setTeacherId(int teacherId) {
-		this.teacherId = teacherId;
-	}
-
 	public List<User> getStudentList() {
 		return studentList;
 	}
 
-	public void setStudentList(List<User> studentList) {
-		this.studentList = studentList;
-	}
-	
+
 }

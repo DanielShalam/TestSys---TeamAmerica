@@ -5,11 +5,15 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 
@@ -45,25 +49,25 @@ public class Exam implements Serializable {
 	@Column(name = "used")
 	private boolean usedInExamination;
 	
-	@Column(name = "creator_id")
-	private int creatorId;
-	
 	@Column(name = "duration")
 	private Duration assignedDuration;
 	
-	public Exam(int couresId, ArrayList<Question> questionList, ArrayList<Integer> answerList,
-			String studentInstructions,String teacherInstructions,int creatorId, Duration assignedDuration ) {
-		
+	// teacher exams relation - Unidirectional
+	@Column(name = "teacher_id")
+	private int teacherId;
+	
+	
+
+	public Exam(int teacherId, int courseId, ArrayList<Question> questionList, ArrayList<Integer> answerList,
+			String studentInstructions,String teacherInstructions, Duration assignedDuration ) {
+		this.teacherId = teacherId;
 		this.courseId = courseId;
 		this.questionList = questionList;
 		this.answerList = answerList;
 		this.studentInstructions = studentInstructions;
 		this.teacherInstructions = teacherInstructions;
-		this.creatorId = creatorId;
 		this.assignedDuration = assignedDuration;
-		setExamId();
 	}
-	
 
 	public Exam() {
 		
@@ -76,7 +80,8 @@ public class Exam implements Serializable {
 	public int getExamId() {
 		return examId;
 	}
-
+	
+	/* call it afeter we persist the object */
 	public void setExamId() {
 		this.examId = courseId * 1000 + examNum;;
 	}
@@ -129,13 +134,6 @@ public class Exam implements Serializable {
 		this.usedInExamination = usedInExamination;
 	}
 
-	public int getCreatorId() {
-		return creatorId;
-	}
-
-	public void setCreatorId(int creatorId) {
-		this.creatorId = creatorId;
-	}
 
 	public Duration getAssignedDuration() {
 		return assignedDuration;
@@ -144,5 +142,12 @@ public class Exam implements Serializable {
 	public void setAssignedDuration(Duration assignedDuration) {
 		this.assignedDuration = assignedDuration;
 	}
+	
+	public int getTeacherId() {
+		return teacherId;
+	}
 
+	public void setTeacherId(int teacherId) {
+		this.teacherId = teacherId;
+	}
 }
