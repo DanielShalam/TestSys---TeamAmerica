@@ -26,7 +26,6 @@ import il.cshaifasweng.HSTS.entities.Role;
 import il.cshaifasweng.HSTS.entities.*;
 
 
-
 public class ConnectToDB {
 	
 	private static Session session;
@@ -54,6 +53,11 @@ public class ConnectToDB {
 		TypedQuery<T> allQuery = session.createQuery(allCriteriaQuery);
 		return allQuery.getResultList();
 	}
+	
+    public <T> void deleteById(final Class<T> type,int entityId) {
+        T entity = ConnectToDB.getById(type, entityId);
+        session.delete(entity);
+    }
 	
     public static <T> T getById(final Class<T> type, int id){
     		return (T) session.get(type, id);

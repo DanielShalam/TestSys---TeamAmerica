@@ -24,7 +24,7 @@ public class LogInController {
     	client.openConnection();
     	
     	client.handleMessageFromLogInController("someUser", "somePass");
-    	System.out.println("meesage from LogInController Handaled");
+    	System.out.println("meesage from LogInController Handled");
     	while (true) {
     		System.out.println("running for ever");
     		if (client.isAnswerReturned==true){
