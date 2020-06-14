@@ -9,21 +9,20 @@ public class UserController {
 	
 	// TODO return role as enum when the client controllers will be ready
 	
-	public static int getRole(String userName, String pass) {
+	public static Role getRole(String userName, String pass) {
 		User user = ConnectToDB.getByUser(userName);
 		if (user == null) {		// If the use does not exist
-			// return Role.INVALID;
-			return 1;
+			return Role.INVALID;
 		}
 		
 		if (user.getPassword() ==  pass) {		// If the password is correct
 			// return user.getRole();
-			return 1;
+			return user.getRole();
 			
 		}
 		
 		// return Role.INVALID;	// If the password is incorrect	
-		return -1;
+		return Role.INVALID;
 	}
 	
 

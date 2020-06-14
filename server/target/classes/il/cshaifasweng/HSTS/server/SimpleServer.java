@@ -5,6 +5,7 @@ import il.cshaifasweng.HSTS.server.ConnectToDB;
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.CarrierType;
 import il.cshaifasweng.HSTS.entities.Question;
+import il.cshaifasweng.HSTS.entities.Role;
 import il.cshaifasweng.HSTS.server.ocsf.ConnectionToClient;
 
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class SimpleServer extends AbstractServer {
 	protected void handleUserMessage(Carrier carrier, ConnectionToClient client) {
 		String UserNameFromClient = (String) carrier.carrierMessageMap.get("userName");
 		String PassFromClient = (String) carrier.carrierMessageMap.get("pass");
-		int checkedRole = UserController.getRole(UserNameFromClient, PassFromClient);
+		Role checkedRole = UserController.getRole(UserNameFromClient, PassFromClient);
 		
 		System.out.println("checkedRole is " + checkedRole);
 		
