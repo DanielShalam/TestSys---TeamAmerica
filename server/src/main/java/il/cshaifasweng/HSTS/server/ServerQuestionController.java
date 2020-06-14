@@ -13,7 +13,7 @@ public class ServerQuestionController {
 		
 	}
 	
-	public static void createBeforeCommit(Question question) {
+	public static int createBeforeCommit(Question question) {
 		Question newQuestion = new Question(
 				question.getCourseId(),
 				question.getQuestion(),
@@ -22,11 +22,17 @@ public class ServerQuestionController {
 				question.getCorrectAnswer(),
 				question.getTeacherId());
 		
-		commitQuestionToDB(newQuestion);
+		int return_value = commitQuestionToDB(newQuestion);
+		return return_value;
 	}
 	
 	public static int commitQuestionToDB(Question question) {
-		ConnectToDB.save(question);
+		int new_id = ConnectToDB.save(question);
+		// Failure
+		if (new_id == question.getQuestionId()) {
+			return -1;
+		}
+		// Success
 		return 1;
 	}
 	
@@ -42,12 +48,9 @@ public class ServerQuestionController {
     	return qList;	
 	}
 	
-//	public List<Question> getQuestionsByTeacher(int teacher_id) {
-//		// Get all the question of some teacher by its id
-//		
-//		Criteria criteria = ConnectToDB.session.createCriteria(Question.class);
-//		List<Question> qList = criteria.add(Restrictions.eq("teacher_id", teacher_id)).list();
-//
-//    	return qList;	
-//	}
+	public List<Question> getQuestionsByTeacher(int teacher_id) {
+		// Get all the question of some teacher by its id
+		List<Question> qList = ConnectToDB.getByAttribute(Question.class, "teacher_id", teacher_id);
+    	return qList;	
+	}
 }

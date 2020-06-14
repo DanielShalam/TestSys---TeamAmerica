@@ -16,15 +16,17 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.hibernate.service.ServiceRegistry;
 
-
 import il.cshaifasweng.HSTS.entities.*;
+import net.bytebuddy.asm.Advice.This;
 
 
 public class ConnectToDB {
 	
 	private static Session session;
+	private static SessionFactory sessionFactory;
 	private static ServiceRegistry serviceRegistry;
     
 	private static SessionFactory getSessionFactory() throws HibernateException {
@@ -42,44 +44,79 @@ public class ConnectToDB {
 		serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 		return configuration.buildSessionFactory(serviceRegistry);
 	}
-
+	
+	// Function to get all instances of given class
 	public static <T> List<T> getAll(Class<T> object) {
 		CriteriaBuilder builder = session.getCriteriaBuilder();
 		CriteriaQuery<T> criteriaQuery = builder.createQuery(object);
 		Root<T> rootEntry = criteriaQuery.from(object);
 		CriteriaQuery<T> allCriteriaQuery = criteriaQuery.select(rootEntry);
-
 		TypedQuery<T> allQuery = session.createQuery(allCriteriaQuery);
 		return allQuery.getResultList();
 	}
 	
+	// Function to delete object from database
     public <T> void deleteById(final Class<T> type,int entityId) {
+    	// Get object
         T entity = ConnectToDB.getById(type, entityId);
-        session.delete(entity);
+        // Delete object
+    	Session temp_session = sessionFactory.openSession();
+    	temp_session.delete(entity);
+    	temp_session.getTransaction().commit();
+    	temp_session.close();
     }
 	
+	// Function to get object using its class and id
     public static <T> T getById(final Class<T> type, int id){
-    		return (T) session.get(type, id);
+    	Session temp_Session = sessionFactory.openSession();
+		T entity =  temp_Session.get(type, id);
+		temp_Session.close();
+		return entity;
     }
     
-    public static <T> T getByUser(String user){
-		return (T) session.get(User.class, user);
+	// Function to get user using its name
+    public static User getByUser(String user){
+    	Session temp_session = sessionFactory.openSession();
+    	User entity =  temp_session.get(User.class, user);
+    	temp_session.close();
+		return entity;
     }
     
-//    public static <T> T getBySomeKey(final Class<T> type, String key, int value){
-//    	
-//    	Criteria criteria = session.createCriteria(type);
-//		List<T> return_list = criteria.add(Restrictions.eq(key, value)).list();
-//    	
-//        return (T) session.save(return_list);
-//      }
-    
-    public static <T> T save(final T o){
-        return (T) session.save(o);
+	// Function to insert object into the database
+    public static <T> int save(T o){
+    	Session temp_session = sessionFactory.openSession();
+    	int new_id = (Integer) temp_session.save(o);
+    	if (o.getClass() == Question.class) {
+    		((Question) o).setQuestionId();
+    	}
+    	else if (o.getClass() == Exam.class) 
+    	{	
+			((Exam) o).setExamId();
+		}
+    	temp_session.getTransaction().commit();
+    	temp_session.close();
+    	return new_id;
       }
+    
+    public static <T> List<T> getByAttribute(final Class<T> type, String key, int value)  {
+        Session temp_session = ConnectToDB.sessionFactory.openSession();
+        temp_session.beginTransaction();
+        CriteriaBuilder cb = temp_session.getCriteriaBuilder();
+
+        CriteriaQuery<T> cr = cb.createQuery(type);
+        Root<T> root = cr.from(type);
+        cr.select(root).where(cb.equal(root.get(key), value));  //here you pass a class field, not a table column (in this example they are called the same)
+
+        Query<T> query = temp_session.createQuery(cr);
+        List<T> result = query.getResultList();
+        temp_session.close();
+
+        return result;
+  }
+    
 
 	
-public static void printUsers() throws Exception {
+	public static void printUsers() throws Exception {
 		
 		System.out.format("Users list: \n\n");
 		List<User> usersList = getAll(User.class);
@@ -286,7 +323,6 @@ public static void printUsers() throws Exception {
 		question_6.setQuestionId();
 		
 		session.flush();
-		
 	}
 
 
@@ -297,7 +333,7 @@ public static void printUsers() throws Exception {
 		
 		try {
 
-			SessionFactory sessionFactory = getSessionFactory();
+			ConnectToDB.sessionFactory = getSessionFactory();
 			session = sessionFactory.openSession();
 			session.beginTransaction();
 
@@ -316,9 +352,9 @@ public static void printUsers() throws Exception {
 			exception.printStackTrace();
 		} finally {
 			if (session != null) {
-				StandardServiceRegistryBuilder.destroy(serviceRegistry);
+//				StandardServiceRegistryBuilder.destroy(serviceRegistry);
 				
-				session.getSessionFactory().close();
+//				ConnectToDB.sessionFactory.close();
 				session.close();
 			}
 		}

@@ -1,18 +1,10 @@
 package il.cshaifasweng.HSTS.server;
 
-import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
-
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
-
 import il.cshaifasweng.HSTS.entities.Exam;
-import il.cshaifasweng.HSTS.entities.Question;
 
 public class ServerExamsController {
 
-	private static final int MAX_NUM_OF_EXAMS = 1000;
 	public static final int ILLEGAL_ID = 0;
 	
 	public ServerExamsController() {
@@ -20,7 +12,7 @@ public class ServerExamsController {
 	}
 
 	
-	public void createBeforeCommit(Exam exam) {
+	public int createBeforeCommit(Exam exam) {
 		Exam newExam = new Exam(
 				exam.getTeacherId(),
 				exam.getCourseId(),
@@ -30,14 +22,17 @@ public class ServerExamsController {
 				exam.getTeacherInstructions(),
 				exam.getAssignedDuration());
 		
-		commitExamToDB(newExam);
-		newExam.setExamId();
+		int return_value = commitExamToDB(newExam);
+		return return_value;
 	}
 	
 	public int commitExamToDB(Exam exam) {
-		ConnectToDB.save(exam);
-		exam.setExamId();
-		
+		int new_id = ConnectToDB.save(exam);
+		// Failure
+		if (new_id == exam.getExamId()) {
+			return -1;
+		}
+		// Success			
 		return 1;
 	}
 	
@@ -53,13 +48,9 @@ public class ServerExamsController {
     	return eList;	
 	}
 	
-//	public List<Exam> getExamsByCreator(int teacher_id) {
-//		// Get all the exams of some teacher by its id
-//		
-//		ConnectToDB.getBySomeKey(type, key, value)
-//		Criteria criteria = ConnectToDB.session.createCriteria(Exam.class);
-//		List<Exam> eList = criteria.add(Restrictions.eq("creatorId", teacher_id)).list();
-//
-//    	return eList;	
-//	}
+	public List<Exam> getQuestionsByTeacher(int teacher_id) {
+		// Get all the question of some teacher by its id
+		List<Exam> eList = ConnectToDB.getByAttribute(Exam.class, "teacher_id", teacher_id);
+    	return eList;	
+	}
 }
