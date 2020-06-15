@@ -5,4 +5,6 @@ il\cshaifasweng\HSTS\entities\Role.class
 il\cshaifasweng\HSTS\entities\User.class
 il\cshaifasweng\HSTS\entities\Carrier.class
 il\cshaifasweng\HSTS\entities\Course.class
+il\cshaifasweng\HSTS\entities\ExamType.class
+il\cshaifasweng\HSTS\entities\AddTimeRequest.class
 il\cshaifasweng\HSTS\entities\Examination.class

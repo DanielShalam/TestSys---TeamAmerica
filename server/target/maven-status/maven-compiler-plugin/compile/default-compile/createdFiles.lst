@@ -1,1 +1,16 @@
+il\cshaifasweng\HSTS\server\ocsf\AbstractServer.class
+il\cshaifasweng\HSTS\server\App.class
 il\cshaifasweng\HSTS\server\SimpleServer$1.class
+il\cshaifasweng\HSTS\server\SimpleServer.class
+il\cshaifasweng\HSTS\server\ocsf\ObservableOriginatorServer.class
+il\cshaifasweng\HSTS\server\ocsf\OriginatorMessage.class
+il\cshaifasweng\HSTS\server\ocsf\AdaptableServer.class
+il\cshaifasweng\HSTS\server\ocsf\ConnectionToClient.class
+il\cshaifasweng\HSTS\server\ServerExaminationController.class
+il\cshaifasweng\HSTS\server\ServerExamsController.class
+il\cshaifasweng\HSTS\server\ConnectToDB.class
+il\cshaifasweng\HSTS\server\ocsf\AbstractConnectionFactory.class
+il\cshaifasweng\HSTS\server\ocsf\ObservableServer.class
+il\cshaifasweng\HSTS\server\UserController.class
+il\cshaifasweng\HSTS\server\ocsf\AbstractServer$1.class
+il\cshaifasweng\HSTS\server\ServerQuestionController.class
