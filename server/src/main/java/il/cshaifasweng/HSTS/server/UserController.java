@@ -1,6 +1,5 @@
 package il.cshaifasweng.HSTS.server;
 
-import java.io.IOException;
 import il.cshaifasweng.HSTS.entities.User;
 import il.cshaifasweng.HSTS.entities.Role;
 
@@ -9,13 +8,14 @@ public class UserController {
 	
 	// TODO return role as enum when the client controllers will be ready
 	
-	public static Role getRole(String userName, String pass) {
-		User user = ConnectToDB.getByUser(userName);
+	public static Role getRole(String first_name, String pass) {
+		User user = (User) ConnectToDB.getByAttribute(User.class, "first_name", first_name);
+		
 		if (user == null) {		// If the use does not exist
 			return Role.INVALID;
 		}
 		
-		if (user.getPassword() ==  pass) {		// If the password is correct
+		if (pass.equals(user.getPassword())){		// If the password is correct
 			// return user.getRole();
 			return user.getRole();
 			

@@ -28,6 +28,7 @@ public class SimpleClient extends AbstractClient {
 		Carrier msgFromSimpleServer = null;
 		msgFromSimpleServer = (Carrier)msg;
 		this.answerCarrier =  msgFromSimpleServer;
+		System.out.println(answerCarrier);
 		if (this.answerCarrier!= null) {
 			System.out.println("key set to true");
 			this.isAnswerReturned = true;
@@ -38,10 +39,10 @@ public class SimpleClient extends AbstractClient {
 	}
 	
 	
-	protected void handleMessageFromLogInController(String userName, String pass) {
+	protected void handleMessageFromLogInController(String first_name, String pass) {
 		Carrier logInCarrier =  new Carrier();
 		logInCarrier.carrierType = CarrierType.USER;
-		logInCarrier.carrierMessageMap.put("userName", userName);
+		logInCarrier.carrierMessageMap.put("userName", first_name);
 		logInCarrier.carrierMessageMap.put("pass", pass);
 	
 		

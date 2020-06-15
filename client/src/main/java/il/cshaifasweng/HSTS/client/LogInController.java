@@ -23,7 +23,7 @@ public class LogInController {
     	client = SimpleClient.getClient();
     	client.openConnection();
     	
-    	client.handleMessageFromLogInController("someUser", "somePass");
+    	client.handleMessageFromLogInController("Sonny", "chickenPie");
     	System.out.println("meesage from LogInController Handled");
     	while (true) {
     		System.out.println("running for ever");

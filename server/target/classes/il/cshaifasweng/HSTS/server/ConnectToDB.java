@@ -76,15 +76,23 @@ public class ConnectToDB {
     
 	// Function to get user using its name
     public static User getByUser(String user){
-    	Session temp_session = sessionFactory.openSession();
+    	System.out.println("1");
+        Session temp_session = ConnectToDB.sessionFactory.openSession();
+    	System.out.println(temp_session.isConnected());
+
+    	System.out.println("2");
+        temp_session.beginTransaction();
+    	System.out.println("3");
     	User entity =  temp_session.get(User.class, user);
+    	System.out.println("4");
     	temp_session.close();
 		return entity;
     }
     
 	// Function to insert object into the database
     public static <T> int save(T o){
-    	Session temp_session = sessionFactory.openSession();
+        Session temp_session = ConnectToDB.sessionFactory.openSession();
+        temp_session.beginTransaction();
     	int new_id = (Integer) temp_session.save(o);
     	if (o.getClass() == Question.class) {
     		((Question) o).setQuestionId();
@@ -102,16 +110,28 @@ public class ConnectToDB {
         Session temp_session = ConnectToDB.sessionFactory.openSession();
         temp_session.beginTransaction();
         CriteriaBuilder cb = temp_session.getCriteriaBuilder();
-
         CriteriaQuery<T> cr = cb.createQuery(type);
         Root<T> root = cr.from(type);
         cr.select(root).where(cb.equal(root.get(key), value));  //here you pass a class field, not a table column (in this example they are called the same)
-
         Query<T> query = temp_session.createQuery(cr);
         List<T> result = query.getResultList();
+
         temp_session.close();
 
         return result;
+  }
+    
+    public static <T> T getByAttribute(final Class<T> type, String key, String value)  {
+        Session temp_session = ConnectToDB.sessionFactory.openSession();
+        temp_session.beginTransaction();
+        CriteriaBuilder cb = temp_session.getCriteriaBuilder();
+        CriteriaQuery<T> cr = cb.createQuery(type);
+        Root<T> root = cr.from(type);
+        cr.select(root).where(cb.equal(root.get(key), value));  //here you pass a class field, not a table column (in this example they are called the same)
+        Query<T> query = temp_session.createQuery(cr);
+        List<T> result = query.getResultList();
+        temp_session.close();
+        return result.get(0);
   }
     
 
