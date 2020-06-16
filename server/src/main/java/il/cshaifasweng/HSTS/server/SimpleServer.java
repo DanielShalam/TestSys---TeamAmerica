@@ -44,17 +44,16 @@ public class SimpleServer extends AbstractServer {
 	protected void handleUserMessage(Carrier carrier, ConnectionToClient client) {
 		String UserNameFromClient = (String) carrier.carrierMessageMap.get("userName");
 		String PassFromClient = (String) carrier.carrierMessageMap.get("pass");
-		Role checkedRole = UserController.getRole(UserNameFromClient, PassFromClient);
+		HashMap<String, Object> checkedRole = UserController.getRole(UserNameFromClient, PassFromClient);
 		
 		System.out.println("checkedRole is " + checkedRole);
 		
 		Carrier msg2SimpleClient = new Carrier();
 		msg2SimpleClient.carrierType = CarrierType.USER;
-		msg2SimpleClient.carrierMessageMap.put("userName", "Daniel"); 
-		msg2SimpleClient.carrierMessageMap.put("pass", "Alexey");
-		msg2SimpleClient.carrierMessageMap.put("role", "1");
-		System.out.println("user is " + UserNameFromClient);
-		System.out.println("pass is " + PassFromClient);
+		msg2SimpleClient.carrierMessageMap.put("Role", checkedRole.get("Role")); 
+		msg2SimpleClient.carrierMessageMap.put("ID", checkedRole.get("ID"));
+
+
 		try{
 			client.sendToClient(msg2SimpleClient);
 		}

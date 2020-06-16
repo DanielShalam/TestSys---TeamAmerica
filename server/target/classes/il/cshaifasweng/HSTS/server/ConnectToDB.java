@@ -121,7 +121,7 @@ public class ConnectToDB {
         return result;
   }
     
-    public static <T> T getByAttribute(final Class<T> type, String key, String value)  {
+    public static <T> List<T> getByAttribute(final Class<T> type, String key, String value)  {
         Session temp_session = ConnectToDB.sessionFactory.openSession();
         temp_session.beginTransaction();
         CriteriaBuilder cb = temp_session.getCriteriaBuilder();
@@ -131,7 +131,7 @@ public class ConnectToDB {
         Query<T> query = temp_session.createQuery(cr);
         List<T> result = query.getResultList();
         temp_session.close();
-        return result.get(0);
+        return result;
   }
     
 
