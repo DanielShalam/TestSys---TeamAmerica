@@ -13,7 +13,7 @@ public class ServerQuestionController {
 		
 	}
 	
-	public static int createBeforeCommit(Question question) {
+	public static String createBeforeCommit(Question question) {
 		Question newQuestion = new Question(
 				question.getCourseId(),
 				question.getQuestion(),
@@ -23,7 +23,10 @@ public class ServerQuestionController {
 				question.getTeacherId());
 		
 		int return_value = commitQuestionToDB(newQuestion);
-		return return_value;
+		if (return_value == 1) {
+			return "Question commited to Database";
+		}
+		return "Commit failed";
 	}
 	
 	public static int commitQuestionToDB(Question question) {
@@ -42,7 +45,7 @@ public class ServerQuestionController {
 		return question;
 	}
 	
-	public List<Question> getAllQuestions() {
+	public static List<Question> getAllQuestions() {
 		// Get all question from database
 		List<Question> qList = ConnectToDB.getAll(Question.class);
     	return qList;	

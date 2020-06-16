@@ -10,7 +10,9 @@ import il.cshaifasweng.HSTS.server.ocsf.ConnectionToClient;
 
 import java.awt.print.Printable;
 import java.io.IOException;
-import java.util.*; 
+import java.util.*;
+
+import com.sun.net.httpserver.Authenticator.Success; 
 
 public class SimpleServer extends AbstractServer {
 
@@ -77,17 +79,40 @@ public class SimpleServer extends AbstractServer {
 				msg2SimpleClient.carrierType = CarrierType.QUESTION;
 				msg2SimpleClient.carrierMessageMap.put("message", "Get By Id"); 
 				msg2SimpleClient.carrierMessageMap.put("Question", question); 
-			try {
-				client.sendToClient(msg2SimpleClient);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				try {
+					client.sendToClient(msg2SimpleClient);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
-			case "Insert New":
+			case "create question":
 				Question new_question = (Question) carrier.carrierMessageMap.get("Question");
-				ServerQuestionController.createBeforeCommit(new_question);
+				String success = ServerQuestionController.createBeforeCommit(new_question);
+				Carrier createNewCarrier = new Carrier();
+				createNewCarrier.carrierType = CarrierType.QUESTION;
+				createNewCarrier.carrierMessageMap.put("message", success);
+				try {
+					client.sendToClient(createNewCarrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			case "get all questions":
+				List <Question> question_list = ServerQuestionController.getAllQuestions();
+				Carrier allQuestionsCarrier = new Carrier();
+				allQuestionsCarrier.carrierType = CarrierType.QUESTION;
+				allQuestionsCarrier.carrierMessageMap.put("message", "return all questions"); 
+				allQuestionsCarrier.carrierMessageMap.put("Questions", question_list); 
+				try {
+					client.sendToClient(allQuestionsCarrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
+		
 	}
 	
 	

@@ -38,7 +38,7 @@ public class ConnectToDB {
 		configuration.addAnnotatedClass(Exam.class);
 		configuration.addAnnotatedClass(Course.class);
 		configuration.addAnnotatedClass(Examination.class);
-		configuration.addAnnotatedClass(AddTimeRequest.class);
+		//configuration.addAnnotatedClass(AddTimeRequest.class);
 		/* TODO - add Entities here: "configuration.addAnnotatedClass..." */
 		
 		serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
