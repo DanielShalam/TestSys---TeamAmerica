@@ -12,18 +12,6 @@ import java.io.IOException;
  * JavaFX App
  */
 
-enum boundaryType {
-	LOGIN_MENU,
-	STUDENT_MENU,
-	TEACHER_MENU,
-	PRINCIPLE_MENU,
-	STUDENT_EXAM_PAGE,
-	QUESTION_MENU,
-	SET_QUESTION_MENU,
-	EXAM_MENU,
-	SET_EXAM,
-	PRINCIPLE_REQUESTS
-}
 public class App extends Application {
 
 	private static Scene scene;
@@ -34,8 +22,6 @@ public class App extends Application {
         scene = new Scene(loadFXML("LoginMenu"));
         stage.setScene(scene);
         stage.show();
-        
-      
     }
 
     static void setRoot(String fxml) throws IOException {

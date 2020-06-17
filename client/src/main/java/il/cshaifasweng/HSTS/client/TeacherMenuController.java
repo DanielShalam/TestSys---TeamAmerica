@@ -6,7 +6,11 @@ package il.cshaifasweng.HSTS.client;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.scene.Parent;
 
 public class TeacherMenuController {
 
@@ -24,8 +28,18 @@ public class TeacherMenuController {
 
     @FXML
     void createQuestionMenuBoudary(ActionEvent event) {
-    	System.out.println("Question menu");
-    	//App.setRoot("QuestionMenu");
+        try {
+        	System.out.println("question menu");
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("QuestionMenu.fxml"));
+            Parent root1 = (Parent) fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root1));
+            stage.setMaximized(true);
+            stage.setTitle("Manage Questions");
+            stage.show();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
