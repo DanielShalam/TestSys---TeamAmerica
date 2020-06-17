@@ -55,21 +55,18 @@ public class SimpleClient extends AbstractClient {
 		}
 	}
 	
-	protected void handleMessageFromClientQuestionController(String messageType, int subjectID, 
+	protected void handleMessageFromClientQuestionController(String messageType, 
 			int courseID, int teacherID, Question question) {
 		Carrier questionCarrier =  new Carrier();
 		questionCarrier.carrierType = CarrierType.QUESTION;	
 		
 		if (messageType == "get all questions") 
 		{
-			questionCarrier.carrierMessageMap.put("subject", subjectID);
 			questionCarrier.carrierMessageMap.put("course", courseID);
 			questionCarrier.carrierMessageMap.put("message", "get all questions");
 		}
 		else if (messageType == "get questions by teacher id")
 		{
-			questionCarrier.carrierMessageMap.put("subject", subjectID);
-			questionCarrier.carrierMessageMap.put("course", courseID);
 			questionCarrier.carrierMessageMap.put("teacher", teacherID);
 			questionCarrier.carrierMessageMap.put("message", "get questions by teacher id");
 		}

@@ -1,11 +1,9 @@
 package il.cshaifasweng.HSTS.server;
 
-import il.cshaifasweng.HSTS.entities.User;
+import il.cshaifasweng.HSTS.entities.*;
 
 import java.util.HashMap;
 import java.util.List;
-
-import il.cshaifasweng.HSTS.entities.Role;
 
 
 public class UserController {
