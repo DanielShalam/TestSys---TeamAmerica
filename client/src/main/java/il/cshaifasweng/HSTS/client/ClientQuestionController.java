@@ -137,13 +137,12 @@ public class ClientQuestionController {
     	String message = "get all questions";
     	Question question = null;
     	
-    	client.handleMessageFromClientQuestionController(message, (int)subjectCB.getValue(),
-    			(int)courseCB.getValue(), LoginController.userReceviedID, question);
+    	client.handleMessageFromClientQuestionController(message, (int)courseCB.getValue(), LoginController.userReceviedID, question);
     	System.out.println("message from ClientQuestionController Handled");
     	
     	while (true) {
     		System.out.println("running for ever");
-    		if (client.isAnswerReturned==true){
+    		if (client.isAnswerReturned==true) {
     			localCarrier = client.answerCarrier;
     			client.isAnswerReturned=false;
     			break;

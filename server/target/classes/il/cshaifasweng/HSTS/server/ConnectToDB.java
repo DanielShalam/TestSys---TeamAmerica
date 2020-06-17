@@ -9,18 +9,15 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.hibernate.service.ServiceRegistry;
 
 import il.cshaifasweng.HSTS.entities.*;
-import net.bytebuddy.asm.Advice.This;
 
 
 public class ConnectToDB {
@@ -38,7 +35,7 @@ public class ConnectToDB {
 		configuration.addAnnotatedClass(Exam.class);
 		configuration.addAnnotatedClass(Course.class);
 		configuration.addAnnotatedClass(Examination.class);
-		configuration.addAnnotatedClass(AddTimeRequest.class);
+		//configuration.addAnnotatedClass(AddTimeRequest.class);
 		/* TODO - add Entities here: "configuration.addAnnotatedClass..." */
 		
 		serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
@@ -47,20 +44,34 @@ public class ConnectToDB {
 	
 	// Function to get all instances of given class
 	public static <T> List<T> getAll(Class<T> object) {
-		CriteriaBuilder builder = session.getCriteriaBuilder();
+		Session temp_session = sessionFactory.openSession();
+
+		CriteriaBuilder builder = temp_session.getCriteriaBuilder();
 		CriteriaQuery<T> criteriaQuery = builder.createQuery(object);
 		Root<T> rootEntry = criteriaQuery.from(object);
 		CriteriaQuery<T> allCriteriaQuery = criteriaQuery.select(rootEntry);
-		TypedQuery<T> allQuery = session.createQuery(allCriteriaQuery);
+		TypedQuery<T> allQuery = temp_session.createQuery(allCriteriaQuery);
+
 		return allQuery.getResultList();
 	}
 	
-	// Function to delete object from database
-    public <T> void deleteById(final Class<T> type,int entityId) {
+	// Function to delete object from database using its id
+    public static <T> void deleteById(final Class<T> type,int entityId) {
     	// Get object
         T entity = ConnectToDB.getById(type, entityId);
         // Delete object
     	Session temp_session = sessionFactory.openSession();
+        temp_session.beginTransaction();
+    	temp_session.delete(entity);
+    	temp_session.getTransaction().commit();
+    	temp_session.close();
+    }
+    
+	// Function to delete object from database directly
+    public static <T> void deleteByInstance(final Class<T> type,T entity) {
+        // Delete object
+    	Session temp_session = sessionFactory.openSession();
+        temp_session.beginTransaction();
     	temp_session.delete(entity);
     	temp_session.getTransaction().commit();
     	temp_session.close();
@@ -68,24 +79,9 @@ public class ConnectToDB {
 	
 	// Function to get object using its class and id
     public static <T> T getById(final Class<T> type, int id){
-    	Session temp_Session = sessionFactory.openSession();
-		T entity =  temp_Session.get(type, id);
-		temp_Session.close();
-		return entity;
-    }
-    
-	// Function to get user using its name
-    public static User getByUser(String user){
-    	System.out.println("1");
-        Session temp_session = ConnectToDB.sessionFactory.openSession();
-    	System.out.println(temp_session.isConnected());
-
-    	System.out.println("2");
-        temp_session.beginTransaction();
-    	System.out.println("3");
-    	User entity =  temp_session.get(User.class, user);
-    	System.out.println("4");
-    	temp_session.close();
+    	Session temp_session = sessionFactory.openSession();
+		T entity =  temp_session.get(type, id);
+		temp_session.close();
 		return entity;
     }
     
@@ -106,13 +102,22 @@ public class ConnectToDB {
     	return new_id;
       }
     
+	// Function to update existing object
+    public static <T> void update(T o){
+        Session temp_session = ConnectToDB.sessionFactory.openSession();
+        temp_session.beginTransaction();
+    	temp_session.merge(o);
+    	temp_session.getTransaction().commit();
+    	temp_session.close();
+      }
+    
     public static <T> List<T> getByAttribute(final Class<T> type, String key, int value)  {
         Session temp_session = ConnectToDB.sessionFactory.openSession();
         temp_session.beginTransaction();
         CriteriaBuilder cb = temp_session.getCriteriaBuilder();
         CriteriaQuery<T> cr = cb.createQuery(type);
         Root<T> root = cr.from(type);
-        cr.select(root).where(cb.equal(root.get(key), value));  //here you pass a class field, not a table column (in this example they are called the same)
+        cr.select(root).where(cb.equal(root.get(key), value));  // Matching the key with its
         Query<T> query = temp_session.createQuery(cr);
         List<T> result = query.getResultList();
 
@@ -208,7 +213,7 @@ public class ConnectToDB {
 	
 	public static void printQuestion(Question question) throws Exception {
 		System.out.format("Question ID:  %-8s",question.getQuestionId());
-		System.out.format("Tourse ID  :  %-5s",question.getCourseId());
+		System.out.format("Course ID  :  %-5s",question.getCourseId());
 		System.out.format("Teacher ID  :  %-5s\n",question.getTeacherId());
 		System.out.format("Instructions  :  %s\n",question.getInstructions());
 		System.out.format("Question:  %-30s\n", question.getQuestion());
