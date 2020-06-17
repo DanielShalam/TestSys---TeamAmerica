@@ -22,6 +22,7 @@ public class SimpleServer extends AbstractServer {
 		super(port);
 		this.dbConnector = new ConnectToDB();
 		ConnectToDB.connectToDB();
+		System.out.println("Database Connected");
 	}
 
 	@Override

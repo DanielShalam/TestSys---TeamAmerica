@@ -47,20 +47,24 @@ public class ConnectToDB {
 	
 	// Function to get all instances of given class
 	public static <T> List<T> getAll(Class<T> object) {
-		CriteriaBuilder builder = session.getCriteriaBuilder();
+		Session temp_session = sessionFactory.openSession();
+
+		CriteriaBuilder builder = temp_session.getCriteriaBuilder();
 		CriteriaQuery<T> criteriaQuery = builder.createQuery(object);
 		Root<T> rootEntry = criteriaQuery.from(object);
 		CriteriaQuery<T> allCriteriaQuery = criteriaQuery.select(rootEntry);
-		TypedQuery<T> allQuery = session.createQuery(allCriteriaQuery);
+		TypedQuery<T> allQuery = temp_session.createQuery(allCriteriaQuery);
+
 		return allQuery.getResultList();
 	}
 	
 	// Function to delete object from database
-    public <T> void deleteById(final Class<T> type,int entityId) {
+    public static <T> void deleteById(final Class<T> type,int entityId) {
     	// Get object
         T entity = ConnectToDB.getById(type, entityId);
         // Delete object
     	Session temp_session = sessionFactory.openSession();
+        temp_session.beginTransaction();
     	temp_session.delete(entity);
     	temp_session.getTransaction().commit();
     	temp_session.close();
@@ -68,24 +72,9 @@ public class ConnectToDB {
 	
 	// Function to get object using its class and id
     public static <T> T getById(final Class<T> type, int id){
-    	Session temp_Session = sessionFactory.openSession();
-		T entity =  temp_Session.get(type, id);
-		temp_Session.close();
-		return entity;
-    }
-    
-	// Function to get user using its name
-    public static User getByUser(String user){
-    	System.out.println("1");
-        Session temp_session = ConnectToDB.sessionFactory.openSession();
-    	System.out.println(temp_session.isConnected());
-
-    	System.out.println("2");
-        temp_session.beginTransaction();
-    	System.out.println("3");
-    	User entity =  temp_session.get(User.class, user);
-    	System.out.println("4");
-    	temp_session.close();
+    	Session temp_session = sessionFactory.openSession();
+		T entity =  temp_session.get(type, id);
+		temp_session.close();
 		return entity;
     }
     
