@@ -58,10 +58,20 @@ public class ConnectToDB {
 		return allQuery.getResultList();
 	}
 	
-	// Function to delete object from database
+	// Function to delete object from database using its id
     public static <T> void deleteById(final Class<T> type,int entityId) {
     	// Get object
         T entity = ConnectToDB.getById(type, entityId);
+        // Delete object
+    	Session temp_session = sessionFactory.openSession();
+        temp_session.beginTransaction();
+    	temp_session.delete(entity);
+    	temp_session.getTransaction().commit();
+    	temp_session.close();
+    }
+    
+	// Function to delete object from database directly
+    public static <T> void deleteByInstance(final Class<T> type,T entity) {
         // Delete object
     	Session temp_session = sessionFactory.openSession();
         temp_session.beginTransaction();
@@ -95,13 +105,22 @@ public class ConnectToDB {
     	return new_id;
       }
     
+	// Function to update existing object
+    public static <T> void update(T o){
+        Session temp_session = ConnectToDB.sessionFactory.openSession();
+        temp_session.beginTransaction();
+    	temp_session.merge(o);
+    	temp_session.getTransaction().commit();
+    	temp_session.close();
+      }
+    
     public static <T> List<T> getByAttribute(final Class<T> type, String key, int value)  {
         Session temp_session = ConnectToDB.sessionFactory.openSession();
         temp_session.beginTransaction();
         CriteriaBuilder cb = temp_session.getCriteriaBuilder();
         CriteriaQuery<T> cr = cb.createQuery(type);
         Root<T> root = cr.from(type);
-        cr.select(root).where(cb.equal(root.get(key), value));  //here you pass a class field, not a table column (in this example they are called the same)
+        cr.select(root).where(cb.equal(root.get(key), value));  // Matching the key with its
         Query<T> query = temp_session.createQuery(cr);
         List<T> result = query.getResultList();
 
@@ -197,7 +216,7 @@ public class ConnectToDB {
 	
 	public static void printQuestion(Question question) throws Exception {
 		System.out.format("Question ID:  %-8s",question.getQuestionId());
-		System.out.format("Tourse ID  :  %-5s",question.getCourseId());
+		System.out.format("Course ID  :  %-5s",question.getCourseId());
 		System.out.format("Teacher ID  :  %-5s\n",question.getTeacherId());
 		System.out.format("Instructions  :  %s\n",question.getInstructions());
 		System.out.format("Question:  %-30s\n", question.getQuestion());

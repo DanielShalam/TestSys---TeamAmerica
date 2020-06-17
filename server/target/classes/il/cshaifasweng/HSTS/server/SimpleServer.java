@@ -22,13 +22,18 @@ public class SimpleServer extends AbstractServer {
 		super(port);
 		this.dbConnector = new ConnectToDB();
 		ConnectToDB.connectToDB();
-		System.out.println("Database Connected");
+		List <Question> qList = ConnectToDB.getAll(Question.class);
+		try {
+			ConnectToDB.printQuestions(qList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		System.out.println("Received Message From Client");
-		// where is the carrier? said unused
 		
 		Carrier msgFromClient = null;
 		msgFromClient = (Carrier)msg;
@@ -43,7 +48,7 @@ public class SimpleServer extends AbstractServer {
 	}
 	
 	
-	//// fucntion to handle Message where Carrier type is USER
+	//// Function to handle Message where Carrier type is USER
 	protected void handleUserMessage(Carrier carrier, ConnectionToClient client) {
 		String UserNameFromClient = (String) carrier.carrierMessageMap.get("userName");
 		String PassFromClient = (String) carrier.carrierMessageMap.get("pass");
@@ -67,18 +72,18 @@ public class SimpleServer extends AbstractServer {
 	}
 
 	
-	//// fucntion to handle Message where Carrier type is QUESTION
+	//// Function to handle Message where Carrier type is QUESTION
 	protected void handleQuestionMessage(Carrier carrier, ConnectionToClient client) {
 		String msg = (String) carrier.carrierMessageMap.get("message");
 		
 		switch(msg) {
-			case "Get By Id":
+			case "get question by id":
 				int question_id = (int) carrier.carrierMessageMap.get("id");
 				Question question = ServerQuestionController.getQuestionById(question_id);
 				
 				Carrier msg2SimpleClient = new Carrier();
 				msg2SimpleClient.carrierType = CarrierType.QUESTION;
-				msg2SimpleClient.carrierMessageMap.put("message", "Get By Id"); 
+				msg2SimpleClient.carrierMessageMap.put("message", "return question by id for editing"); 
 				msg2SimpleClient.carrierMessageMap.put("Question", question); 
 				try {
 					client.sendToClient(msg2SimpleClient);
@@ -108,6 +113,20 @@ public class SimpleServer extends AbstractServer {
 				allQuestionsCarrier.carrierMessageMap.put("Questions", question_list); 
 				try {
 					client.sendToClient(allQuestionsCarrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			case "delete question":
+				int id = (int) carrier.carrierMessageMap.get("id");
+				String status = ServerQuestionController.deleteQuestionByID(id);
+				Carrier deleteCarrier = new Carrier();
+				deleteCarrier.carrierType = CarrierType.QUESTION;
+				deleteCarrier.carrierMessageMap.put("message", "delete question status"); 
+				deleteCarrier.carrierMessageMap.put("Status", status); 
+				try {
+					client.sendToClient(deleteCarrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

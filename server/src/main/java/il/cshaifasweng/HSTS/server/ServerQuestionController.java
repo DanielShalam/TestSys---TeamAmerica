@@ -2,18 +2,19 @@ package il.cshaifasweng.HSTS.server;
 
 import java.util.List;
 
+import com.mysql.cj.x.protobuf.MysqlxCrud.Update;
+
 import il.cshaifasweng.HSTS.entities.Question;
 
 public class ServerQuestionController {
 	
-	private static final int MAX_NUM_OF_QUESTIONS = 1000;
-	public static final int ILLEGAL_ID = 0;
-	
 	public ServerQuestionController() {
 		
 	}
-	
+
+	// Create new instance of question before committing to database
 	public static String createBeforeCommit(Question question) {
+		// Crate new question
 		Question newQuestion = new Question(
 				question.getCourseId(),
 				question.getQuestion(),
@@ -22,38 +23,88 @@ public class ServerQuestionController {
 				question.getCorrectAnswer(),
 				question.getTeacherId());
 		
+		// Commit the new question
 		int return_value = commitQuestionToDB(newQuestion);
 		if (return_value == 1) {
-			return "Question commited to Database";
+			return "Question commited successfully. ";
 		}
-		return "Commit failed";
+		else if (return_value == -2) {
+			return "Error - Course ID is invalied. ";
+		}
+		return "Error - Please try again. ";
 	}
-	
+
+	// Commit new Question to database
 	public static int commitQuestionToDB(Question question) {
-		int new_id = ConnectToDB.save(question);
-		// Failure
-		if (new_id == question.getQuestionId()) {
-			return -1;
+		try {
+			int new_id = ConnectToDB.save(question);
+
+			if (new_id == question.getQuestionId()) {	// Failure
+				return -1;
+			}
+			return 1;	// Success
+			
+		} catch (Exception logExceptions) {		// Foreign key is invalid
+			return -2;
 		}
-		// Success
-		return 1;
 	}
-	
+
+	// Get question by its id
 	public static Question getQuestionById(int id) {	
-		// Get question by its id
-		Question question = ConnectToDB.getById(Question.class, id);
-		return question;
+		try {
+			Question question = ConnectToDB.getById(Question.class, id);
+			return question;	// Success
+			
+		} catch (Exception nullPointerException) {	// No Question is found
+			return null;
+		}
+
 	}
-	
+
+	// Get all question from database
 	public static List<Question> getAllQuestions() {
-		// Get all question from database
 		List<Question> qList = ConnectToDB.getAll(Question.class);
     	return qList;	
 	}
+
+	// Get all the question of some teacher by its id
+	public static List<Question> getQuestionsByTeacher(int teacher_id) {
+		try {
+			List<Question> qList = ConnectToDB.getByAttribute(Question.class, "teacher_id", teacher_id);	// Getting by Teacher id
+	    	return qList;	
+	    	
+		} catch (Exception illegalArgumentException) {	// No question matches teacher_id
+			return null;
+		}
+	}
 	
-	public List<Question> getQuestionsByTeacher(int teacher_id) {
-		// Get all the question of some teacher by its id
-		List<Question> qList = ConnectToDB.getByAttribute(Question.class, "teacher_id", teacher_id);
-    	return qList;	
+	// Delete question from database using its id
+	public static String deleteQuestionByID(int question_id) {
+
+		Question question = ServerQuestionController.getQuestionById(question_id);	// Getting the question
+
+		if (question == null) {		// Question id not in database
+			return "Error - Question not found. ";
+		}
+		else if (question.getUsedInTest()) {	// Validation condition
+			return "Error - Question already used in Exam. ";
+		}
+		return "Question deleted successfully. ";
+	}
+	
+	// Update existing question without creating new instance
+	public static Question updateQuestion(int question_id) {
+		
+		Question question = ServerQuestionController.getQuestionById(question_id);	// Getting the question
+
+		if (question == null) {		// Question id not in database
+			return null;
+		}
+		
+		question.setUsedInTest(true);
+		
+		ConnectToDB.update(question);
+		return ServerQuestionController.getQuestionById(question_id);
+		
 	}
 }
