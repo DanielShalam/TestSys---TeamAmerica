@@ -1,8 +1,12 @@
 package il.cshaifasweng.HSTS.entities;
 
+
 import java.io.Serializable;
 import java.sql.Time;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +36,15 @@ public class Examination implements Serializable {
 	private Duration duration;
 	
 	@Column
+	private LocalDate examDate;
+	
+	@Column
+	private LocalTime examStartTime;
+	
+	@Column
+	private LocalTime examEndTime;
+	
+	@Column
 	private AddTimeRequest addTimeRequest;
 	
 	@Column
@@ -53,7 +66,7 @@ public class Examination implements Serializable {
 	@ManyToMany
 	private List<User> examinees;
 	
-	public Examination(int assigningTeacher,ExamType examType) {
+	public Examination(int assigningTeacher,ExamType examType, Duration duration) {
 		this.studentsStarted = 0;
 		this.studentsFinished = 0;
 		this.studentsNotFinsished = 0;
@@ -61,11 +74,22 @@ public class Examination implements Serializable {
 		this.assigningTeacher = assigningTeacher;
 		this.examType = examType;
 		this.addTimeRequest = null; 
+		setDuration(duration);
 	}
 	
 	public Examination() {
 		
 	}
+	
+	public void endExamination() {
+		/* TODO - reach the connecting table and check:
+		 * 		if student started the test
+		 * 		if student ended by themselves
+		 * 		if student was forced to end (only in computerized test)
+		*/		
+	}
+		
+		
 	
 	public int getExamination_id() {
 		return examination_id;
@@ -85,6 +109,7 @@ public class Examination implements Serializable {
 
 	public void setDuration(Duration duration) {
 		this.duration = duration;
+		updateExamEndTime();
 	}
 
 	public AddTimeRequest getAddTimeRequest() {
@@ -143,8 +168,30 @@ public class Examination implements Serializable {
 		this.examinees = examinees;
 	}
 
+	public LocalDate getExamDate() {
+		return examDate;
+	}
+
+	public void setExamDate(LocalDate examDate) {
+		this.examDate = examDate;
+	}
+
+	public LocalTime getExamStartTime() {
+		return examStartTime;
+	}
+
+	public void setExamStartTime(LocalTime examStartTime) {
+		this.examStartTime = examStartTime;
+	}
+
+	public LocalTime getExamEndTime() {
+		return examEndTime;
+	}
 	
-	
+	private void updateExamEndTime() {
+		examEndTime.plusHours(duration.toHours());
+		examEndTime.plusMinutes(duration.toMinutes());
+	}
 	
 }
 

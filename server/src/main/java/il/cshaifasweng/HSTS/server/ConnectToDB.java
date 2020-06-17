@@ -21,7 +21,8 @@ import org.hibernate.service.ServiceRegistry;
 
 import il.cshaifasweng.HSTS.entities.*;
 import net.bytebuddy.asm.Advice.This;
-
+import il.cshaifasweng.HSTS.server.utilities.*;
+// TODO - do as singleton
 
 public class ConnectToDB {
 	
@@ -232,21 +233,21 @@ public class ConnectToDB {
 	private static void initData() throws Exception {
 		
 		// initialize users data	
-		User principle = new User("Professor", "X", "wheels", Role.PRINCIPLE);
+		User principle = new User("Professor", "X", Hashing.hashing("wheels"), Role.PRINCIPLE);
 		
-		User teacher_1 = new User("Barak", "Obama", "plonter", Role.TEACHER);
-		User teacher_2 = new User("Rudy", "Giuliani", "theBigApple", Role.TEACHER);
-		User teacher_3 = new User("Linus", "Torvalds", "Linux", Role.TEACHER);
+		User teacher_1 = new User("Barak", "Obama", Hashing.hashing("plonter"), Role.TEACHER);
+		User teacher_2 = new User("Rudy", "Giuliani", Hashing.hashing("theBigApple"), Role.TEACHER);
+		User teacher_3 = new User("Linus", "Torvalds", Hashing.hashing("Linux"), Role.TEACHER);
 		
-		User student_1 = new User("Donald", "Trump", "duckface", Role.STUDENT);
-		User student_2 = new User("John", "Rockefeller", "stillRichest", Role.STUDENT);
-		User student_3 = new User("Mayer", "Amschel Rothschild", "conspiracy101", Role.STUDENT); 
-		User student_4 = new User("kyle", "broflovski", "ginGer", Role.STUDENT);
-		User student_5 = new User("Gregory", "House", "meningitis", Role.STUDENT);
-		User student_6 = new User("raymond", "reddington", "TheCabal",Role.STUDENT);
-		User student_7 = new User("Rick", "Sanchez", "MeeSeeks",Role.STUDENT);
-		User student_8 = new User("Abigail", "Lawnmower", "GrassIsGreen",Role.STUDENT);
-		User student_9 = new User("Sonny", "Mythroast", "chickenPie",Role.STUDENT);
+		User student_1 = new User("Donald", "Trump", Hashing.hashing("duckface"), Role.STUDENT);
+		User student_2 = new User("John", "Rockefeller", Hashing.hashing("stillRichest"), Role.STUDENT);
+		User student_3 = new User("Mayer", "Amschel Rothschild", Hashing.hashing("conspiracy101"), Role.STUDENT); 
+		User student_4 = new User("kyle", "broflovski", Hashing.hashing("ginGer"), Role.STUDENT);
+		User student_5 = new User("Gregory", "House", Hashing.hashing("meningitis"), Role.STUDENT);
+		User student_6 = new User("raymond", "reddington", Hashing.hashing("TheCabal"),Role.STUDENT);
+		User student_7 = new User("Rick", "Sanchez", Hashing.hashing("MeeSeeks"),Role.STUDENT);
+		User student_8 = new User("Abigail", "Lawnmower", Hashing.hashing("GrassIsGreen"),Role.STUDENT);
+		User student_9 = new User("Sonny", "Mythroast", Hashing.hashing("chickenPie"),Role.STUDENT);
 		
 		session.save(teacher_1);
 		session.save(teacher_2);
