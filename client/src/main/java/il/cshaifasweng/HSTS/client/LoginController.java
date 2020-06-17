@@ -11,19 +11,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.Parent;
 import java.io.IOException;
 import javafx.event.ActionEvent;
 
 
 public class LoginController {
 	
-	private SimpleClient client;
+	static public SimpleClient client;
 	private Carrier localCarrier = null;
-	Integer userReceviedID = null;
+	static public Integer userReceviedID = null;
 	Role userReceviedRole=  null;
 	
-	
-
     @FXML // fx:id="usernameTF"
     private TextField usernameTF; // Value injected by FXMLLoader
 

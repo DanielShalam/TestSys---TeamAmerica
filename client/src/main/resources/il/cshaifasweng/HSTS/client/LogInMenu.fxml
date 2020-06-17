@@ -50,6 +50,7 @@
             </PasswordField>
          </graphic>
       </Label>
+      <Label fx:id="incorrectUsernamePasswordLabel" text="Incorrect password or user name." textFill="RED" visible="false" />
       <Button fx:id="loginButton" onAction="#validate" text="Login" />
    </children>
    <padding>

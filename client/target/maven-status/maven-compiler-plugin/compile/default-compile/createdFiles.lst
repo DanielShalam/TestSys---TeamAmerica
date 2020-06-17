@@ -5,9 +5,7 @@ il\cshaifasweng\HSTS\client\ocsf\AbstractClient.class
 il\cshaifasweng\HSTS\client\App.class
 il\cshaifasweng\HSTS\client\ocsf\ObservableClient.class
 il\cshaifasweng\HSTS\client\Main.class
-il\cshaifasweng\HSTS\client\LoginController.class
 il\cshaifasweng\HSTS\client\ocsf\ObservableSWRClient.class
 il\cshaifasweng\HSTS\client\ocsf\AdaptableClient.class
-il\cshaifasweng\HSTS\client\boundaryType.class
 il\cshaifasweng\HSTS\client\LoginController$1.class
 il\cshaifasweng\HSTS\client\TeacherMenuController.class
