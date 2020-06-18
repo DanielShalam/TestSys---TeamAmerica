@@ -5,6 +5,7 @@
 package il.cshaifasweng.HSTS.client;
 
 import java.io.IOException;
+import java.util.List;
 
 import il.cshaifasweng.HSTS.entities.Carrier;
 import javafx.fxml.FXML;
@@ -20,12 +21,14 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import il.cshaifasweng.HSTS.entities.Question;
+import javafx.beans.property.SimpleStringProperty;
 
 
 public class ClientQuestionController {
 	
 	private SimpleClient client;
 	private Carrier localCarrier = null;
+	private List <Question> question_list = null;
 
     @FXML // fx:id="addNewQuestionsButton"
     private Button addNewQuestionsButton; // Value injected by FXMLLoader
@@ -49,10 +52,10 @@ public class ClientQuestionController {
     private TableColumn<?, ?> questionIdTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="questionTC"
-    private TableColumn<?, ?> questionTC; // Value injected by FXMLLoader
+    private TableColumn<Question, String> questionTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="instructionsTC"
-    private TableColumn<?, ?> instructionsTC; // Value injected by FXMLLoader
+    private TableColumn<Question, String> instructionsTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="answersTC"
     private TableColumn<?, ?> answersTC; // Value injected by FXMLLoader
@@ -136,14 +139,23 @@ public class ClientQuestionController {
     	
     	String message = "get all questions";
     	Question question = null;
+    	int id = 0;
     	
-    	client.handleMessageFromClientQuestionController(message, (int)courseCB.getValue(), LoginController.userReceviedID, question);
+    	client.handleMessageFromClientQuestionController(message, id, question);
     	System.out.println("message from ClientQuestionController Handled");
     	
     	while (true) {
     		System.out.println("running for ever");
     		if (client.isAnswerReturned==true) {
+    			
     			localCarrier = client.answerCarrier;
+    			question_list = (List<Question>) localCarrier.carrierMessageMap.get("questions");
+    			for (Question i : question_list)
+    			{
+    				System.out.println(i.getQuestion());
+    				//questionIdTC.setCellValueFactory(c -> new SimpleStringProperty(i.getQuestion()));
+    				//instructionsTC.setCellValueFactory(c -> new SimpleStringProperty(i.getInstructions()));
+    			}
     			client.isAnswerReturned=false;
     			break;
     		}	

@@ -17,13 +17,13 @@ public class SimpleServer extends AbstractServer {
 		this.dbConnector = new ConnectToDB();
 		ConnectToDB.connectToDB();
 		
-		List <Question> qList = ServerQuestionController.getQuestionsByAtrribute("teacherId", 2);
+		/*List <Question> qList = ServerQuestionController.getQuestionsByAtrribute("teacherId", 2);
 		try {
 			ConnectToDB.printQuestions(qList);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	@Override

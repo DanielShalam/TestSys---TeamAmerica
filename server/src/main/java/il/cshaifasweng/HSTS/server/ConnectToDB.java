@@ -366,7 +366,7 @@ public class ConnectToDB {
 			
 			initData();
 			session.getTransaction().commit();
-			printUsers();
+			//printUsers();
 			//printQuestions();
 			
 		} catch (Exception exception) {
