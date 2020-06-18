@@ -55,27 +55,34 @@ public class SimpleClient extends AbstractClient {
 		}
 	}
 	
-	protected void handleMessageFromClientQuestionController(String messageType, 
-			int courseID, int teacherID, Question question) {
+	protected void handleMessageFromClientQuestionController(String message, int id, Question question) {
 		Carrier questionCarrier =  new Carrier();
 		questionCarrier.carrierType = CarrierType.QUESTION;	
 		
-		if (messageType == "get all questions") 
+		if (message == "get all questions") 
 		{
-			questionCarrier.carrierMessageMap.put("course", courseID);
 			questionCarrier.carrierMessageMap.put("message", "get all questions");
 		}
-		else if (messageType == "get questions by teacher id")
+		else if (message == "get all teacher questions")
 		{
-			questionCarrier.carrierMessageMap.put("teacher", teacherID);
-			questionCarrier.carrierMessageMap.put("message", "get questions by teacher id");
+			questionCarrier.carrierMessageMap.put("teacher", id);
+			questionCarrier.carrierMessageMap.put("message", "get all teacher questions");
 		}
-		else if (messageType == "create question") 
+		else if (message == "create question") 
 		{
 			questionCarrier.carrierMessageMap.put("question", question);
 			questionCarrier.carrierMessageMap.put("message", "create question");
 		}
-		
+		else if (message == "get all course questions")
+		{
+			questionCarrier.carrierMessageMap.put("course", id);
+			questionCarrier.carrierMessageMap.put("message", "get all course questions");
+		}
+		else if(message == "delete question")
+		{
+			questionCarrier.carrierMessageMap.put("questionID", id);
+			questionCarrier.carrierMessageMap.put("message", "delete question");
+		}
 		
 		try {
 			this.sendToServer(questionCarrier);
