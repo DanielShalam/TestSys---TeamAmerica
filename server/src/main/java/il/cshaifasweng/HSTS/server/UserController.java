@@ -27,6 +27,13 @@ public class UserController {
 				// return user.getRole();
 				hash.put("Role", user.getRole());
 				hash.put("ID", user.getUserId());
+				if (user.getRole() == Role.STUDENT) {
+					hash.put("Courses", user.getCoursesStudying());
+				}
+				else if (user.getRole() == Role.TEACHER) {
+					hash.put("Courses", user.getCoursesTeaching());
+				}
+				hash.put("Courses", user.getUserId());
 				return hash;
 				
 			}
