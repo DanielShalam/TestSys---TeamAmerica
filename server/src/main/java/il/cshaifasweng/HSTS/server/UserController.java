@@ -32,12 +32,14 @@ public class UserController {
 					hash.put("Courses", user.getCoursesStudying());
 				}
 				else if (user.getRole() == Role.TEACHER) {
-					List <String> courses = new ArrayList<String>();
-					System.out.println("Courses");
-					List <Course> course_list = user.getCoursesTeaching();
-					System.out.println("Courses");
-
-					hash.put("Courses", courses);
+					//List <String> courses = new ArrayList<String>();
+					//System.out.println("Courses");
+					//List <Course> course_list = user.getCoursesTeaching();
+					//System.out.println("Courses");
+					hash.put("Courses", user.getCoursesTeaching());
+					
+					//System.out.println(user.getCoursesTeaching().isEmpty());
+					//hash.put("Courses", courses);
 				}
 				
 				return hash;

@@ -22,12 +22,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.AnchorPane;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import il.cshaifasweng.HSTS.entities.Question;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 
@@ -74,9 +74,12 @@ public class ClientQuestionController implements Initializable {
 
     @FXML // fx:id="courseIdTC"
     private TableColumn<Question, Integer> courseIDTC; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="questionIdTC"
+    private TableColumn<Question, Integer> questionIdTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="courseCB"
-    private ChoiceBox<String> courseCB; // Value injected by FXMLLoader
+    private ChoiceBox<Integer> courseCB; // Value injected by FXMLLoader
     
     @FXML // fx:id="saveButton"
     private Button saveButton; // Value injected by FXMLLoader
@@ -100,7 +103,7 @@ public class ClientQuestionController implements Initializable {
     private TextArea answer4TA; // Value injected by FXMLLoader
 
     @FXML // fx:id="courseComboBox"
-    private ComboBox<?> courseComboBox; // Value injected by FXMLLoader
+    private ComboBox<Integer> courseComboBox; // Value injected by FXMLLoader
     
     @FXML // fx:id="answer1RB"
     private RadioButton answer1RB; // Value injected by FXMLLoader
@@ -114,26 +117,46 @@ public class ClientQuestionController implements Initializable {
     @FXML // fx:id="answer3RB"
     private RadioButton answer3RB; // Value injected by FXMLLoader  
     
+    @FXML // fx:id="setQuestionMenuAP"
+    private AnchorPane setQuestionMenuAP; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="manageQuestionAP"
+    private AnchorPane manageQuestionAP; // Value injected by FXMLLoader
     
     @FXML
     void createSetQuestionBoudary(ActionEvent event) {
-    	try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("SetQuestionMenu.fxml"));
-            Parent root2 = (Parent) fxmlLoader.load();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root2));
-            stage.setMaximized(true);
-            stage.setTitle("Add/Edit Questions");
-            stage.show();
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-    	
+    	manageQuestionAP.setVisible(false);
+    	setQuestionMenuAP.setVisible(true);
     }
 
     @FXML
-    void deleteQuestion(ActionEvent event) {
+    void deleteQuestion(ActionEvent event) throws IOException {
+    	client = LoginController.client;
+    	client.openConnection();
+    	
+    	Question question = questionTV.getSelectionModel().getSelectedItem();
+    	if (question.getUsedInTest()) {
+    		System.out.println("you CANNOT delete me!");
+    	}
+    	else {
+    		String message = "delete question";
+        	int id = question.getQuestionId();
+        	
+        	client.handleMessageFromClientQuestionController(message, id, question);
+        	
+        	
+        	/*while (true) {
+    			System.out.println("Running");
 
+        		if (client.isAnswerReturned==true) {
+        			System.out.println("you deleted me!");
+        			
+        			client.isAnswerReturned=false;
+        			break;
+        		}	
+        		
+        	}*/
+    	}
     }
 
     @FXML
@@ -144,6 +167,10 @@ public class ClientQuestionController implements Initializable {
     	String message = "get all questions";
     	Question question = null;
     	int id = 0;
+    	if (courseCB.getSelectionModel().getSelectedItem() != null) {
+    		message = "get all course questions";
+    		id = courseCB.getSelectionModel().getSelectedItem();
+    	}
     	
     	client.handleMessageFromClientQuestionController(message, id, question);
     	System.out.println("message from ClientQuestionController Handled");
@@ -152,7 +179,13 @@ public class ClientQuestionController implements Initializable {
 			System.out.println("Running");
 
     		if (client.isAnswerReturned==true) {
-
+    			
+    			ObservableList<Question> qItems = questionTV.getItems();
+    			
+    			if (!qItems.isEmpty()) {
+    				questionTV.getItems().removeAll(question_list);
+    			}
+    		
     			localCarrier = client.answerCarrier;
     			question_list = (List<Question>) localCarrier.carrierMessageMap.get("questions");
     			
@@ -182,6 +215,12 @@ public class ClientQuestionController implements Initializable {
 
     		if (client.isAnswerReturned==true) {
 
+    			ObservableList<Question> qItems = questionTV.getItems();
+    			
+    			if (!qItems.isEmpty()) {
+    				questionTV.getItems().removeAll(question_list);
+    			}
+    			
     			localCarrier = client.answerCarrier;
     			question_list = (List<Question>) localCarrier.carrierMessageMap.get("questions");
     			
@@ -197,16 +236,118 @@ public class ClientQuestionController implements Initializable {
 
     @FXML
     void loadQuestionToSetQuestionBoudary(ActionEvent event) {
-
+    	Question question = questionTV.getSelectionModel().getSelectedItem();
+    	if (question == null)
+    	{
+    		System.out.println("No question was selected!");
+    	}
+    	else {
+    		manageQuestionAP.setVisible(false);
+    		questionTA.setText(question.getQuestion());
+    		instructionsTA.setText(question.getInstructions());
+    		answer1TA.setText(question.getAnswers()[0]);
+    		answer2TA.setText(question.getAnswers()[1]);
+    		answer3TA.setText(question.getAnswers()[2]);
+    		answer4TA.setText(question.getAnswers()[3]);
+    		
+    		switch(question.getCorrectAnswer()) {
+    		case 1:
+    			answer1RB.setSelected(true);
+    			break;
+    		case 2:
+    			answer2RB.setSelected(true);
+    			break;
+    		case 3:
+    			answer3RB.setSelected(true);
+    			break;
+    		case 4:
+    			answer4RB.setSelected(true);
+    			break;
+    		}
+    		
+    		setQuestionMenuAP.setVisible(true);
+    	}
+    	
     }
     
     @FXML
     void cancel(ActionEvent event) {
-
+    	clearData();
+    	setQuestionMenuAP.setVisible(false);
+    	manageQuestionAP.setVisible(true);
     }
 
     @FXML
     void clearFields(ActionEvent event) {
+    	clearData();
+    }
+
+    @FXML
+    void commitQuestionToDB(ActionEvent event) {
+    	if (isQuestionValid())
+    	{
+    		
+    	}
+    }
+    
+    @FXML
+    boolean isQuestionValid() {
+    	//check if question has empty fields
+    	if (questionTA.getText().isBlank() || answer1TA.getText().isBlank() || answer2TA.getText().isBlank() ||
+    			answer3TA.getText().isBlank() || answer4TA.getText().isBlank() || 
+    			(answer1RB.isSelected() == false && answer2RB.isSelected() == false &&
+    			answer3RB.isSelected() == false && answer4RB.isSelected() == false) ||
+    			courseComboBox.getSelectionModel().isEmpty()) 
+    	{
+    		return false;
+    	} 
+    	else 
+    	{
+    		Question question = questionTV.getSelectionModel().getSelectedItem();
+    		
+    		//check if question was changed
+    		if (questionTA.getText() == question.getQuestion() &&
+    				answer1TA.getText() == question.getAnswers()[0] &&
+    				answer2TA.getText() == question.getAnswers()[1] &&
+    				answer3TA.getText() == question.getAnswers()[2] &&
+    				answer4TA.getText() == question.getAnswers()[3] &&
+    				courseComboBox.getSelectionModel().getSelectedItem() == question.getCourseId() &&
+    				((answer1RB.isSelected() && question.getCorrectAnswer() == 1) ||
+    						(answer2RB.isSelected() && question.getCorrectAnswer() == 2) ||
+    						(answer3RB.isSelected() && question.getCorrectAnswer() == 3) ||
+    						(answer4RB.isSelected() && question.getCorrectAnswer() == 4))) {
+    			return false;
+    		}
+    		return true;
+    	}
+    }
+     
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+    	courseIDTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("courseId"));
+    	questionTC.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
+    	answersTC.setCellValueFactory(new PropertyValueFactory<Question,String[]>("answers"));
+    	instructionsTC.setCellValueFactory(new PropertyValueFactory<Question,String>("instructions"));
+    	correctAnswerTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("correctAnswer"));
+    	teacherIdTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("teacherId"));
+    	questionIdTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("questionId"));
+    	
+//    	for(String course: LoginController.userReceviedCourses) {
+//    		courseCB.getItems().add(course);
+//    	}
+    }
+    
+    //Load data to table
+    void loadData(List<Question> question_list) {
+
+        for (Question questionItem : question_list)
+        {
+        	questionTV.getItems().addAll(questionItem);
+        }
+        
+    }
+    
+    void clearData() {
     	questionTA.setText(null);
     	instructionsTA.setText(null);
     	answer1TA.setText(null);
@@ -227,54 +368,6 @@ public class ClientQuestionController implements Initializable {
     	else if (answer4RB.isSelected()) {
     		answer4RB.setSelected(false);
     	}
-    }
-
-    @FXML
-    void commitQuestionToDB(ActionEvent event) {
-    	if (isQuestionValid())
-    	{
-    		
-    	}
-    }
-    
-    @FXML
-    boolean isQuestionValid() {
-    	if (questionTA.getText().isBlank() || answer1TA.getText().isBlank() || answer2TA.getText().isBlank() ||
-    			answer3TA.getText().isBlank() || answer4TA.getText().isBlank()) 
-    			//correctAnswerChoiceBox.getSelectionModel().isBlank() || courseComboBox.getSelectionModel().isBlank())
-    	{
-    		return false;
-    	} else {
-    		return true;
-    	}
-    }
-     
-    //Receive message from scene 1
-    public void transferMessage(SimpleClient client, Integer teacherID) {
-        
-    }
-    
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-    	courseIDTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("courseId"));
-    	questionTC.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
-    	answersTC.setCellValueFactory(new PropertyValueFactory<Question,String[]>("answers"));
-    	instructionsTC.setCellValueFactory(new PropertyValueFactory<Question,String>("instructions"));
-    	correctAnswerTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("correctAnswer"));
-    	teacherIdTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("teacherId"));
-    	
-//    	for(String course: LoginController.userReceviedCourses) {
-//    		courseCB.getItems().add(course);
-//    	}
-    }
-    
-    //Load data to table
-    void loadData(List<Question> question_list) {
-
-        for (Question questionItem : question_list)
-        {
-        	questionTV.getItems().addAll(questionItem);
-        }   
     }
     
 }
