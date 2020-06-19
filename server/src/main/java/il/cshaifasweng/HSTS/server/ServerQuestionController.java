@@ -66,9 +66,9 @@ public class ServerQuestionController {
 	}
 
 	// Get all the question of some teacher by its id
-	public static List<Question> getQuestionsByAtrribute(String attribute, int teacher_id) {
+	public static List<Question> getQuestionsByAtrribute(String attribute, int value) {
 		try {
-			List<Question> qList = ConnectToDB.getByAttribute(Question.class, attribute, teacher_id);	// Getting by Teacher id
+			List<Question> qList = ConnectToDB.getByAttribute(Question.class, attribute, value);	// Getting by Teacher id
 	    	return qList;	
 	    	
 		} catch (Exception illegalArgumentException) {	// No question matches teacher_id

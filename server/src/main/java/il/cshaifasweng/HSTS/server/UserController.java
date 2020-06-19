@@ -1,6 +1,7 @@
 package il.cshaifasweng.HSTS.server;
 
-import il.cshaifasweng.HSTS.entities.*;
+import il.cshaifasweng.HSTS.entities.User;
+import il.cshaifasweng.HSTS.entities.Role;
 
 import java.util.HashMap;
 import java.util.List;
