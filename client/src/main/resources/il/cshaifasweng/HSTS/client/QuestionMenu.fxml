@@ -10,16 +10,14 @@
 
 <AnchorPane maxHeight="620.0" maxWidth="1225.0" prefHeight="620.0" prefWidth="1225.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.HSTS.client.ClientQuestionController">
    <children>
-      <TableView layoutX="397.0" layoutY="146.0" prefHeight="400.0" prefWidth="795.0">
+      <TableView fx:id="questionTV" layoutX="397.0" layoutY="146.0" prefHeight="400.0" prefWidth="795.0">
         <columns>
-          <TableColumn fx:id="selectTC" prefWidth="39.0" text="Select" />
-          <TableColumn fx:id="questionIdTC" prefWidth="94.0" text="Question ID" />
+            <TableColumn fx:id="courseIDTC" prefWidth="127.0" text="CourseID" />
             <TableColumn fx:id="questionTC" prefWidth="127.0" text="Question" />
-            <TableColumn fx:id="instructionsTC" prefWidth="127.0" text="Instructions" />
             <TableColumn fx:id="answersTC" prefWidth="127.0" text="Answers" />
+            <TableColumn fx:id="instructionsTC" prefWidth="94.0" text="Instructions" />
             <TableColumn fx:id="correctAnswerTC" prefWidth="94.0" text="Correct Answer" />
             <TableColumn fx:id="teacherIdTC" prefWidth="94.0" text="Teacher ID" />
-            <TableColumn fx:id="courseIdTC" prefWidth="94.0" text="Course ID" />
         </columns>
       </TableView>
       <Button fx:id="addNewQuestionsButton" layoutX="462.0" layoutY="570.0" mnemonicParsing="false" onAction="#createSetQuestionBoudary" prefHeight="30.0" prefWidth="172.0" text="Add New Question">

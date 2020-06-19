@@ -6,22 +6,25 @@ package il.cshaifasweng.HSTS.client;
 
 import java.io.IOException;
 import java.util.List;
-
 import il.cshaifasweng.HSTS.entities.Carrier;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import il.cshaifasweng.HSTS.entities.Question;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 
 public class ClientQuestionController {
@@ -29,6 +32,7 @@ public class ClientQuestionController {
 	private SimpleClient client;
 	private Carrier localCarrier = null;
 	private List <Question> question_list = null;
+	ObservableList<Question> questionData = FXCollections.observableArrayList();
 
     @FXML // fx:id="addNewQuestionsButton"
     private Button addNewQuestionsButton; // Value injected by FXMLLoader
@@ -45,32 +49,26 @@ public class ClientQuestionController {
     @FXML // fx:id="showAllQuestionsButton"
     private Button showAllQuestionsButton; // Value injected by FXMLLoader
     
-    @FXML // fx:id="selectTC"
-    private TableColumn<?, ?> selectTC; // Value injected by FXMLLoader
-
-    @FXML // fx:id="questionIdTC"
-    private TableColumn<?, ?> questionIdTC; // Value injected by FXMLLoader
+    @FXML // fx:id="questionTV"
+    private TableView<Question> questionTV; // Value injected by FXMLLoader
 
     @FXML // fx:id="questionTC"
     private TableColumn<Question, String> questionTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="instructionsTC"
     private TableColumn<Question, String> instructionsTC; // Value injected by FXMLLoader
-
+    
     @FXML // fx:id="answersTC"
-    private TableColumn<?, ?> answersTC; // Value injected by FXMLLoader
+    private TableColumn<Question, String[]> answersTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="correctAnswerTC"
-    private TableColumn<?, ?> correctAnswerTC; // Value injected by FXMLLoader
+    private TableColumn<Question, Integer> correctAnswerTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="teacherIdTC"
-    private TableColumn<?, ?> teacherIdTC; // Value injected by FXMLLoader
+    private TableColumn<Question, Integer> teacherIdTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="courseIdTC"
-    private TableColumn<?, ?> courseIdTC; // Value injected by FXMLLoader
-    
-    @FXML // fx:id="subjectCB"
-    private ChoiceBox<?> subjectCB; // Value injected by FXMLLoader
+    private TableColumn<Question, Integer> courseIDTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="courseCB"
     private ChoiceBox<?> courseCB; // Value injected by FXMLLoader
@@ -109,8 +107,9 @@ public class ClientQuestionController {
     private RadioButton answer4RB; // Value injected by FXMLLoader
 
     @FXML // fx:id="answer3RB"
-    private RadioButton answer3RB; // Value injected by FXMLLoader
-
+    private RadioButton answer3RB; // Value injected by FXMLLoader  
+    
+    
     @FXML
     void createSetQuestionBoudary(ActionEvent event) {
     	try {
@@ -135,37 +134,47 @@ public class ClientQuestionController {
     @FXML
     void getAllQuestions(ActionEvent event) throws IOException {
     	client = LoginController.client;
-    	client.openConnection();
+    	//client.openConnection();
     	
     	String message = "get all questions";
     	Question question = null;
     	int id = 0;
     	
+    	courseIDTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("courseId"));
+    	questionTC.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
+    	answersTC.setCellValueFactory(new PropertyValueFactory<Question,String[]>("answers"));
+    	instructionsTC.setCellValueFactory(new PropertyValueFactory<Question,String>("instructions"));
+    	correctAnswerTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("correctAnswer"));
+    	teacherIdTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("teacherId"));
+    	
     	client.handleMessageFromClientQuestionController(message, id, question);
     	System.out.println("message from ClientQuestionController Handled");
     	
     	while (true) {
-    		System.out.println("running for ever");
     		if (client.isAnswerReturned==true) {
     			
     			localCarrier = client.answerCarrier;
     			question_list = (List<Question>) localCarrier.carrierMessageMap.get("questions");
-    			for (Question i : question_list)
-    			{
-    				System.out.println(i.getQuestion());
-    				//questionIdTC.setCellValueFactory(c -> new SimpleStringProperty(i.getQuestion()));
-    				//instructionsTC.setCellValueFactory(c -> new SimpleStringProperty(i.getInstructions()));
-    			}
+    			
+    			System.out.println(question_list);
+                for (Question questionItem : question_list)
+                {
+                	System.out.println(questionItem.getQuestion());
+                	questionTV.getItems().addAll(questionItem);
+                	
+                }
+    			//loadData(question_list);
+    			
     			client.isAnswerReturned=false;
     			break;
     		}	
-    		
     	}
     }
 
     @FXML
-    void getQuestionsByTeacherID(ActionEvent event) {
-
+    void getQuestionsByTeacherID(ActionEvent event)  throws IOException {
+ 
+    	
     }
 
     @FXML
@@ -225,6 +234,22 @@ public class ClientQuestionController {
     //Receive message from scene 1
     public void transferMessage(SimpleClient client, Integer teacherID) {
         
+    }
+    
+    //Load data to table
+    void loadData(List<Question> question_list) {
+    	
+    	courseIDTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("courseId"));
+    	questionTC.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
+    	answersTC.setCellValueFactory(new PropertyValueFactory<Question,String[]>("answers"));
+    	instructionsTC.setCellValueFactory(new PropertyValueFactory<Question,String>("instructions"));
+    	correctAnswerTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("correctAnswer"));
+    	teacherIdTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("teacherId"));
+    	
+        for (Question questionItem : question_list)
+        {
+        	questionTV.getItems().addAll(questionItem);
+        }   
     }
     
 }
