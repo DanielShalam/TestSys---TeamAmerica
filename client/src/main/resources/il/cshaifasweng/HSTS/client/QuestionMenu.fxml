@@ -2,56 +2,111 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="620.0" maxWidth="1225.0" prefHeight="620.0" prefWidth="1225.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.HSTS.client.ClientQuestionController">
    <children>
-      <TableView layoutX="397.0" layoutY="146.0" prefHeight="400.0" prefWidth="795.0">
-        <columns>
-          <TableColumn fx:id="selectTC" prefWidth="39.0" text="Select" />
-          <TableColumn fx:id="questionIdTC" prefWidth="94.0" text="Question ID" />
-            <TableColumn fx:id="questionTC" prefWidth="127.0" text="Question" />
-            <TableColumn fx:id="instructionsTC" prefWidth="127.0" text="Instructions" />
-            <TableColumn fx:id="answersTC" prefWidth="127.0" text="Answers" />
-            <TableColumn fx:id="correctAnswerTC" prefWidth="94.0" text="Correct Answer" />
-            <TableColumn fx:id="teacherIdTC" prefWidth="94.0" text="Teacher ID" />
-            <TableColumn fx:id="courseIdTC" prefWidth="94.0" text="Course ID" />
-        </columns>
-      </TableView>
-      <Button fx:id="addNewQuestionsButton" layoutX="462.0" layoutY="570.0" mnemonicParsing="false" onAction="#createSetQuestionBoudary" prefHeight="30.0" prefWidth="172.0" text="Add New Question">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font>
-      </Button>
-      <Button fx:id="editQuestionsButton" layoutX="727.0" layoutY="570.0" mnemonicParsing="false" onAction="#loadQuestionToSetQuestionBoudary" prefHeight="30.0" prefWidth="172.0" text="Edit Question">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font>
-      </Button>
-      <Button fx:id="deleteQuestionsButton" layoutX="969.0" layoutY="570.0" mnemonicParsing="false" onAction="#deleteQuestion" prefHeight="30.0" prefWidth="172.0" text="Delete Question">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font>
-      </Button>
-      <Button fx:id="showMyQeuestionsButton" layoutX="952.0" layoutY="88.0" mnemonicParsing="false" onAction="#getQuestionsByTeacherID" prefHeight="30.0" prefWidth="172.0" text="Show My Questions">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font>
-      </Button>
-      <Button fx:id="showAllQuestionsButton" layoutX="462.0" layoutY="88.0" mnemonicParsing="false" onAction="#getAllQuestions" prefHeight="30.0" prefWidth="172.0" text="Show All Questions">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font>
-      </Button>
-      <Label layoutX="49.0" layoutY="36.0" text="Manage Questions">
-         <font>
-            <Font name="System Bold" size="24.0" />
-         </font></Label>
-      <Label layoutX="49.0" layoutY="146.0" text="Select Course:" />
-      <ChoiceBox fx:id="courseCB" layoutX="49.0" layoutY="182.0" prefWidth="150.0" />
+      <AnchorPane fx:id="setQuestionMenuAP" layoutX="10.0" layoutY="10.0" maxHeight="620.0" maxWidth="1225.0" prefHeight="620.0" prefWidth="1225.0" visible="false">
+         <children>
+            <Label layoutX="49.0" layoutY="87.0" text="Question:" />
+            <Button fx:id="saveButton" layoutX="154.0" layoutY="570.0" mnemonicParsing="false" onAction="#commitQuestionToDB" prefHeight="30.0" prefWidth="172.0" text="Save">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="editQuestionsButton1" layoutX="527.0" layoutY="570.0" mnemonicParsing="false" onAction="#clearFields" prefHeight="30.0" prefWidth="172.0" text="Clear">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="deleteQuestionsButton1" layoutX="884.0" layoutY="570.0" mnemonicParsing="false" onAction="#cancel" prefHeight="30.0" prefWidth="172.0" text="Cancel">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Label layoutX="49.0" layoutY="36.0" text="Add/Edit Question">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <TextArea fx:id="questionTA" layoutX="49.0" layoutY="104.0" prefHeight="68.0" prefWidth="698.0" wrapText="true" />
+            <Label layoutX="49.0" layoutY="186.0" text="Instructions:" />
+            <TextArea fx:id="instructionsTA" layoutX="49.0" layoutY="203.0" prefHeight="68.0" prefWidth="698.0" wrapText="true" />
+            <Label layoutX="49.0" layoutY="287.0" text="Answer 1:" />
+            <TextArea fx:id="answer1TA" layoutX="49.0" layoutY="304.0" prefHeight="30.0" prefWidth="698.0" wrapText="true" />
+            <Label layoutX="49.0" layoutY="359.0" text="Answer 2:" />
+            <TextArea fx:id="answer2TA" layoutX="49.0" layoutY="376.0" prefHeight="30.0" prefWidth="698.0" wrapText="true" />
+            <Label layoutX="49.0" layoutY="427.0" text="Answer 3:" />
+            <TextArea fx:id="answer3TA" layoutX="49.0" layoutY="444.0" prefHeight="30.0" prefWidth="698.0" wrapText="true" />
+            <Label layoutX="49.0" layoutY="497.0" text="Answer 4:" />
+            <TextArea fx:id="answer4TA" layoutX="49.0" layoutY="514.0" prefHeight="30.0" prefWidth="698.0" wrapText="true" />
+            <Label layoutX="808.0" layoutY="87.0" text="Correct Answer:" />
+            <Label layoutX="808.0" layoutY="195.0" text="Course:" />
+            <ComboBox fx:id="courseComboBox" layoutX="809.0" layoutY="225.0" prefWidth="150.0" />
+            <RadioButton fx:id="answer1RB" layoutX="807.0" layoutY="121.0" mnemonicParsing="false" text="Answer 1">
+               <toggleGroup>
+                  <ToggleGroup fx:id="answerGroup" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="answer2RB" layoutX="807.0" layoutY="155.0" mnemonicParsing="false" text="Answer 2" toggleGroup="$answerGroup" />
+            <RadioButton fx:id="answer4RB" layoutX="959.0" layoutY="155.0" mnemonicParsing="false" text="Answer 4" toggleGroup="$answerGroup" />
+            <RadioButton fx:id="answer3RB" layoutX="959.0" layoutY="121.0" mnemonicParsing="false" text="Answer 3" toggleGroup="$answerGroup" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="manageQuestionAP" layoutX="10.0" layoutY="10.0" maxHeight="620.0" maxWidth="1225.0" prefHeight="620.0" prefWidth="1225.0">
+         <children>
+            <TableView fx:id="questionTV" layoutX="268.0" layoutY="146.0" prefHeight="420.0" prefWidth="924.0">
+               <columns>
+                  <TableColumn fx:id="questionIdTC" prefWidth="75.0" text="Question ID" />
+                  <TableColumn fx:id="questionTC" prefWidth="200.0" text="Question" />
+                  <TableColumn fx:id="instructionsTC" prefWidth="200.0" text="Instructions" />
+                  <TableColumn fx:id="answersTC" prefWidth="200.0" text="Answers" />
+                  <TableColumn fx:id="correctAnswerTC" prefWidth="94.0" text="Correct Answer" />
+                  <TableColumn fx:id="courseIDTC" text="CourseID" />
+                  <TableColumn fx:id="teacherIdTC" text="Teacher ID" />
+               </columns>
+            </TableView>
+            <Button fx:id="addNewQuestionsButton" layoutX="328.0" layoutY="592.0" mnemonicParsing="false" onAction="#createSetQuestionBoudary" prefHeight="30.0" prefWidth="172.0" text="Add New Question">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="editQuestionsButton" layoutX="644.0" layoutY="592.0" mnemonicParsing="false" onAction="#loadQuestionToSetQuestionBoudary" prefHeight="30.0" prefWidth="172.0" text="Edit Question">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="deleteQuestionsButton" layoutX="971.0" layoutY="592.0" mnemonicParsing="false" onAction="#deleteQuestion" prefHeight="30.0" prefWidth="172.0" text="Delete Question">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="showMyQeuestionsButton" layoutX="952.0" layoutY="88.0" mnemonicParsing="false" onAction="#getQuestionsByTeacherID" prefHeight="30.0" prefWidth="172.0" text="Show My Questions">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="showAllQuestionsButton" layoutX="338.0" layoutY="88.0" mnemonicParsing="false" onAction="#getAllQuestions" prefHeight="30.0" prefWidth="172.0" text="Show All Questions">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Label layoutX="49.0" layoutY="36.0" text="Manage Questions">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <Label layoutX="49.0" layoutY="146.0" text="Select Course:" />
+            <ChoiceBox fx:id="courseCB" layoutX="49.0" layoutY="182.0" prefWidth="150.0" />
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>

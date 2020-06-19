@@ -3,6 +3,7 @@ package il.cshaifasweng.HSTS.server;
 import il.cshaifasweng.HSTS.entities.User;
 import il.cshaifasweng.HSTS.entities.Role;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,9 +33,16 @@ public class UserController {
 					hash.put("Courses", user.getCoursesStudying());
 				}
 				else if (user.getRole() == Role.TEACHER) {
+					//List <String> courses = new ArrayList<String>();
+					//System.out.println("Courses");
+					//List <Course> course_list = user.getCoursesTeaching();
+					//System.out.println("Courses");
 					hash.put("Courses", user.getCoursesTeaching());
+					
+					//System.out.println(user.getCoursesTeaching().isEmpty());
+					//hash.put("Courses", courses);
 				}
-				hash.put("Courses", user.getUserId());
+				
 				return hash;
 				
 			}
