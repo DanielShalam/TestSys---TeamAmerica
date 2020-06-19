@@ -5,10 +5,14 @@
 package il.cshaifasweng.HSTS.client;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import java.util.ResourceBundle;
+
 import il.cshaifasweng.HSTS.entities.Carrier;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -27,13 +31,14 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 
-public class ClientQuestionController {
+public class ClientQuestionController implements Initializable {
 	
 	private SimpleClient client;
 	private Carrier localCarrier = null;
 	private List <Question> question_list = null;
 	ObservableList<Question> questionData = FXCollections.observableArrayList();
-
+	
+	
     @FXML // fx:id="addNewQuestionsButton"
     private Button addNewQuestionsButton; // Value injected by FXMLLoader
 
@@ -71,7 +76,7 @@ public class ClientQuestionController {
     private TableColumn<Question, Integer> courseIDTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="courseCB"
-    private ChoiceBox<?> courseCB; // Value injected by FXMLLoader
+    private ChoiceBox<String> courseCB; // Value injected by FXMLLoader
     
     @FXML // fx:id="saveButton"
     private Button saveButton; // Value injected by FXMLLoader
@@ -134,46 +139,59 @@ public class ClientQuestionController {
     @FXML
     void getAllQuestions(ActionEvent event) throws IOException {
     	client = LoginController.client;
-    	//client.openConnection();
+    	client.openConnection();
     	
     	String message = "get all questions";
     	Question question = null;
     	int id = 0;
     	
-    	courseIDTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("courseId"));
-    	questionTC.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
-    	answersTC.setCellValueFactory(new PropertyValueFactory<Question,String[]>("answers"));
-    	instructionsTC.setCellValueFactory(new PropertyValueFactory<Question,String>("instructions"));
-    	correctAnswerTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("correctAnswer"));
-    	teacherIdTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("teacherId"));
-    	
     	client.handleMessageFromClientQuestionController(message, id, question);
     	System.out.println("message from ClientQuestionController Handled");
     	
     	while (true) {
+			System.out.println("Running");
+
     		if (client.isAnswerReturned==true) {
-    			
+
     			localCarrier = client.answerCarrier;
     			question_list = (List<Question>) localCarrier.carrierMessageMap.get("questions");
     			
-    			System.out.println(question_list);
-                for (Question questionItem : question_list)
-                {
-                	System.out.println(questionItem.getQuestion());
-                	questionTV.getItems().addAll(questionItem);
-                	
-                }
-    			//loadData(question_list);
+    			loadData(question_list);
     			
     			client.isAnswerReturned=false;
     			break;
     		}	
+    		
     	}
     }
 
     @FXML
     void getQuestionsByTeacherID(ActionEvent event)  throws IOException {
- 
+    	client = LoginController.client;
+    	client.openConnection();
+    	
+    	String message = "get all teacher questions";
+    	Question question = null;
+    	int id = LoginController.userReceviedID;
+    	
+    	client.handleMessageFromClientQuestionController(message, id, question);
+    	System.out.println("message from ClientQuestionController Handled");
+    	
+    	while (true) {
+			System.out.println("Running");
+
+    		if (client.isAnswerReturned==true) {
+
+    			localCarrier = client.answerCarrier;
+    			question_list = (List<Question>) localCarrier.carrierMessageMap.get("questions");
+    			
+    			loadData(question_list);
+    			
+    			client.isAnswerReturned=false;
+    			break;
+    		}	
+    		
+    	}
     	
     }
 
@@ -236,9 +254,8 @@ public class ClientQuestionController {
         
     }
     
-    //Load data to table
-    void loadData(List<Question> question_list) {
-    	
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
     	courseIDTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("courseId"));
     	questionTC.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
     	answersTC.setCellValueFactory(new PropertyValueFactory<Question,String[]>("answers"));
@@ -246,6 +263,14 @@ public class ClientQuestionController {
     	correctAnswerTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("correctAnswer"));
     	teacherIdTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("teacherId"));
     	
+//    	for(String course: LoginController.userReceviedCourses) {
+//    		courseCB.getItems().add(course);
+//    	}
+    }
+    
+    //Load data to table
+    void loadData(List<Question> question_list) {
+
         for (Question questionItem : question_list)
         {
         	questionTV.getItems().addAll(questionItem);

@@ -2,6 +2,7 @@ package il.cshaifasweng.HSTS.server;
 
 import il.cshaifasweng.HSTS.entities.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,9 +32,14 @@ public class UserController {
 					hash.put("Courses", user.getCoursesStudying());
 				}
 				else if (user.getRole() == Role.TEACHER) {
-					hash.put("Courses", user.getCoursesTeaching());
+					List <String> courses = new ArrayList<String>();
+					System.out.println("Courses");
+					List <Course> course_list = user.getCoursesTeaching();
+					System.out.println("Courses");
+
+					hash.put("Courses", courses);
 				}
-				hash.put("Courses", user.getUserId());
+				
 				return hash;
 				
 			}

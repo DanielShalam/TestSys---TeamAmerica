@@ -5,6 +5,7 @@
 package il.cshaifasweng.HSTS.client;
 
 import il.cshaifasweng.HSTS.entities.Carrier;
+import il.cshaifasweng.HSTS.entities.Course;
 import il.cshaifasweng.HSTS.entities.Role;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -13,6 +14,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.Parent;
 import java.io.IOException;
+import java.util.List;
+
 import javafx.event.ActionEvent;
 
 
@@ -21,6 +24,7 @@ public class LoginController {
 	static public SimpleClient client;
 	private Carrier localCarrier = null;
 	static public Integer userReceviedID = null;
+	static public List<String> userReceviedCourses = null;
 	Role userReceviedRole=  null;
 	
     @FXML // fx:id="usernameTF"
@@ -51,6 +55,7 @@ public class LoginController {
     			localCarrier = client.answerCarrier;
     			userReceviedRole = (Role) localCarrier.carrierMessageMap.get("Role");
     			userReceviedID = (Integer) localCarrier.carrierMessageMap.get("ID");
+    			userReceviedCourses = (List<String>) localCarrier.carrierMessageMap.get("Courses");
     			
     			System.out.println("data From SimpleServer :" +  userReceviedRole +" "+ userReceviedID + "");
     			
