@@ -1,8 +1,11 @@
 package il.cshaifasweng.HSTS.entities;
 
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -39,25 +42,32 @@ public class User implements Serializable {
 	
 	@Column(name = "password")
 	private String password;
-		
-	// teacher courses relation - Bidirectional
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy="teacher")	// mapping owner side
+	
+	// teacher courses relation - Bidirectional (owning side)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,mappedBy="teacher")	// mapping owner side
 	private List<Course> coursesTeaching;
 	
-	// teacher questions relation - Unidirectional
+	// teacher questions relation - Unidirectional (owning side)
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy="teacherId")	// mapping owner side
 	private List<Question> questionsWritten;
 	
-	// teacher exams relation - Unidirectional
+	// teacher exams relation - Unidirectional (owning side)
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy="teacherId")	// mapping owner side
 	private List<Exam> examsWritten;
 	
-	// student courses
-	@ManyToMany(mappedBy = "studentList",
+	// teacher examination relation - Unidirectional (owning side)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy="teacherId")	// mapping owner side
+	private List<Examination> examinationInstigated;
+	
+	// student courses relation 
+	@ManyToMany(mappedBy = "studentList",	// owner side
 			cascade = {CascadeType.PERSIST, CascadeType.MERGE},
 			targetEntity = Course.class	)
 	private List<Course> coursesStudying;
 	
+	// student examinationStudent relation - Bidirectional
+	@OneToMany(mappedBy = "student")		// mapping owner side
+    private Set<ExaminationStudent> examinationList = new HashSet<ExaminationStudent>();
 	
 	public User(String firstName, String lastName, String password, Role role) {
 		this.first_name = firstName;
@@ -68,6 +78,7 @@ public class User implements Serializable {
 		this.examsWritten = new ArrayList<Exam>();
 		this.coursesTeaching = new ArrayList<Course>();
 		this.coursesStudying = new ArrayList<Course>();
+		this.examinationInstigated = new ArrayList<Examination>();
 	}
 	
 	public User() {
@@ -132,5 +143,9 @@ public class User implements Serializable {
 	
 	public List<Question> getQuestionsWritten(){
 		return questionsWritten;
+	}
+	
+	public void addExamination(ExaminationStudent examinationStudent) {
+		examinationList.add(examinationStudent);
 	}
 }	
