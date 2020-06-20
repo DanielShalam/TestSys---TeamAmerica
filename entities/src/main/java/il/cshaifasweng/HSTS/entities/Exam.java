@@ -180,4 +180,8 @@ public class Exam implements Serializable {
 	public int getTeacherId() {
 		return teacherId;
 	}
+	
+	public void addQuestionScore(int score) {
+		
+	}
 }
