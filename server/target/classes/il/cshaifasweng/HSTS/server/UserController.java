@@ -48,10 +48,8 @@ public class UserController {
 					HashMap<String, Integer> courses = new HashMap<String, Integer>();
 					List <Course> course_list = user.getCoursesTeaching();
 					System.out.println("Courses");
-
-					System.out.println(course_list);
-
 					for (Course course: course_list) {
+						System.out.println("Courses");
 						courses.put(course.getCourseName(), course.getCourseId());
 					}
 					hash.put("Courses", courses);

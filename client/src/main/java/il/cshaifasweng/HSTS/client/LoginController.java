@@ -39,6 +39,9 @@ public class LoginController {
     
     @FXML // fx:id="incorrectUsernamePasswordLabel"
     private Label incorrectUsernamePasswordLabel; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="alreadyLoggedInLabel"
+    private Label alreadyLoggedInLabel; // Value injected by FXMLLoader
 
     @FXML
     void validate(ActionEvent event) throws IOException {
@@ -78,11 +81,22 @@ public class LoginController {
 			App.setRoot("PrincipleMenu");
 			break;
 		case INVALID:
-			incorrectUsernamePasswordLabel.setVisible(true);
-			passwordPF.clear();
+			if (userReceviedID == -2) {
+				incorrectUsernamePasswordLabel.setVisible(false);
+				alreadyLoggedInLabel.setVisible(true);
+				passwordPF.clear();
+			}
+			else {
+				alreadyLoggedInLabel.setVisible(false);
+				incorrectUsernamePasswordLabel.setVisible(true);
+				passwordPF.clear();
+			}
 			break;
 		}
     	
+    }
+    static void logMeOut() {
+    	client.handleLogOut(userReceviedID);
     }
 
 }
