@@ -14,11 +14,12 @@ public class SimpleClient extends AbstractClient {
 	
 	public boolean isAnswerReturned = false;
 	public Carrier answerCarrier = new Carrier();
-
+	
 	private SimpleClient(String host, int port) {
 		super(host, port);
 	}
-
+	
+	
 	@Override
 	protected void handleMessageFromServer(Object msg) {
 		
@@ -38,12 +39,26 @@ public class SimpleClient extends AbstractClient {
 		// TODO
 	}
 	
+	protected void handleLogOut(int userId) {
+		Carrier logoutCarrier =  new Carrier();
+		logoutCarrier.carrierType = CarrierType.USER;
+		logoutCarrier.carrierMessageMap.put("message", "Log me out");
+		logoutCarrier.carrierMessageMap.put("ID", userId);
+	
+		try {
+			this.sendToServer(logoutCarrier);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	protected void handleMessageFromLogInController(String first_name, String pass) {
 		Carrier logInCarrier =  new Carrier();
 		logInCarrier.carrierType = CarrierType.USER;
+		logInCarrier.carrierMessageMap.put("message", "Log me in");
 		logInCarrier.carrierMessageMap.put("userName", first_name);
-		logInCarrier.carrierMessageMap.put("pass", pass);
+		logInCarrier.carrierMessageMap.put("password", pass);
 	
 		
 		try {
@@ -100,9 +115,9 @@ public class SimpleClient extends AbstractClient {
 	
 	@Override
 	protected void connectionClosed() {
-		// TODO Auto-generated method stub
-		super.connectionClosed();
+		// TODO Auto-generated method stub	
 		System.out.println("Disconnected from server. ");
+		super.connectionClosed();
 	}
 
 }
