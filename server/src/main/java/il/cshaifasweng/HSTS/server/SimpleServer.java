@@ -16,14 +16,6 @@ public class SimpleServer extends AbstractServer {
 		super(port);
 		this.dbConnector = new ConnectToDB();
 		ConnectToDB.connectToDB();
-		
-		/*List <Question> qList = ServerQuestionController.getQuestionsByAtrribute("teacherId", 2);
-		try {
-			ConnectToDB.printQuestions(qList);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
 	}
 
 	@Override
@@ -53,19 +45,15 @@ public class SimpleServer extends AbstractServer {
 		HashMap<String, Object> checkedRole = UserController.getRole(UserNameFromClient, PassFromClient);
 		Role user_role = (Role) checkedRole.get("Role"); 
 		System.out.println("checkedRole is " + user_role);
-		
+
 		Carrier msg2SimpleClient = new Carrier();
 		msg2SimpleClient.carrierType = CarrierType.USER;
 		msg2SimpleClient.carrierMessageMap.put("Role", user_role); 
 		msg2SimpleClient.carrierMessageMap.put("ID", checkedRole.get("ID"));
-		if (user_role == Role.STUDENT || user_role == Role.TEACHER) {
-			msg2SimpleClient.carrierMessageMap.put("Courses", checkedRole.get("Courses")); 
-		}
-
-		try{
+		msg2SimpleClient.carrierMessageMap.put("Courses", checkedRole.get("Courses"));
+		try {
 			client.sendToClient(msg2SimpleClient);
-		}
-		catch(IOException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -91,7 +79,8 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+				break;
+
 			case "create question":
 				Question new_question = (Question) carrier.carrierMessageMap.get("question");
 				String status = ServerQuestionController.createBeforeCommit(new_question);
@@ -105,6 +94,7 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				break;
 				
 			case "get all questions":
 				List <Question> question_list = ServerQuestionController.getAllQuestions();
@@ -118,6 +108,7 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				break;
 				
 			case "get all teacher questions":
 				int teacher_id = (int) carrier.carrierMessageMap.get("teacher");
@@ -132,6 +123,7 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				break;
 			
 			case "get all course questions":
 				int course_id = (int) carrier.carrierMessageMap.get("course");
@@ -146,10 +138,11 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				break;
 				
 			case "delete question":
-				int id = (int) carrier.carrierMessageMap.get("id");
-				String delete_status = ServerQuestionController.deleteQuestionByID(id);
+				Question question_to_delete = (Question) carrier.carrierMessageMap.get("question");
+				String delete_status = ServerQuestionController.deleteQuestion(question_to_delete);
 
 				responseCarrier.carrierType = CarrierType.QUESTION;
 				responseCarrier.carrierMessageMap.put("message", "delete question status"); 
@@ -160,6 +153,7 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				break;
 		}
 		
 	}
@@ -259,6 +253,12 @@ public class SimpleServer extends AbstractServer {
 	protected void clientConnected(ConnectionToClient client) {
 		super.clientConnected(client);
 		System.out.println("Client connected: " + client.getInetAddress());
+	}
+	
+	@Override
+	synchronized protected void clientDisconnected(ConnectionToClient client) {
+		System.out.println("Client Disconnected");
+		super.clientDisconnected(client);
 	}
 	
 	public static void main(String[] args) throws IOException {

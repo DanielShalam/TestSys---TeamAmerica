@@ -1,6 +1,5 @@
 package il.cshaifasweng.HSTS.client;
 
-import java.util.*; 
 import java.io.IOException;
 
 import il.cshaifasweng.HSTS.client.ocsf.AbstractClient;
@@ -80,7 +79,7 @@ public class SimpleClient extends AbstractClient {
 		}
 		else if(message == "delete question")
 		{
-			questionCarrier.carrierMessageMap.put("questionID", id);
+			questionCarrier.carrierMessageMap.put("question", question);
 			questionCarrier.carrierMessageMap.put("message", "delete question");
 		}
 		
@@ -99,8 +98,11 @@ public class SimpleClient extends AbstractClient {
 		return client;
 	}
 	
-	
-	
-	
+	@Override
+	protected void connectionClosed() {
+		// TODO Auto-generated method stub
+		super.connectionClosed();
+		System.out.println("Disconnected from server. ");
+	}
 
 }

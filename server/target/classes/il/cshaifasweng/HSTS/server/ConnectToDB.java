@@ -135,7 +135,8 @@ public class ConnectToDB {
         cr.select(root).where(cb.equal(root.get(key), value));  //here you pass a class field, not a table column (in this example they are called the same)
         Query<T> query = temp_session.createQuery(cr);
         List<T> result = query.getResultList();
-        temp_session.close();
+        
+        //temp_session.close();
         return result;
   }
     
@@ -330,7 +331,7 @@ public class ConnectToDB {
 		
 		String[] answers6 = {"T-999","N-97","C-137","D-142"};
 		correct_answer = 3;
-		Question question_6 = new Question(course_2.getCourseId(), "What is Rick's \"universe number\"?", answers6, 
+		Question question_6 = new Question(course_3.getCourseId(), "What is Rick's \"universe number\"?", answers6, 
 											"Watch rick and mortey", correct_answer,teacher_3.getUserId());
 		
 		session.save(question_1);

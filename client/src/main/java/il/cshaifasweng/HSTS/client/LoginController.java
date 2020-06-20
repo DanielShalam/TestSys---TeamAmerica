@@ -14,6 +14,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.Parent;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import javafx.event.ActionEvent;
@@ -24,7 +25,7 @@ public class LoginController {
 	static public SimpleClient client;
 	private Carrier localCarrier = null;
 	static public Integer userReceviedID = null;
-	static public List<String> userReceviedCourses = null;
+	static public HashMap<String, Integer> userReceviedCourses = null;
 	Role userReceviedRole=  null;
 	
     @FXML // fx:id="usernameTF"
@@ -55,7 +56,7 @@ public class LoginController {
     			localCarrier = client.answerCarrier;
     			userReceviedRole = (Role) localCarrier.carrierMessageMap.get("Role");
     			userReceviedID = (Integer) localCarrier.carrierMessageMap.get("ID");
-    			userReceviedCourses = (List<String>) localCarrier.carrierMessageMap.get("Courses");
+    			userReceviedCourses = (HashMap<String, Integer>) localCarrier.carrierMessageMap.get("Courses");
     			
     			System.out.println("data From SimpleServer :" +  userReceviedRole +" "+ userReceviedID + "");
     			

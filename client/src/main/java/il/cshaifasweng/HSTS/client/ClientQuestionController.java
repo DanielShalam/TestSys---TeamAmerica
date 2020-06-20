@@ -7,24 +7,20 @@ package il.cshaifasweng.HSTS.client;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
 import il.cshaifasweng.HSTS.entities.Carrier;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.event.ActionEvent;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import il.cshaifasweng.HSTS.entities.Question;
@@ -79,7 +75,7 @@ public class ClientQuestionController implements Initializable {
     private TableColumn<Question, Integer> questionIdTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="courseCB"
-    private ChoiceBox<Integer> courseCB; // Value injected by FXMLLoader
+    private ChoiceBox<String> courseCB; // Value injected by FXMLLoader
     
     @FXML // fx:id="saveButton"
     private Button saveButton; // Value injected by FXMLLoader
@@ -103,7 +99,7 @@ public class ClientQuestionController implements Initializable {
     private TextArea answer4TA; // Value injected by FXMLLoader
 
     @FXML // fx:id="courseComboBox"
-    private ComboBox<Integer> courseComboBox; // Value injected by FXMLLoader
+    private ChoiceBox<String> courseComboBox; // Value injected by FXMLLoader
     
     @FXML // fx:id="answer1RB"
     private RadioButton answer1RB; // Value injected by FXMLLoader
@@ -127,6 +123,7 @@ public class ClientQuestionController implements Initializable {
     void createSetQuestionBoudary(ActionEvent event) {
     	manageQuestionAP.setVisible(false);
     	setQuestionMenuAP.setVisible(true);
+    	
     }
 
     @FXML
@@ -169,7 +166,7 @@ public class ClientQuestionController implements Initializable {
     	int id = 0;
     	if (courseCB.getSelectionModel().getSelectedItem() != null) {
     		message = "get all course questions";
-    		id = courseCB.getSelectionModel().getSelectedItem();
+    		id = LoginController.userReceviedCourses.get(courseCB.getSelectionModel().getSelectedItem());
     	}
     	
     	client.handleMessageFromClientQuestionController(message, id, question);
@@ -193,8 +190,7 @@ public class ClientQuestionController implements Initializable {
     			
     			client.isAnswerReturned=false;
     			break;
-    		}	
-    		
+    		}		
     	}
     }
 
@@ -204,22 +200,22 @@ public class ClientQuestionController implements Initializable {
     	client.openConnection();
     	
     	String message = "get all teacher questions";
+    	System.out.println(message);
     	Question question = null;
     	int id = LoginController.userReceviedID;
     	
     	client.handleMessageFromClientQuestionController(message, id, question);
     	System.out.println("message from ClientQuestionController Handled");
-    	
+		ObservableList<Question> qItems = questionTV.getItems();
+		
+		if (!qItems.isEmpty()) {
+			questionTV.getItems().removeAll(question_list);
+		}
+		
     	while (true) {
 			System.out.println("Running");
 
     		if (client.isAnswerReturned==true) {
-
-    			ObservableList<Question> qItems = questionTV.getItems();
-    			
-    			if (!qItems.isEmpty()) {
-    				questionTV.getItems().removeAll(question_list);
-    			}
     			
     			localCarrier = client.answerCarrier;
     			question_list = (List<Question>) localCarrier.carrierMessageMap.get("questions");
@@ -265,6 +261,14 @@ public class ClientQuestionController implements Initializable {
     			break;
     		}
     		
+    		int courseId = question.getCourseId();
+    		String courseName = null;
+    	    for (Entry<String, Integer> entry : LoginController.userReceviedCourses.entrySet()) {
+    	        if (courseId == entry.getValue()) {
+    	        	courseName = entry.getKey();
+    	        }
+    	    }
+    		courseComboBox.getSelectionModel().select(courseName);
     		setQuestionMenuAP.setVisible(true);
     	}
     	
@@ -286,6 +290,44 @@ public class ClientQuestionController implements Initializable {
     void commitQuestionToDB(ActionEvent event) {
     	if (isQuestionValid())
     	{
+    		int courseId = LoginController.userReceviedCourses.get(courseComboBox.getSelectionModel().getSelectedItem());
+    		int correct_answer = 0;
+        	if (answer1RB.isSelected()) {
+        		correct_answer = 1;
+        	}
+        	else if (answer2RB.isSelected()) {
+        		correct_answer = 2;
+        	}
+        	else if (answer3RB.isSelected()) {
+        		correct_answer = 3;
+        	}
+        	else if (answer4RB.isSelected()) {
+        		correct_answer = 4;
+        	}
+    		String[] answers = {answer1TA.getText(), answer2TA.getText(), answer3TA.getText(), answer4TA.getText()};
+
+    		Question question = new Question(courseId, questionTA.getText(), answers, instructionsTA.getText(), correct_answer, LoginController.userReceviedID);
+    		
+        	client = LoginController.client;
+        	
+        	String message = "create question";   	
+        	client.handleMessageFromClientQuestionController(message, 0, question);
+        	System.out.println("message from ClientQuestionController Handled");
+        	
+        	while (true) {
+    			System.out.println("Running");
+
+        		if (client.isAnswerReturned==true) {
+        			
+        			localCarrier = client.answerCarrier;
+        			String status = (String) localCarrier.carrierMessageMap.get("status");
+        			System.out.println(status);
+        			client.isAnswerReturned=false;
+                	setQuestionMenuAP.setVisible(false);
+                	manageQuestionAP.setVisible(true);
+        			break;
+        		}	
+        	}
     		
     	}
     }
@@ -304,19 +346,21 @@ public class ClientQuestionController implements Initializable {
     	else 
     	{
     		Question question = questionTV.getSelectionModel().getSelectedItem();
-    		
-    		//check if question was changed
-    		if (questionTA.getText() == question.getQuestion() &&
-    				answer1TA.getText() == question.getAnswers()[0] &&
-    				answer2TA.getText() == question.getAnswers()[1] &&
-    				answer3TA.getText() == question.getAnswers()[2] &&
-    				answer4TA.getText() == question.getAnswers()[3] &&
-    				courseComboBox.getSelectionModel().getSelectedItem() == question.getCourseId() &&
-    				((answer1RB.isSelected() && question.getCorrectAnswer() == 1) ||
-    						(answer2RB.isSelected() && question.getCorrectAnswer() == 2) ||
-    						(answer3RB.isSelected() && question.getCorrectAnswer() == 3) ||
-    						(answer4RB.isSelected() && question.getCorrectAnswer() == 4))) {
-    			return false;
+    		if (question != null) {
+	    		//check if question was changed
+	    		if (questionTA.getText() == question.getQuestion() &&
+	    				answer1TA.getText() == question.getAnswers()[0] &&
+	    				answer2TA.getText() == question.getAnswers()[1] &&
+	    				answer3TA.getText() == question.getAnswers()[2] &&
+	    				answer4TA.getText() == question.getAnswers()[3] &&
+	    				LoginController.userReceviedCourses.get(courseComboBox.getSelectionModel().getSelectedItem()) == question.getCourseId() &&
+	    				((answer1RB.isSelected() && question.getCorrectAnswer() == 1) ||
+	    						(answer2RB.isSelected() && question.getCorrectAnswer() == 2) ||
+	    						(answer3RB.isSelected() && question.getCorrectAnswer() == 3) ||
+	    						(answer4RB.isSelected() && question.getCorrectAnswer() == 4))) {
+	    			return false;
+	    		}
+	    		return true;
     		}
     		return true;
     	}
@@ -332,9 +376,13 @@ public class ClientQuestionController implements Initializable {
     	teacherIdTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("teacherId"));
     	questionIdTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("questionId"));
     	
-//    	for(String course: LoginController.userReceviedCourses) {
-//    		courseCB.getItems().add(course);
-//    	}
+    	for(String course: (LoginController.userReceviedCourses).keySet()) {
+    		courseCB.getItems().add(course);
+    	}
+    	
+    	for(String course: (LoginController.userReceviedCourses).keySet()) {
+    		courseComboBox.getItems().add(course);
+    	}
     }
     
     //Load data to table

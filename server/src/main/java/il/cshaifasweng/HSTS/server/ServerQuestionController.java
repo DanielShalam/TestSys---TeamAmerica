@@ -77,16 +77,9 @@ public class ServerQuestionController {
 	}
 	
 	// Delete question from database using its id
-	public static String deleteQuestionByID(int question_id) {
+	public static String deleteQuestion(Question question) {
 
-		Question question = ServerQuestionController.getQuestionById(question_id);	// Getting the question
-
-		if (question == null) {		// Question id not in database
-			return "Error - Question not found. ";
-		}
-		else if (question.getUsedInTest()) {	// Validation condition
-			return "Error - Question already used in Exam. ";
-		}
+		ConnectToDB.deleteByInstance(Question.class, question);	// Getting the question
 		return "Question deleted successfully. ";
 	}
 	

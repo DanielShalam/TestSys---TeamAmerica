@@ -39,7 +39,7 @@ public class User implements Serializable {
 	
 	@Column(name = "password")
 	private String password;
-	
+		
 	// teacher courses relation - Bidirectional
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy="teacher")	// mapping owner side
 	private List<Course> coursesTeaching;
