@@ -1,7 +1,3 @@
-/**
- * Sample Skeleton for 'ExamMenu.fxml' Controller Class
- */
-
 package il.cshaifasweng.HSTS.client;
 
 import javafx.fxml.FXML;
