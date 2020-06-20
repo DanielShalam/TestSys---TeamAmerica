@@ -41,7 +41,7 @@ public class Question implements Serializable {
 	private int correct_answer;
 	
 	@Column(name = "used_in_test")
-	private boolean used_in_test;
+	private boolean usedInTest;
 	
 	// teacher question relation - Unidirectional
 	@Column(name = "teacher_id")
@@ -57,7 +57,7 @@ public class Question implements Serializable {
 		this.answers = answers;
 		this.instructions = instructions;
 		this.correct_answer = correct_answer;
-		this.used_in_test = false;	
+		this.usedInTest = false;	
 		this.teacherId = teacherId;
 		this.courseId = courseId;
 	}
@@ -116,11 +116,11 @@ public class Question implements Serializable {
 	}
 	
 	public boolean getUsedInTest() {
-		return this.used_in_test;
+		return this.usedInTest;
 	}
 
 	public void setUsedInTest(boolean used_in_test) {
-		this.used_in_test = used_in_test;
+		this.usedInTest = used_in_test;
 	}
 	
 	public void printQeustionNum() {

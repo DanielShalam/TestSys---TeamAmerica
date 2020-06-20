@@ -13,16 +13,8 @@ public class ServerExamsController {
 
 	
 	public static String createBeforeCommit(Exam exam) {
-		Exam newExam = new Exam(
-				exam.getTeacherId(),
-				exam.getCourseId(),
-				exam.getQuestionList(),
-				exam.getAnswerList(),
-				exam.getStudentInstructions(),
-				exam.getTeacherInstructions(),
-				exam.getAssignedDuration());
-		
-		int return_value = commitExamToDB(newExam);
+	
+		int return_value = commitExamToDB(exam);
 		if (return_value == 1) {
 			return "Exam commited successfully. ";
 		}

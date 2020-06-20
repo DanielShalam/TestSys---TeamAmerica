@@ -4,9 +4,10 @@ import il.cshaifasweng.HSTS.entities.User;
 import il.cshaifasweng.HSTS.entities.Course;
 import il.cshaifasweng.HSTS.entities.Role;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import org.hibernate.Session;
 
 
 public class UserController {
@@ -36,13 +37,16 @@ public class UserController {
 				else if (user.getRole() == Role.TEACHER) {
 					HashMap<String, Integer> courses = new HashMap<String, Integer>();
 					List <Course> course_list = user.getCoursesTeaching();
+					System.out.println("Courses");
+
+					System.out.println(course_list);
+
 					for (Course course: course_list) {
 						courses.put(course.getCourseName(), course.getCourseId());
 					}
 					hash.put("Courses", courses);
 				}
-				return hash;
-				
+				return hash;	
 			}
 		}	
 		
