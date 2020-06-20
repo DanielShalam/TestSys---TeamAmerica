@@ -1,3 +1,4 @@
 ﻿/dependency-reduced-pom.xml
 /target/
 *.class
+/target/classes/il/cshaifasweng/HSTS/client/SimpleClient.class
