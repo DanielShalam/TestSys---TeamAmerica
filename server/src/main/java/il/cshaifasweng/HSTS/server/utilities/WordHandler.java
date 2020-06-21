@@ -1,94 +1,59 @@
 package il.cshaifasweng.HSTS.server.utilities;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
-
 import il.cshaifasweng.HSTS.entities.Examination;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 public class WordHandler implements Serializable {
-	private static final long serialVersionUID = 2955938781660056312L;
-	private String examId=null;
-	private String fileName=null;	
-	private int size=0;
-	public  byte[] mybytearray;
+	private static final long serialVersionUID = 1L;
 	
-	public void initArray(int size)
-	{
-		mybytearray = new byte [size];	
-	}
-	
-	public WordHandler(String pathname) {
-		this.fileName = pathname; 
-	}
-	
-	
-	public String getFileName() {
-		return fileName;
-	}
-
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
-	
-	public int getSize() {
-		return size;
-	}
-
-	public void setSize(int size) {
-		this.size = size;
-	}
-
-	public byte[] getMybytearray() {
-		return mybytearray;
-	}
-	
-	public byte getMybytearray(int i) {
-		return mybytearray[i];
-	}
-
-	public void setMybytearray(byte[] mybytearray) {
+	public static void CreateWordFile(Examination examination) throws IOException {
+		String fileName = String.valueOf(examination.getExamId());
+		//Blank Document
+		XWPFDocument document = new XWPFDocument(); 
+		XWPFParagraph tempParagraph = document.createParagraph();
+		XWPFRun tempRun = tempParagraph.createRun();
+		tempRun.setText("\tCourse id: "+examination.getExam().getCourseId()+"\n");
+		tempRun.setText("\tDate: "+examination.getDuration()+"\n\n");
+		tempRun.setText("\tInstractions: "+examination.getExam().getTeacherInstructions());
+		//		writer.write("\tField: "+activeExam.getExam().getField().getName()+"\n");
 		
-		for(int i=0;i<mybytearray.length;i++) {
-			this.mybytearray[i] = mybytearray[i];
-		}
-			
-	}
-
-	public String getDescription() {
-		return examId;
-	}
-
-	public void setDescription(String description) {
-		examId = description;
-	}	
-	
-//	public WordHandler CreateWordFile(Examination activeExam, String path) throws IOException
-//	{
-//		BufferedWriter writer = new BufferedWriter(new FileWriter(path));
-//	    writer.write("\t\t"+activeExam.getExam().getCourse().getName()+"\n");
-//	    writer.write("\tField: "+activeExam.getExam().getField().getName()+"\n");
-//	    writer.write("\tDate: "+activeExam.getDuration()+"\n\n");
-//		
-//	    ArrayList<Q> questionsInExam=activeExam.getExam().getQuestionsInExam();
-//	    int questionIndex=1;
-//		for(QuestionInExam qie:questionsInExam)//Sets all questions with their info on screen.
+//		List<Question> questionsInExam= examination.getExam().getQuestionList();
+//		int questionIndex=1;
+//		for(Question question:questionsInExam)//Sets all questions with their info on screen.
 //		{
-//			writer.write(questionIndex+". "+qie.getQuestionString()+" ("+qie.getPointsValue()+" Points)\n");
-//			if(!qie.getStudentNote().equals(""))
+//			writer.write(questionIndex+". "+question.getQuestion()+" ("+examination.getExam().getScoringList()[questionIndex]+" Points)\n");
+//			if(!question.getInstructions().equals(""))
 //			{
-//				writer.write("Note:" + qie.getStudentNote()+"\n");
+//				writer.write("Note:" + question.getInstructions() +"\n");
 //			}
 //			questionIndex++;
 //			for(int i=1;i<5;i++) {
-//				writer.write("\t"+i+". "+qie.getAnswer(i)+"\n");
+//				writer.write("\t"+i+". "+question.getAnswers()[i]+"\n");
 //			}
 //		}
 //		writer.write("\n\nGood Luck!");
-//	    writer.close();
+//		writer.close();
+//		
+//
+//
+//		return new WordHandler(path);
 		
-//		
-//		
-//		return new AesWordDoc(path);
-//	}
+        File Dir = new File(System.getProperty("user.home"), "Desktop");
+        if (!Dir.exists()) {
+        	Dir.mkdir();
+        }
+        
+        FileOutputStream out = new FileOutputStream(new File(Dir.toString() + fileName));
+        document.write(out);
+        document.close();
+        
+        out.close();
+        return;
+	}
 }

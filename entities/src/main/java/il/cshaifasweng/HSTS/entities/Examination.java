@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -28,7 +30,7 @@ public class Examination implements Serializable {
 	private int examination_id;		//primary key
 	
 	// exam examination relation - Unidirectional
-	@Column(name = "exam_id")
+	@Column(name = "examination_key")
 	private int examId;
 	
 	@Column
@@ -58,11 +60,13 @@ public class Examination implements Serializable {
 	@Column
 	private int studentsNotFinsished;
 	
-	
+	@ManyToOne
+	@JoinColumn(name = "exam_id")
+	private Exam exam;
+
 	// teacher exams relation - Unidirectional
 	@Column(name = "teacher_id")
 	private int teacherId;
-	
 	
 	@OneToMany(mappedBy = "examination")
     private Set<ExaminationStudent> examineesList = new HashSet<ExaminationStudent>();
@@ -105,16 +109,18 @@ public class Examination implements Serializable {
 		return examId;
 	}
 
-	// adds the examination id to the exams "examinationList"
-	public void setExamId(Exam exam) {
-		this.examId = exam.getExamId();
-		exam.getExaminationList().add(this);
-	}
-
 	public Duration getDuration() {
 		return duration;
 	}
 
+	public Exam getExam() {
+		return exam;
+	}
+
+	public void setExam(Exam exam) {
+		this.exam = exam;
+	}
+	
 	public void setDuration(Duration duration) {
 		this.duration = duration;
 		updateExamEndTime();

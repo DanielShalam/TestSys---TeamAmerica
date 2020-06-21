@@ -3,6 +3,8 @@ package il.cshaifasweng.HSTS.server.utilities;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.hibernate.Session;
 
@@ -240,28 +242,28 @@ public class InitializeDB {
 		String studentInstructions = "do the test";
 		String teacherInstructions = "this exam is not easy";
 		
-		ArrayList<Question> questionList_1 = new ArrayList<Question>();
+		Set<Question> questionList_1 = new HashSet<Question>();
 		questionList_1.add(question_1);
 		questionList_1.add(question_5);
 		questionList_1.add(question_12);
 		questionList_1.add(question_13);
 		Exam exam_1 = new Exam(teacher_3.getUserId(), 1, questionList_1, scoringList, studentInstructions, teacherInstructions, duration_1);
 		
-		ArrayList<Question> questionList_2 = new ArrayList<Question>();
+		Set<Question> questionList_2 = new HashSet<Question>();
 		questionList_2.add(question_2);
 		questionList_2.add(question_6);
 		questionList_2.add(question_8);
 		questionList_2.add(question_9);
 		Exam exam_2 = new Exam(teacher_1.getUserId(), 2, questionList_2, scoringList, studentInstructions, teacherInstructions, duration_1);
 		
-		ArrayList<Question> questionList_3 = new ArrayList<Question>();
+		Set<Question> questionList_3 = new HashSet<Question>();
 		questionList_3.add(question_3);
 		questionList_3.add(question_10);
 		questionList_3.add(question_14);
 		questionList_3.add(question_15);
 		Exam exam_3 = new Exam(teacher_3.getUserId(), 3, questionList_1, scoringList, studentInstructions, teacherInstructions, duration_1);
 		
-		ArrayList<Question> questionList_4 = new ArrayList<Question>();
+		Set<Question> questionList_4 = new HashSet<Question>();
 		questionList_4.add(question_4);
 		questionList_4.add(question_7);
 		questionList_4.add(question_11);

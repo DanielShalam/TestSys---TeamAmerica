@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -42,7 +43,7 @@ public class Exam implements Serializable {
 	@JoinTable(name = "exam_question", 
 	           joinColumns = { @JoinColumn(name = "exam_id") }, 
 	           inverseJoinColumns = { @JoinColumn(name = "question_id") })
-	private List<Question> questionList; 
+	private Set<Question> questionList; 
 	
 	
 	@Column(name = "scoring_list")
@@ -60,10 +61,6 @@ public class Exam implements Serializable {
 	@Column(name = "duration")
 	private Duration assignedDuration;
 	
-	// teacher questions relation - Unidirectional (owning side)
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy="examId")	// mapping owner side
-	private List<Examination> examinationList;
-	
 	// teacher exams relation - Unidirectional
 	@Column(name = "teacher_id")
 	private int teacherId;
@@ -71,16 +68,15 @@ public class Exam implements Serializable {
 	public Exam(Exam other) {
 		this.teacherId = other.getTeacherId();
 		this.courseId = other.getCourseId();
-		this.questionList = new ArrayList<Question>(other.getQuestionList());
+		this.questionList = other.getQuestionList();
 		this.scoringList = other.getScoringList();
 		this.studentInstructions = other.getStudentInstructions();
 		this.teacherInstructions = other.getTeacherInstructions();
 		this.assignedDuration = other.getAssignedDuration();
-		this.examinationList = new ArrayList<Examination>(other.getExaminationList());
 		this.usedInExamination = false;
 	}
 	
-	public Exam(int teacherId, int courseId, ArrayList<Question> questionList, Integer[] scoringList,
+	public Exam(int teacherId, int courseId, Set<Question> questionList, Integer[] scoringList,
 			String studentInstructions,String teacherInstructions, Duration assignedDuration ) {
 		this.teacherId = teacherId;
 		this.courseId = courseId;
@@ -89,16 +85,11 @@ public class Exam implements Serializable {
 		this.studentInstructions = studentInstructions;
 		this.teacherInstructions = teacherInstructions;
 		this.assignedDuration = assignedDuration;
-		this.examinationList = new ArrayList<Examination>();
 		this.usedInExamination = false;
 	}
 
 	public Exam() {
 		
-	}
-	
-	public List<Examination> getExaminationList() {
-		return examinationList;
 	}
 	
 	
@@ -122,11 +113,11 @@ public class Exam implements Serializable {
 		this.courseId = courseId;
 	}
 
-	public List<Question> getQuestionList() {
+	public Set<Question> getQuestionList() {
 		return questionList;
 	}
 
-	public void setQuestionList(ArrayList<Question> questionList) {
+	public void setQuestionList(Set<Question> questionList) {
 		this.questionList = questionList;
 	}
 
@@ -155,11 +146,7 @@ public class Exam implements Serializable {
 	}
 
 	public boolean isUsedInExamination() {
-		if (examinationList.isEmpty()) {
-			usedInExamination = false;
-		}
-		else usedInExamination = true;
-		return usedInExamination;
+		return this.usedInExamination;
 	}
 
 	public void setUsedInExamination(boolean usedInExamination) {

@@ -7,8 +7,6 @@ import il.cshaifasweng.HSTS.server.ocsf.ConnectionToClient;
 import java.io.IOException;
 import java.util.*;
 
-import com.sun.xml.bind.v2.model.core.ID;
-
 public class SimpleServer extends AbstractServer {
 
 	public ConnectToDB dbConnector;	   
