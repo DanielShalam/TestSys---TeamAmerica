@@ -1,5 +1,6 @@
 package il.cshaifasweng.HSTS.server;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,13 +50,16 @@ public class ConnectToDB {
 	// Function to get all instances of given class
 	public static <T> List<T> getAll(Class<T> object) {
 		Session temp_session = sessionFactory.openSession();
+        temp_session.beginTransaction();
 
 		CriteriaBuilder builder = temp_session.getCriteriaBuilder();
 		CriteriaQuery<T> criteriaQuery = builder.createQuery(object);
 		Root<T> rootEntry = criteriaQuery.from(object);
 		CriteriaQuery<T> allCriteriaQuery = criteriaQuery.select(rootEntry);
 		TypedQuery<T> allQuery = temp_session.createQuery(allCriteriaQuery);
-
+		
+    	temp_session.getTransaction().commit();
+    	temp_session.close();
 		return allQuery.getResultList();
 	}
 	
@@ -84,7 +88,9 @@ public class ConnectToDB {
 	// Function to get object using its class and id
     public static <T> T getById(final Class<T> type, int id){
     	Session temp_session = sessionFactory.openSession();
+        temp_session.beginTransaction();
 		T entity =  temp_session.get(type, id);
+    	temp_session.getTransaction().commit();
 		temp_session.close();
 		return entity;
     }
@@ -140,15 +146,35 @@ public class ConnectToDB {
         cr.select(root).where(cb.equal(root.get(key), value));  //here you pass a class field, not a table column (in this example they are called the same)
         Query<T> query = temp_session.createQuery(cr);
         List<T> result = query.getResultList();
-//        temp_session.getTransaction().commit();
-//        temp_session.close();
+        temp_session.getTransaction().commit();
+        temp_session.close();
         return result;
   }
     
     
-	public static Session getNewSession(){
+	public static List<Course> extractCourses(User user){
 	    Session temp_session = ConnectToDB.sessionFactory.openSession();
-	    return temp_session;
+		List<Course> myCourses = new ArrayList<Course>(); 
+        temp_session.beginTransaction();
+        switch (user.getRole()) {
+		case STUDENT: {
+			myCourses = user.getCoursesStudying();
+			break;
+		}
+		case TEACHER:{
+			myCourses = user.getCoursesTeaching();
+			break;
+		}
+		case PRINCIPLE:
+			myCourses =  null;
+			break;
+
+		default:
+			break;
+		}
+        temp_session.getTransaction().commit();
+        temp_session.close();
+        return myCourses;
   }
 
 	
