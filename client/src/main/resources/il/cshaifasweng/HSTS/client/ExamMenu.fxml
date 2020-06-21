@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="620.0" maxWidth="1225.0" prefHeight="620.0" prefWidth="1225.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.HSTS.client.ClientExamsController">
+   <children>
+      <AnchorPane fx:id="setQuestionMenuAP" layoutX="10.0" layoutY="10.0" maxHeight="620.0" maxWidth="1225.0" prefHeight="620.0" prefWidth="1225.0" visible="false">
+         <children>
+            <Label layoutX="49.0" layoutY="87.0" text="Question:" />
+            <Button fx:id="saveButton" layoutX="154.0" layoutY="570.0" mnemonicParsing="false" onAction="#commitQuestionToDB" prefHeight="30.0" prefWidth="172.0" text="Save">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="editQuestionsButton1" layoutX="527.0" layoutY="570.0" mnemonicParsing="false" onAction="#clearFields" prefHeight="30.0" prefWidth="172.0" text="Clear">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="deleteQuestionsButton1" layoutX="884.0" layoutY="570.0" mnemonicParsing="false" onAction="#cancel" prefHeight="30.0" prefWidth="172.0" text="Cancel">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Label layoutX="49.0" layoutY="36.0" text="Add/Edit Question">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <TextArea fx:id="questionTA" layoutX="49.0" layoutY="104.0" prefHeight="68.0" prefWidth="698.0" wrapText="true" />
+            <Label layoutX="49.0" layoutY="186.0" text="Instructions:" />
+            <TextArea fx:id="instructionsTA" layoutX="49.0" layoutY="203.0" prefHeight="68.0" prefWidth="698.0" wrapText="true" />
+            <Label layoutX="49.0" layoutY="287.0" text="Answer 1:" />
+            <TextArea fx:id="answer1TA" layoutX="49.0" layoutY="304.0" prefHeight="30.0" prefWidth="698.0" wrapText="true" />
+            <Label layoutX="49.0" layoutY="359.0" text="Answer 2:" />
+            <TextArea fx:id="answer2TA" layoutX="49.0" layoutY="376.0" prefHeight="30.0" prefWidth="698.0" wrapText="true" />
+            <Label layoutX="49.0" layoutY="427.0" text="Answer 3:" />
+            <TextArea fx:id="answer3TA" layoutX="49.0" layoutY="444.0" prefHeight="30.0" prefWidth="698.0" wrapText="true" />
+            <Label layoutX="49.0" layoutY="497.0" text="Answer 4:" />
+            <TextArea fx:id="answer4TA" layoutX="49.0" layoutY="514.0" prefHeight="30.0" prefWidth="698.0" wrapText="true" />
+            <Label layoutX="808.0" layoutY="87.0" text="Correct Answer:" />
+            <Label layoutX="808.0" layoutY="195.0" text="Course:" />
+            <ChoiceBox fx:id="courseComboBox" layoutX="809.0" layoutY="225.0" prefWidth="150.0" />
+            <RadioButton fx:id="answer1RB" layoutX="807.0" layoutY="121.0" mnemonicParsing="false" text="Answer 1">
+               <toggleGroup>
+                  <ToggleGroup fx:id="answerGroup" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="answer2RB" layoutX="807.0" layoutY="155.0" mnemonicParsing="false" text="Answer 2" toggleGroup="$answerGroup" />
+            <RadioButton fx:id="answer4RB" layoutX="959.0" layoutY="155.0" mnemonicParsing="false" text="Answer 4" toggleGroup="$answerGroup" />
+            <RadioButton fx:id="answer3RB" layoutX="959.0" layoutY="121.0" mnemonicParsing="false" text="Answer 3" toggleGroup="$answerGroup" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="manageExamsAP" maxHeight="620.0" maxWidth="1239.0" prefHeight="620.0" prefWidth="1239.0">
+         <children>
+            <Button fx:id="gradesAndStatisticsButton" layoutX="49.0" layoutY="448.0" mnemonicParsing="false" onAction="#showGradesAndStatistis" prefHeight="81.0" prefWidth="172.0" text="Gardes &amp; Statistics" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Label layoutX="49.0" layoutY="36.0" text="Manage Exams">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <Button fx:id="viewCreateEditButton" layoutX="48.0" layoutY="126.0" mnemonicParsing="false" onAction="#showViewCreateEdit" prefHeight="81.0" prefWidth="172.0" text="View, Create &amp; Edit Exams" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="examInstigationButton" layoutX="49.0" layoutY="240.0" mnemonicParsing="false" onAction="#showExamInstigation" prefHeight="81.0" prefWidth="172.0" text="Exam Instigation" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <AnchorPane fx:id="gradeExamsAP" layoutX="420.0" layoutY="36.0" prefHeight="565.0" prefWidth="683.0" visible="false">
+               <children>
+                  <Button fx:id="shoeAutoCheckedExamsButton" layoutY="87.0" mnemonicParsing="false" onAction="#getAutoCheckedExams" prefHeight="51.0" prefWidth="172.0" text="Show Automtically Checked Exams" textAlignment="CENTER" wrapText="true">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="checkExamButton" layoutX="345.0" layoutY="488.0" mnemonicParsing="false" onAction="#showCheckExam" prefHeight="30.0" prefWidth="172.0" text="Check Exam">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Label text="Grade Exams" textFill="#a8a6a6">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <TableView fx:id="checkedExamsTV" layoutX="222.0" layoutY="87.0" prefHeight="379.0" prefWidth="417.0">
+                    <columns>
+                      <TableColumn fx:id="checkedExamsTC" prefWidth="320.0" text="Exam" />
+                      <TableColumn fx:id="checkedExamsDateTC" minWidth="0.0" prefWidth="96.0" text="Date" />
+                    </columns>
+                  </TableView>
+               </children>
+            </AnchorPane>
+            <Button fx:id="gradeExamsButton" layoutX="49.0" layoutY="348.0" mnemonicParsing="false" onAction="#showGradeExams" prefHeight="81.0" prefWidth="172.0" text="Grade Exams" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <AnchorPane fx:id="gradesStatisticsAP" layoutX="420.0" layoutY="30.0" prefHeight="571.0" prefWidth="660.0" visible="false">
+               <children>
+                  <Label layoutX="21.0" layoutY="14.0" text="Grades &amp; Statistics" textFill="#a8a6a6">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <TableView fx:id="performedExamsTV" layoutX="227.0" layoutY="94.0" prefHeight="410.0" prefWidth="369.0">
+                    <columns>
+                      <TableColumn fx:id="performedExamsTC" prefWidth="231.0" text="Exam" />
+                      <TableColumn fx:id="performedExamsDateTC" minWidth="0.0" prefWidth="141.0" text="Date" />
+                    </columns>
+                  </TableView>
+                  <Button fx:id="viewGradesButton" layoutX="325.0" layoutY="527.0" mnemonicParsing="false" onAction="#viewGrades" prefHeight="25.0" prefWidth="172.0" text="View Grades">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="showPerformedExamsButton" layoutX="21.0" layoutY="94.0" mnemonicParsing="false" onAction="#getPerformedExams" prefHeight="51.0" prefWidth="172.0" text="Show Performed Exams" textAlignment="CENTER" wrapText="true">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="viewCreateEditExamsAP" layoutX="420.0" layoutY="33.0" prefHeight="565.0" prefWidth="746.0" visible="false">
+               <children>
+                  <ChoiceBox fx:id="courseViewExamsCB" layoutX="338.0" layoutY="63.0" prefWidth="150.0" />
+                  <Button fx:id="showCourseExamsButton" layoutX="135.0" layoutY="101.0" mnemonicParsing="false" onAction="#getCourseExams" prefHeight="30.0" prefWidth="172.0" text="Show Course Exams">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="addNewExamButton" layoutX="210.0" layoutY="527.0" mnemonicParsing="false" onAction="#createExam" prefHeight="30.0" prefWidth="134.0" text="Add New Exam">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="editExamButton" layoutX="393.0" layoutY="527.0" mnemonicParsing="false" onAction="#editExam" prefHeight="30.0" prefWidth="134.0" text="Edit Exam">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="deleteExamButton" layoutX="573.0" layoutY="527.0" mnemonicParsing="false" onAction="#deleteExam" prefHeight="30.0" prefWidth="134.0" text="Delete Exam">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="showMyExamsButton" layoutX="435.0" layoutY="101.0" mnemonicParsing="false" onAction="#getExamsByTeacherID" prefHeight="30.0" prefWidth="172.0" text="Show My Exams">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Label layoutX="221.0" layoutY="67.0" text="Select Course:" />
+                  <Button fx:id="viewExamButton" layoutX="29.0" layoutY="527.0" mnemonicParsing="false" onAction="#viewExam" prefHeight="30.0" prefWidth="134.0" text="View Exam">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Label layoutX="14.0" layoutY="5.0" text="View, Create &amp; Edit Exams" textFill="#a8a6a6">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <TableView fx:id="viewExamsTV" layoutX="123.0" layoutY="150.0" prefHeight="351.0" prefWidth="517.0">
+                    <columns>
+                      <TableColumn fx:id="viewExamTC" prefWidth="516.0" text="Exam" />
+                    </columns>
+                  </TableView>
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="examInstigationAP" layoutX="419.0" layoutY="28.0" prefHeight="586.0" prefWidth="690.0" visible="false">
+               <children>
+                  <Button fx:id="instigateExamButton" layoutX="114.0" layoutY="510.0" mnemonicParsing="false" onAction="#instigateExam" prefHeight="51.0" prefWidth="172.0" text="Instigate Exam">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="requestTimeButton" layoutX="405.0" layoutY="510.0" mnemonicParsing="false" onAction="#requestAdditionTime" prefHeight="51.0" prefWidth="172.0" text="Request Additional Time" textAlignment="CENTER" wrapText="true">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Label layoutY="8.0" text="Exam Instigation" textFill="#a8a6a6">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="153.0" layoutY="76.0" text="Select Course:" />
+                  <ChoiceBox fx:id="courseExamInstigCB" layoutX="282.0" layoutY="72.0" prefWidth="150.0" />
+                  <TableView fx:id="instigateExamsTV" layoutX="114.0" layoutY="214.0" prefHeight="268.0" prefWidth="463.0" visible="false">
+                    <columns>
+                      <TableColumn fx:id="examIDTC" prefWidth="75.0" text="Exam ID" />
+                      <TableColumn fx:id="examInstTC" prefWidth="387.0" text="Exam" />
+                    </columns>
+                  </TableView>
+                  <Button fx:id="showCourseExamsInstButton" layoutX="133.0" layoutY="155.0" mnemonicParsing="false" onAction="#getCourseExamsInst" prefHeight="30.0" prefWidth="172.0" text="Show Course Exams">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="showActiveExamsButton" layoutX="380.0" layoutY="155.0" mnemonicParsing="false" onAction="#getActiveExams" prefHeight="30.0" prefWidth="172.0" text="Show Active Exams">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </AnchorPane>
+            <Line endX="4.0" endY="-127.0" layoutX="304.0" layoutY="144.0" startX="4.0" startY="464.0" stroke="#9a9494" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

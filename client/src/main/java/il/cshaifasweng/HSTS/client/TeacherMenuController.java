@@ -22,8 +22,19 @@ public class TeacherMenuController {
 
     @FXML
     void createExamMenuBoudary(ActionEvent event) {
-    	System.out.println("Exam menu");
-    	//App.setRoot("ExamMenu");
+        try {
+        	System.out.println("exam menu");
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ExamMenu.fxml"));
+            Parent root1 = (Parent) fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root1));
+            stage.setMaximized(true);
+            stage.setTitle("Manage Exams");
+            stage.show();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    	
     }
 
     @FXML
