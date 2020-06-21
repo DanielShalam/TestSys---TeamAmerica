@@ -39,7 +39,7 @@ public class Exam implements Serializable {
 	private int courseId;
 	
 	// exam question relation - Unidirectional 
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "exam_question", 
 	           joinColumns = { @JoinColumn(name = "exam_id") }, 
 	           inverseJoinColumns = { @JoinColumn(name = "question_id") })

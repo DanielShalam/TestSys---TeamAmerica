@@ -34,6 +34,9 @@ public class Examination implements Serializable {
 	private int examId;
 	
 	@Column
+	private int executionCode;
+	
+	@Column
 	private Duration duration;
 	
 	@Column
@@ -71,7 +74,8 @@ public class Examination implements Serializable {
 	@OneToMany(mappedBy = "examination")
     private Set<ExaminationStudent> examineesList = new HashSet<ExaminationStudent>();
 	
-	public Examination(int teacherId,ExamType examType, Duration duration, int examId) {
+	public Examination(int execuationCode, int teacherId,ExamType examType, Duration duration, Exam exam) {
+		this.executionCode = execuationCode;
 		this.studentsStarted = 0;
 		this.studentsFinished = 0;
 		this.studentsNotFinsished = 0;
@@ -79,8 +83,9 @@ public class Examination implements Serializable {
 		this.teacherId = teacherId;
 		this.examType = examType;
 		this.addTimeRequest = null; 
-		this.examId = examId;
-		setDuration(duration);
+		this.exam = exam;
+		this.duration = duration;
+//		setDuration(duration);
 	}
 	
 	public Examination() {

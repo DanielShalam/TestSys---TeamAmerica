@@ -1,5 +1,6 @@
 package il.cshaifasweng.HSTS.server;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -14,10 +15,11 @@ public class ServerStudentExaminationController {
 		int grade = 0;
 		Exam exam = studentExam.getExamination().getExam();
 		Set<Question> examQuestions = exam.getQuestionList();
+		ArrayList<Question> questionList = new ArrayList<Question>(examQuestions);
 		List<Integer> studentAnswers = studentExam.getStudentsAnswers();
 
 	    for (int index = 0; index < examQuestions.size(); index++) {
-	        if(examQuestions(index).getCorrectAnswer() == studentAnswers.get(index)) {
+	        if(questionList.get(index).getCorrectAnswer() == studentAnswers.get(index)) {
 	        	grade += exam.getScoringList()[index];
 	        }
 	    }

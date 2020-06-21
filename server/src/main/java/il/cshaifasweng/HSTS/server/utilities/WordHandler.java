@@ -4,55 +4,88 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Set;
+
 import il.cshaifasweng.HSTS.entities.Examination;
+import il.cshaifasweng.HSTS.entities.Question;
+
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+
+import com.mysql.cj.xdevapi.Table;
 
 public class WordHandler implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	public static void CreateWordFile(Examination examination) throws IOException {
-		String fileName = String.valueOf(examination.getExamId());
+//		String fileName = String.valueOf(examination.getExamId());
+		String fileName = "Newfile.docx";
 		//Blank Document
 		XWPFDocument document = new XWPFDocument(); 
-		XWPFParagraph tempParagraph = document.createParagraph();
-		XWPFRun tempRun = tempParagraph.createRun();
-		tempRun.setText("\tCourse id: "+examination.getExam().getCourseId()+"\n");
-		tempRun.setText("\tDate: "+examination.getDuration()+"\n\n");
-		tempRun.setText("\tInstractions: "+examination.getExam().getTeacherInstructions());
-		//		writer.write("\tField: "+activeExam.getExam().getField().getName()+"\n");
+		XWPFParagraph labelParagraph = document.createParagraph();
+		XWPFRun tempRun = labelParagraph.createRun();
+		tempRun.setText("\tCourse id: "+examination.getExam().getCourseId());
+		tempRun.addBreak();
+		tempRun.setText("\tDate: "+examination.getDuration());
+		tempRun.addBreak();
+		tempRun.setText("\tInstructions: "+examination.getExam().getTeacherInstructions());
+		tempRun.addBreak();
+		tempRun.addBreak();
+		tempRun.addBreak();
+
+	    // Format as desired
+		tempRun.setFontSize(14);
+		tempRun.setFontFamily("Verdana");
+		tempRun.setColor("4169E1");
+		tempRun.setBold(true);  
+		labelParagraph.setAlignment(ParagraphAlignment.RIGHT);
+		Set<Question> questionsInExam= examination.getExam().getQuestionList();
 		
-//		List<Question> questionsInExam= examination.getExam().getQuestionList();
-//		int questionIndex=1;
-//		for(Question question:questionsInExam)//Sets all questions with their info on screen.
-//		{
-//			writer.write(questionIndex+". "+question.getQuestion()+" ("+examination.getExam().getScoringList()[questionIndex]+" Points)\n");
-//			if(!question.getInstructions().equals(""))
-//			{
-//				writer.write("Note:" + question.getInstructions() +"\n");
-//			}
-//			questionIndex++;
-//			for(int i=1;i<5;i++) {
-//				writer.write("\t"+i+". "+question.getAnswers()[i]+"\n");
-//			}
-//		}
-//		writer.write("\n\nGood Luck!");
-//		writer.close();
-//		
-//
-//
-//		return new WordHandler(path);
+		XWPFParagraph questionParagraph = document.createParagraph();
+		XWPFRun questionRun = labelParagraph.createRun();
 		
-        File Dir = new File(System.getProperty("user.home"), "Desktop");
-        if (!Dir.exists()) {
-        	Dir.mkdir();
+		int questionIndex=0;
+		for(Question question:questionsInExam)//Sets all questions with their info on screen.
+		{
+			questionRun.setText(questionIndex+". "+question.getQuestion()+" ("+examination.getExam().getScoringList()[questionIndex]+" Points) ");
+			questionRun.addCarriageReturn();
+			questionRun.setText("");
+			if(!question.getInstructions().equals(""))
+			{
+				questionRun.addTab();
+				questionRun.setText("Instructions: " + question.getInstructions());
+				questionRun.addCarriageReturn();
+				questionRun.addCarriageReturn();
+			}
+			questionIndex++;
+			for(int i=0;i<4;i++) {
+				questionRun.addTab();
+				questionRun.setText(4-i+". "+question.getAnswers()[i]);
+			}
+			questionRun.addCarriageReturn();
+			questionRun.addCarriageReturn();
+
+		}
+		questionRun.setFontSize(13);
+		questionRun.setFontFamily("David");
+		questionParagraph.setAlignment(ParagraphAlignment.RIGHT);
+		questionRun.setText("\n\nGood Luck!");		
+
+
+		String folder = "C:/Exams/";
+		File file = new File(folder);
+		
+        if (!file.exists()) {
+            System.out.println("Creating folder. ");
+        	file.mkdirs();
         }
-        
-        FileOutputStream out = new FileOutputStream(new File(Dir.toString() + fileName));
+
+        FileOutputStream out = new FileOutputStream(folder+fileName);
         document.write(out);
         document.close();
-        
+        System.out.println("Finish Writing document. ");
         out.close();
         return;
 	}
