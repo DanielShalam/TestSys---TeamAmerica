@@ -1,94 +1,92 @@
 package il.cshaifasweng.HSTS.server.utilities;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.Set;
 
 import il.cshaifasweng.HSTS.entities.Examination;
+import il.cshaifasweng.HSTS.entities.Question;
+
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+
+import com.mysql.cj.xdevapi.Table;
 
 public class WordHandler implements Serializable {
-	private static final long serialVersionUID = 2955938781660056312L;
-	private String examId=null;
-	private String fileName=null;	
-	private int size=0;
-	public  byte[] mybytearray;
+	private static final long serialVersionUID = 1L;
 	
-	public void initArray(int size)
-	{
-		mybytearray = new byte [size];	
-	}
-	
-	public WordHandler(String pathname) {
-		this.fileName = pathname; 
-	}
-	
-	
-	public String getFileName() {
-		return fileName;
-	}
+	public static void CreateWordFile(Examination examination) throws IOException {
+//		String fileName = String.valueOf(examination.getExamId());
+		String fileName = "Newfile.docx";
+		//Blank Document
+		XWPFDocument document = new XWPFDocument(); 
+		XWPFParagraph labelParagraph = document.createParagraph();
+		XWPFRun tempRun = labelParagraph.createRun();
+		tempRun.setText("\tCourse id: "+examination.getExam().getCourseId());
+		tempRun.addBreak();
+		tempRun.setText("\tDate: "+examination.getDuration());
+		tempRun.addBreak();
+		tempRun.setText("\tInstructions: "+examination.getExam().getTeacherInstructions());
+		tempRun.addBreak();
+		tempRun.addBreak();
+		tempRun.addBreak();
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
-	
-	public int getSize() {
-		return size;
-	}
-
-	public void setSize(int size) {
-		this.size = size;
-	}
-
-	public byte[] getMybytearray() {
-		return mybytearray;
-	}
-	
-	public byte getMybytearray(int i) {
-		return mybytearray[i];
-	}
-
-	public void setMybytearray(byte[] mybytearray) {
+	    // Format as desired
+		tempRun.setFontSize(14);
+		tempRun.setFontFamily("Verdana");
+		tempRun.setColor("4169E1");
+		tempRun.setBold(true);  
+		labelParagraph.setAlignment(ParagraphAlignment.RIGHT);
+		Set<Question> questionsInExam= examination.getExam().getQuestionList();
 		
-		for(int i=0;i<mybytearray.length;i++) {
-			this.mybytearray[i] = mybytearray[i];
+		XWPFParagraph questionParagraph = document.createParagraph();
+		XWPFRun questionRun = labelParagraph.createRun();
+		
+		int questionIndex=0;
+		for(Question question:questionsInExam)//Sets all questions with their info on screen.
+		{
+			questionRun.setText(questionIndex+". "+question.getQuestion()+" ("+examination.getExam().getScoringList()[questionIndex]+" Points) ");
+			questionRun.addCarriageReturn();
+			questionRun.setText("");
+			if(!question.getInstructions().equals(""))
+			{
+				questionRun.addTab();
+				questionRun.setText("Instructions: " + question.getInstructions());
+				questionRun.addCarriageReturn();
+				questionRun.addCarriageReturn();
+			}
+			questionIndex++;
+			for(int i=0;i<4;i++) {
+				questionRun.addTab();
+				questionRun.setText(4-i+". "+question.getAnswers()[i]);
+			}
+			questionRun.addCarriageReturn();
+			questionRun.addCarriageReturn();
+
 		}
-			
-	}
+		questionRun.setFontSize(13);
+		questionRun.setFontFamily("David");
+		questionParagraph.setAlignment(ParagraphAlignment.RIGHT);
+		questionRun.setText("\n\nGood Luck!");		
 
-	public String getDescription() {
-		return examId;
-	}
 
-	public void setDescription(String description) {
-		examId = description;
-	}	
-	
-//	public WordHandler CreateWordFile(Examination activeExam, String path) throws IOException
-//	{
-//		BufferedWriter writer = new BufferedWriter(new FileWriter(path));
-//	    writer.write("\t\t"+activeExam.getExam().getCourse().getName()+"\n");
-//	    writer.write("\tField: "+activeExam.getExam().getField().getName()+"\n");
-//	    writer.write("\tDate: "+activeExam.getDuration()+"\n\n");
-//		
-//	    ArrayList<Q> questionsInExam=activeExam.getExam().getQuestionsInExam();
-//	    int questionIndex=1;
-//		for(QuestionInExam qie:questionsInExam)//Sets all questions with their info on screen.
-//		{
-//			writer.write(questionIndex+". "+qie.getQuestionString()+" ("+qie.getPointsValue()+" Points)\n");
-//			if(!qie.getStudentNote().equals(""))
-//			{
-//				writer.write("Note:" + qie.getStudentNote()+"\n");
-//			}
-//			questionIndex++;
-//			for(int i=1;i<5;i++) {
-//				writer.write("\t"+i+". "+qie.getAnswer(i)+"\n");
-//			}
-//		}
-//		writer.write("\n\nGood Luck!");
-//	    writer.close();
+		String folder = "C:/Exams/";
+		File file = new File(folder);
 		
-//		
-//		
-//		return new AesWordDoc(path);
-//	}
+        if (!file.exists()) {
+            System.out.println("Creating folder. ");
+        	file.mkdirs();
+        }
+
+        FileOutputStream out = new FileOutputStream(folder+fileName);
+        document.write(out);
+        document.close();
+        System.out.println("Finish Writing document. ");
+        out.close();
+        return;
+	}
 }
