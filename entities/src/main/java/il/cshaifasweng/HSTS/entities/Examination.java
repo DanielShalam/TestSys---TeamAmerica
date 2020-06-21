@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -28,8 +30,11 @@ public class Examination implements Serializable {
 	private int examination_id;		//primary key
 	
 	// exam examination relation - Unidirectional
-	@Column(name = "exam_id")
+	@Column(name = "examination_key")
 	private int examId;
+	
+	@Column
+	private int executionCode;
 	
 	@Column
 	private Duration duration;
@@ -58,16 +63,19 @@ public class Examination implements Serializable {
 	@Column
 	private int studentsNotFinsished;
 	
-	
+	@ManyToOne
+	@JoinColumn(name = "exam_id")
+	private Exam exam;
+
 	// teacher exams relation - Unidirectional
 	@Column(name = "teacher_id")
 	private int teacherId;
 	
-	
 	@OneToMany(mappedBy = "examination")
     private Set<ExaminationStudent> examineesList = new HashSet<ExaminationStudent>();
 	
-	public Examination(int teacherId,ExamType examType, Duration duration, int examId) {
+	public Examination(int execuationCode, int teacherId,ExamType examType, Duration duration, Exam exam) {
+		this.executionCode = execuationCode;
 		this.studentsStarted = 0;
 		this.studentsFinished = 0;
 		this.studentsNotFinsished = 0;
@@ -75,8 +83,9 @@ public class Examination implements Serializable {
 		this.teacherId = teacherId;
 		this.examType = examType;
 		this.addTimeRequest = null; 
-		this.examId = examId;
-		setDuration(duration);
+		this.exam = exam;
+		this.duration = duration;
+//		setDuration(duration);
 	}
 	
 	public Examination() {
@@ -105,16 +114,18 @@ public class Examination implements Serializable {
 		return examId;
 	}
 
-	// adds the examination id to the exams "examinationList"
-	public void setExamId(Exam exam) {
-		this.examId = exam.getExamId();
-		exam.getExaminationList().add(this);
-	}
-
 	public Duration getDuration() {
 		return duration;
 	}
 
+	public Exam getExam() {
+		return exam;
+	}
+
+	public void setExam(Exam exam) {
+		this.exam = exam;
+	}
+	
 	public void setDuration(Duration duration) {
 		this.duration = duration;
 		updateExamEndTime();
