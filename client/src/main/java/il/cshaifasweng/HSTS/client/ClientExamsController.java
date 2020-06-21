@@ -1,6 +1,7 @@
 package il.cshaifasweng.HSTS.client;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.RadioButton;
@@ -8,10 +9,27 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+
+import il.cshaifasweng.HSTS.entities.Carrier;
+import il.cshaifasweng.HSTS.entities.Exam;
+import il.cshaifasweng.HSTS.entities.Question;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 
-public class ClientExamsController {
+public class ClientExamsController implements Initializable{
+	
+	private SimpleClient client;
+	private Carrier localCarrier = null;
+	private List <Exam> examsList = null;
+	ObservableList<Exam> examData = FXCollections.observableArrayList();
 
     @FXML // fx:id="setQuestionMenuAP"
     private AnchorPane setQuestionMenuAP; // Value injected by FXMLLoader
@@ -116,7 +134,7 @@ public class ClientExamsController {
     private AnchorPane viewCreateEditExamsAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="courseViewExamsCB"
-    private ChoiceBox<?> courseViewExamsCB; // Value injected by FXMLLoader
+    private ChoiceBox<String> courseViewExamsCB; // Value injected by FXMLLoader
 
     @FXML // fx:id="showCourseExamsButton"
     private Button showCourseExamsButton; // Value injected by FXMLLoader
@@ -137,7 +155,7 @@ public class ClientExamsController {
     private Button viewExamButton; // Value injected by FXMLLoader
 
     @FXML // fx:id="viewExamsTV"
-    private TableView<?> viewExamsTV; // Value injected by FXMLLoader
+    private TableView<Exam> viewExamsTV; // Value injected by FXMLLoader
 
     @FXML // fx:id="viewExamTC"
     private TableColumn<?, ?> viewExamTC; // Value injected by FXMLLoader
@@ -158,10 +176,10 @@ public class ClientExamsController {
     private TableView<?> instigateExamsTV; // Value injected by FXMLLoader
 
     @FXML // fx:id="examIDTC"
-    private TableColumn<?, ?> examIDTC; // Value injected by FXMLLoader
+    private TableColumn<Exam, Integer> examIDTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="examInstTC"
-    private TableColumn<?, ?> examInstTC; // Value injected by FXMLLoader
+    private TableColumn<Exam, String> examInstTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="showCourseExamsInstButton"
     private Button showCourseExamsInstButton; // Value injected by FXMLLoader
@@ -211,7 +229,40 @@ public class ClientExamsController {
 
     @FXML
     void getCourseExams(ActionEvent event) {
+    	client = LoginController.client;
+//    	client.openConnection();
+    	String message = "get all exams";
+    	Exam exam = null;
+    	
+    	int id = 0;
+    	if (courseViewExamsCB.getSelectionModel().getSelectedItem() != null) {
+    		message = "get all course exams";
+    		id = LoginController.userReceviedCourses.get(courseViewExamsCB.getSelectionModel().getSelectedItem());
+    	}
+    	
+    	client.handleMessageFromClientExamController(message, id, exam);
+    	System.out.println("message from ClientExamsController Handled");
+		ObservableList<Exam> eItems = viewExamsTV.getItems();
+		
+		if (!eItems.isEmpty()) {
+			viewExamsTV.getItems().removeAll(examsList);
+		}
+		
+    	while (true) {
+			System.out.println("Running");
 
+    		if (client.isAnswerReturned==true) {
+    			
+    			localCarrier = client.answerCarrier;
+    			examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
+    			
+    			loadData(examsList);
+    			
+    			client.isAnswerReturned=false;
+    			break;
+    		}	
+    		
+    	}
     }
 
     @FXML
@@ -221,7 +272,37 @@ public class ClientExamsController {
 
     @FXML
     void getExamsByTeacherID(ActionEvent event) {
+    	client = LoginController.client;
+//    	client.openConnection();
+    	
+    	String message = "get all teacher exams";
+    	System.out.println(message);
+    	Exam exam = null;
+    	int id = LoginController.userReceviedID;
+    	
+    	client.handleMessageFromClientExamController(message, id, exam);
+    	System.out.println("message from ClientExamsController Handled");
+		ObservableList<Exam> eItems = viewExamsTV.getItems();
+		
+		if (!eItems.isEmpty()) {
+			viewExamsTV.getItems().removeAll(examsList);
+		}
+		
+    	while (true) {
+			System.out.println("Running");
 
+    		if (client.isAnswerReturned==true) {
+    			
+    			localCarrier = client.answerCarrier;
+    			examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
+    			
+    			loadData(examsList);
+    			
+    			client.isAnswerReturned=false;
+    			break;
+    		}	
+    		
+    	}
     }
 
     @FXML
@@ -292,4 +373,30 @@ public class ClientExamsController {
     		gradesStatisticsAP.setVisible(false);
     	}
     }
+    
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+    	examIDTC.setCellValueFactory(new PropertyValueFactory<Exam,Integer>("examId"));
+    	examInstTC.setCellValueFactory(new PropertyValueFactory<Exam,String>("teacherInstructions"));
+    	
+    	for(String course: (LoginController.userReceviedCourses).keySet()) {
+    		courseViewExamsCB.getItems().add(course);
+    	}
+    	
+//    	for(String course: (LoginController.userReceviedCourses).keySet()) {
+//    		courseComboBox.getItems().add(course);
+//    	}
+    }
+    
+    //Load data to table
+    void loadData(List<Exam> exam_list) {
+
+        for (Exam examItem : exam_list)
+        {
+        	System.out.println(examItem.getExamId());
+        	viewExamsTV.getItems().addAll(examItem);
+        }
+        
+    }
+    	
 }

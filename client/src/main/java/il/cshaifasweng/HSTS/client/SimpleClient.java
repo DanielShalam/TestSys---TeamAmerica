@@ -5,6 +5,7 @@ import java.io.IOException;
 import il.cshaifasweng.HSTS.client.ocsf.AbstractClient;
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.CarrierType;
+import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.Question;
 
 
@@ -100,6 +101,43 @@ public class SimpleClient extends AbstractClient {
 		
 		try {
 			this.sendToServer(questionCarrier);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	protected void handleMessageFromClientExamController(String message, int id, Exam exam) {
+		Carrier examCarrier =  new Carrier();
+		examCarrier.carrierType = CarrierType.EXAM;	
+		
+		if (message == "get all exams") 
+		{
+			examCarrier.carrierMessageMap.put("message", "get all exams");
+		}
+		else if (message == "get all teacher exams")
+		{
+			examCarrier.carrierMessageMap.put("teacher", id);
+			examCarrier.carrierMessageMap.put("message", "get all teacher exams");
+		}
+		else if (message == "create exam") 
+		{
+			examCarrier.carrierMessageMap.put("exam", exam);
+			examCarrier.carrierMessageMap.put("message", "create exam");
+		}
+		else if (message == "get all course exams")
+		{
+			examCarrier.carrierMessageMap.put("course", id);
+			examCarrier.carrierMessageMap.put("message", "get all course exams");
+		}
+		else if(message == "delete exam")
+		{
+			examCarrier.carrierMessageMap.put("question", exam);
+			examCarrier.carrierMessageMap.put("message", "delete exam");
+		}
+		
+		try {
+			this.sendToServer(examCarrier);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

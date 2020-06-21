@@ -122,7 +122,6 @@ public class ConnectToDB {
       }
     
     public static <T> List<T> getByAttribute(final Class<T> type, String key, int value)  {
-    	System.out.println("adssad");
         Session temp_session = ConnectToDB.sessionFactory.openSession();
         temp_session.beginTransaction();
         CriteriaBuilder cb = temp_session.getCriteriaBuilder();
