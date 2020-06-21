@@ -246,6 +246,7 @@ public class SimpleServer extends AbstractServer {
 			case "get all teacher exams":
 				int teacher_id = (int) carrier.carrierMessageMap.get("teacher");
 				List <Exam> teacher_exams = ServerExamsController.getExamsByAtrribute("teacherId", teacher_id);
+				//System.out.println(teacher_exams.length);
 
 				responseCarrier.carrierType = CarrierType.EXAM;
 				responseCarrier.carrierMessageMap.put("message", "return all teacher questions"); 
