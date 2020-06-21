@@ -11,11 +11,13 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Map.Entry;
 
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.Exam;
@@ -29,8 +31,10 @@ public class ClientExamsController implements Initializable{
 	private SimpleClient client;
 	private Carrier localCarrier = null;
 	private List <Exam> examsList = null;
+	
 	ObservableList<Exam> examData = FXCollections.observableArrayList();
-
+	
+	
     @FXML // fx:id="setQuestionMenuAP"
     private AnchorPane setQuestionMenuAP; // Value injected by FXMLLoader
 
@@ -158,7 +162,7 @@ public class ClientExamsController implements Initializable{
     private TableView<Exam> viewExamsTV; // Value injected by FXMLLoader
 
     @FXML // fx:id="viewExamTC"
-    private TableColumn<?, ?> viewExamTC; // Value injected by FXMLLoader
+    private TableColumn<Exam, Integer> viewExamTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="examInstigationAP"
     private AnchorPane examInstigationAP; // Value injected by FXMLLoader
@@ -186,7 +190,68 @@ public class ClientExamsController implements Initializable{
 
     @FXML // fx:id="showActiveExamsButton"
     private Button showActiveExamsButton; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="courseCBSetExamAP"
+    private ChoiceBox<String> courseCBSetExamAP; // Value injected by FXMLLoader
 
+    @FXML // fx:id="studentInstructionsTASetExamAP"
+    private TextArea studentInstructionsTASetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="teacherInstructionsTASetExamAP"
+    private TextArea teacherInstructionsTASetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="examIDSetExamAP"
+    private TextField examIDSetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="examDurationTFSetExamAP"
+    private TextField examDurationTFSetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="teacherIDSetExamAP"
+    private TextField teacherIDSetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="examQuestionsTVsetExamAP"
+    private TableView<Question> examQuestionsTVsetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="examQuestionIdTCSetExamAP"
+    private TableColumn<Question, Integer> examQuestionIdTCSetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="examQuestionTCSetExamAP"
+    private TableColumn<Question, String> examQuestionTCSetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="scoreTVSetExamAP"
+    private TableView<Integer[]> scoreTVSetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="scoreTCSetExamAP"
+    private TableColumn<Integer[], Integer> scoreTCSetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="addQuestionsAPSetExamAP"
+    private AnchorPane addQuestionsAPSetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="courseQuestionIdTVSetExamAP"
+    private TableView<?> courseQuestionIdTVSetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="addQuestionButtonSetExamAP"
+    private Button addQuestionButtonSetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="courseViewQuestionButtonSetExamAP"
+    private Button courseViewQuestionButtonSetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="removeQuestionButtonSetExamAP"
+    private Button removeQuestionButtonSetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="viewQuestionButtonSetExamAP"
+    private Button viewQuestionButtonSetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="cancelButtonSetExamAP"
+    private Button cancelButtonSetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="saveButtonSetExamAP"
+    private Button saveButtonSetExamAP; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="setExamsMenuAP"
+    private AnchorPane setExamsMenuAP; // Value injected by FXMLLoader
+
+    
     @FXML
     void cancel(ActionEvent event) {
 
@@ -228,7 +293,7 @@ public class ClientExamsController implements Initializable{
     }
 
     @FXML
-    void getCourseExams(ActionEvent event) {
+    void getCourseExams(ActionEvent event) throws IOException {
     	client = LoginController.client;
 //    	client.openConnection();
     	String message = "get all exams";
@@ -271,7 +336,7 @@ public class ClientExamsController implements Initializable{
     }
 
     @FXML
-    void getExamsByTeacherID(ActionEvent event) {
+    void getExamsByTeacherID(ActionEvent event) throws IOException {
     	client = LoginController.client;
 //    	client.openConnection();
     	
@@ -350,8 +415,18 @@ public class ClientExamsController implements Initializable{
     }
 
     @FXML
-    void viewExam(ActionEvent event) {
-
+    void viewExam(ActionEvent event) throws IOException {
+    	Exam exam = viewExamsTV.getSelectionModel().getSelectedItem();
+    	
+    	if (exam == null)
+    	{
+    		System.out.println("No exam was selected!");
+    	} else {
+    		addQuestionsAPSetExamAP.setVisible(false);
+    		setExamsMenuAP.setVisible(true);
+    		loadExamDataToSetExamAP(exam);
+    		
+    	}
     }
 
     @FXML
@@ -374,10 +449,44 @@ public class ClientExamsController implements Initializable{
     	}
     }
     
+    @FXML
+    void saveExam(ActionEvent event) {
+
+    }
+    
+    @FXML
+    void cancelSetExam(ActionEvent event) {
+
+    }
+    
+    @FXML
+    void removeQuestionFromExam(ActionEvent event) {
+
+    }
+    
+    @FXML
+    void viewQuestion(ActionEvent event) {
+
+    }
+    
+    @FXML
+    void addQuestionToExam(ActionEvent event) {
+
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+    	viewExamTC.setCellValueFactory(new PropertyValueFactory<Exam,Integer>("examId"));
     	examIDTC.setCellValueFactory(new PropertyValueFactory<Exam,Integer>("examId"));
     	examInstTC.setCellValueFactory(new PropertyValueFactory<Exam,String>("teacherInstructions"));
+    	examQuestionIdTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,Integer>("questionId"));
+    	examQuestionTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
+    	scoreTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Integer[],Integer>("valueOf"));
+    	
+    	/*scoreTCSetExamAP.setCellValueFactory(cellData -> {
+            Integer score = cellData.getValue();
+            return score;
+        });*/
     	
     	for(String course: (LoginController.userReceviedCourses).keySet()) {
     		courseViewExamsCB.getItems().add(course);
@@ -397,6 +506,47 @@ public class ClientExamsController implements Initializable{
         	viewExamsTV.getItems().addAll(examItem);
         }
         
+    }
+    
+    //Load data to table
+    void loadQuestionData(List<Question> question_list, TableView<Question> TV) {
+
+        for (Question questionItem : question_list)
+        {
+        	TV.getItems().addAll(questionItem);
+        }
+        
+    }
+    
+    void loadExamDataToSetExamAP (Exam exam) {
+    	
+		manageExamsAP.setVisible(false);
+		int courseId = exam.getCourseId();
+		String courseName = null;
+	    for (Entry<String, Integer> entry : LoginController.userReceviedCourses.entrySet()) {
+	        if (courseId == entry.getValue()) {
+	        	courseName = entry.getKey();
+	        }
+	    }
+	    courseCBSetExamAP.getSelectionModel().select(courseName);
+	    examIDSetExamAP.setText(String.valueOf(exam.getExamId()));
+	    teacherIDSetExamAP.setText(String.valueOf(exam.getTeacherId()));
+	    examDurationTFSetExamAP.setText(exam.getAssignedDuration().toString());
+	    studentInstructionsTASetExamAP.setText(exam.getStudentInstructions());
+	    teacherInstructionsTASetExamAP.setText(exam.getTeacherInstructions());
+	    
+	    List<Question> questionList = exam.getQuestionList();
+	    Integer[] scoringList = exam.getScoringList();
+	    loadScoringData(scoringList, scoreTVSetExamAP);
+	    loadQuestionData(questionList, examQuestionsTVsetExamAP);
+	    
+    }
+    
+    void loadScoringData(Integer[] scoringList, TableView TV) {
+    	 for (Integer score : scoringList)
+         {
+         	TV.getItems().addAll(score);
+         }
     }
     	
 }

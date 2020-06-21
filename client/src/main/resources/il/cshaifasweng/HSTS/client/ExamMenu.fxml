@@ -7,6 +7,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Line?>
@@ -177,7 +178,7 @@
                         <Font name="System Bold" size="24.0" />
                      </font>
                   </Label>
-                  <TableView fx:id="viewExamsTV" layoutX="123.0" layoutY="150.0" prefHeight="351.0" prefWidth="517.0">
+                  <TableView fx:id="viewExamsTV" editable="true" layoutX="123.0" layoutY="150.0" prefHeight="351.0" prefWidth="517.0">
                     <columns>
                       <TableColumn fx:id="viewExamTC" prefWidth="516.0" text="Exam" />
                     </columns>
@@ -222,6 +223,64 @@
                </children>
             </AnchorPane>
             <Line endX="4.0" endY="-127.0" layoutX="304.0" layoutY="144.0" startX="4.0" startY="464.0" stroke="#9a9494" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="setExamsMenuAP" prefHeight="677.0" prefWidth="1239.0" visible="false">
+         <children>
+            <Label layoutX="51.0" layoutY="120.0" text="Course:" />
+            <Label layoutX="51.0" layoutY="37.0" text="Exam">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <Label layoutX="648.0" layoutY="120.0" text="Created By:" />
+            <Label layoutX="51.0" layoutY="183.0" text="Student Instructions:" />
+            <Label layoutX="51.0" layoutY="298.0" text="Teacher Instructions:" />
+            <ChoiceBox fx:id="courseCBSetExamAP" layoutX="126.0" layoutY="116.0" prefWidth="150.0" />
+            <TextArea fx:id="studentInstructionsTASetExamAP" layoutX="51.0" layoutY="212.0" prefHeight="51.0" prefWidth="355.0" />
+            <TextArea fx:id="teacherInstructionsTASetExamAP" layoutX="51.0" layoutY="324.0" prefHeight="51.0" prefWidth="355.0" />
+            <TextField fx:id="examIDSetExamAP" layoutX="418.0" layoutY="116.0" />
+            <TextField fx:id="examDurationTFSetExamAP" layoutX="1044.0" layoutY="116.0" />
+            <Label layoutX="360.0" layoutY="120.0" text="Exam ID:" />
+            <TextField fx:id="teacherIDSetExamAP" editable="false" layoutX="723.0" layoutY="116.0" />
+            <Label layoutX="952.0" layoutY="120.0" text="Exam Duration:" />
+            <TableView fx:id="examQuestionsTVsetExamAP" layoutX="441.0" layoutY="215.0" prefHeight="320.0" prefWidth="313.0">
+              <columns>
+                <TableColumn fx:id="examQuestionIdTCSetExamAP" editable="false" prefWidth="75.0" sortable="false" text="Question ID" />
+                <TableColumn fx:id="examQuestionTCSetExamAP" editable="false" prefWidth="237.0" sortable="false" text="Question" />
+              </columns>
+            </TableView>
+            <TableView fx:id="scoreTVSetExamAP" layoutX="773.0" layoutY="216.0" prefHeight="320.0" prefWidth="61.0">
+              <columns>
+                <TableColumn fx:id="scoreTCSetExamAP" prefWidth="62.0" sortable="false" text="Score" />
+              </columns>
+            </TableView>
+            <Label layoutX="441.0" layoutY="183.0" text="Exam Questions:" />
+            <AnchorPane fx:id="addQuestionsAPSetExamAP" layoutX="852.0" layoutY="163.0" prefHeight="428.0" prefWidth="355.0">
+               <children>
+                  <Label layoutX="21.0" layoutY="24.0" text="Course Questions:" />
+                  <TableView fx:id="courseQuestionIdTVSetExamAP" layoutX="21.0" layoutY="52.0" prefHeight="320.0" prefWidth="313.0">
+                    <columns>
+                      <TableColumn prefWidth="75.0" text="Question ID" />
+                      <TableColumn prefWidth="237.0" text="Question" />
+                    </columns>
+                  </TableView>
+                  <Button fx:id="addQuestionButtonSetExamAP" layoutX="21.0" layoutY="389.0" mnemonicParsing="false" onAction="#addQuestionToExam" text="Add Question to Exam" />
+                  <Button fx:id="courseViewQuestionButtonSetExamAP" layoutX="199.0" layoutY="389.0" mnemonicParsing="false" onAction="#viewQuestion" prefHeight="25.0" prefWidth="135.0" text="View Question" />
+               </children>
+            </AnchorPane>
+            <Button fx:id="removeQuestionButtonSetExamAP" layoutX="443.0" layoutY="553.0" mnemonicParsing="false" onAction="#removeQuestionFromExam" text="Remove Question from Exam" />
+            <Button fx:id="viewQuestionButtonSetExamAP" layoutX="662.0" layoutY="553.0" mnemonicParsing="false" onAction="#viewQuestion" text="View Question" />
+            <Button fx:id="cancelButtonSetExamAP" layoutX="907.0" layoutY="625.0" mnemonicParsing="false" onAction="#cancelSetExam" prefHeight="30.0" prefWidth="172.0" text="Cancel">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="saveButtonSetExamAP" layoutX="151.0" layoutY="625.0" mnemonicParsing="false" onAction="#saveExam" prefHeight="30.0" prefWidth="172.0" text="Save">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
          </children>
       </AnchorPane>
    </children>
