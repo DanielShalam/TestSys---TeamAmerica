@@ -45,6 +45,9 @@ public class SimpleServer extends AbstractServer {
 				
 			case EXAM:
 				handleExamMessage(msgFromClient, client);
+				
+			case EXAMINATION:
+				handleExaminationMessage(msgFromClient, client);
 		}
 	}
 	
@@ -291,7 +294,108 @@ public class SimpleServer extends AbstractServer {
 		}
 		
 	}
-	
+
+	//// Function to handle Message where Carrier type is EXAM
+	protected void handleExaminationMessage(Carrier carrier, ConnectionToClient client) {
+		String msg = (String) carrier.carrierMessageMap.get("message");
+		Carrier responseCarrier = new Carrier();
+		switch(msg) {
+			case "get examination by id":
+				int exam_id = (int) carrier.carrierMessageMap.get("id");
+				Examination examination = ServerExaminationController.getExaminationById(exam_id);
+				
+				responseCarrier.carrierType = CarrierType.EXAMINATION;
+				responseCarrier.carrierMessageMap.put("message", "return examination by id"); 
+				responseCarrier.carrierMessageMap.put("examination", examination); 
+				try {
+					client.sendToClient(responseCarrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+			case "create examination":
+				Examination new_exam = (Examination) carrier.carrierMessageMap.get("examination");
+				String is_success = ServerExaminationController.commitExaminationToDB(new_exam);
+
+				responseCarrier.carrierType = CarrierType.EXAMINATION;
+				responseCarrier.carrierMessageMap.put("message", "create exam status");
+				responseCarrier.carrierMessageMap.put("status", is_success);
+				try {
+					client.sendToClient(responseCarrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			case "get all teacher examinations":
+				int teacher_id = (int) carrier.carrierMessageMap.get("teacher");
+				List <Examination> teacher_exams = ServerExaminationController.getExamsByAtrribute("teacherId", teacher_id);
+
+				responseCarrier.carrierType = CarrierType.EXAM;
+				responseCarrier.carrierMessageMap.put("message", "return all teacher examinations"); 
+				responseCarrier.carrierMessageMap.put("exams", teacher_exams); 
+				try {
+					client.sendToClient(responseCarrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			case "get all course examinations":
+				int course_id = (int) carrier.carrierMessageMap.get("course");
+				List <Examination> course_exams = ServerExaminationController.getExamsByAtrribute("courseId", course_id);
+
+				responseCarrier.carrierType = CarrierType.EXAMINATION;
+				responseCarrier.carrierMessageMap.put("message", "return all course questions"); 
+				responseCarrier.carrierMessageMap.put("exams", course_exams); 
+				try {
+					client.sendToClient(responseCarrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			
+			case "get examination by execution code":
+				int exec_code = (int) carrier.carrierMessageMap.get("exec_code");
+				List<Examination> examination_list = ServerExaminationController.getExamsByAtrribute("executionCode", exec_code);
+				if (examination_list != null) {
+					responseCarrier.carrierMessageMap.put("examination", examination_list.get(0)); }
+				else {
+					responseCarrier.carrierMessageMap.put("examination", examination_list); }
+				
+				responseCarrier.carrierType = CarrierType.EXAMINATION;
+				responseCarrier.carrierMessageMap.put("message", "return examination with execution code"); 
+
+				try {
+					client.sendToClient(responseCarrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			case "delete examination":
+				Examination examinationToDelete = (Examination) carrier.carrierMessageMap.get("examination");
+				String status = ServerExaminationController.deleteExamByEntity(examinationToDelete);
+
+				responseCarrier.carrierType = CarrierType.EXAMINATION;
+				responseCarrier.carrierMessageMap.put("message", "delete exams status"); 
+				responseCarrier.carrierMessageMap.put("status", status); 
+				try {
+					client.sendToClient(responseCarrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			}
+
+		}
 	@Override
 	protected void clientConnected(ConnectionToClient client) {
 		super.clientConnected(client);
