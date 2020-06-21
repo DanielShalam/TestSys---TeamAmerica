@@ -13,7 +13,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 
@@ -34,11 +37,16 @@ public class Exam implements Serializable {
 	@Column(name = "course_id")
 	private int courseId;
 	
-	@Column(name = "question_list")
-	private ArrayList<Question> questionList;
+	// exam question relation - Unidirectional 
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "exam_question", 
+	           joinColumns = { @JoinColumn(name = "exam_id") }, 
+	           inverseJoinColumns = { @JoinColumn(name = "question_id") })
+	private List<Question> questionList; 
 	
-	@Column(name = "answer_list")
-	private ArrayList<Integer> answerList;
+	
+	@Column(name = "scoring_list")
+	private Integer[] scoringList;
 		
 	@Column(name = "student_instructions")
 	private String studentInstructions;
@@ -52,26 +60,47 @@ public class Exam implements Serializable {
 	@Column(name = "duration")
 	private Duration assignedDuration;
 	
+	// teacher questions relation - Unidirectional (owning side)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy="examId")	// mapping owner side
+	private List<Examination> examinationList;
+	
 	// teacher exams relation - Unidirectional
 	@Column(name = "teacher_id")
 	private int teacherId;
 	
+	public Exam(Exam other) {
+		this.teacherId = other.getTeacherId();
+		this.courseId = other.getCourseId();
+		this.questionList = new ArrayList<Question>(other.getQuestionList());
+		this.scoringList = other.getScoringList();
+		this.studentInstructions = other.getStudentInstructions();
+		this.teacherInstructions = other.getTeacherInstructions();
+		this.assignedDuration = other.getAssignedDuration();
+		this.examinationList = new ArrayList<Examination>(other.getExaminationList());
+		this.usedInExamination = false;
+	}
 	
-
-	public Exam(int teacherId, int courseId, ArrayList<Question> questionList, ArrayList<Integer> answerList,
+	public Exam(int teacherId, int courseId, ArrayList<Question> questionList, Integer[] scoringList,
 			String studentInstructions,String teacherInstructions, Duration assignedDuration ) {
 		this.teacherId = teacherId;
 		this.courseId = courseId;
 		this.questionList = questionList;
-		this.answerList = answerList;
+		this.scoringList = scoringList;
 		this.studentInstructions = studentInstructions;
 		this.teacherInstructions = teacherInstructions;
 		this.assignedDuration = assignedDuration;
+		this.examinationList = new ArrayList<Examination>();
+		this.usedInExamination = false;
 	}
 
 	public Exam() {
 		
 	}
+	
+	public List<Examination> getExaminationList() {
+		return examinationList;
+	}
+	
 	
 	public int getExamNum() {
 		return examNum;
@@ -80,8 +109,7 @@ public class Exam implements Serializable {
 	public int getExamId() {
 		return examId;
 	}
-	
-	/* call it afeter we persist the object */
+
 	public void setExamId() {
 		this.examId = courseId * 1000 + examNum;;
 	}
@@ -94,7 +122,7 @@ public class Exam implements Serializable {
 		this.courseId = courseId;
 	}
 
-	public ArrayList<Question> getQuestionList() {
+	public List<Question> getQuestionList() {
 		return questionList;
 	}
 
@@ -102,12 +130,12 @@ public class Exam implements Serializable {
 		this.questionList = questionList;
 	}
 
-	public ArrayList<Integer> getAnswerList() {
-		return answerList;
+	public Integer[] getScoringList() {
+		return scoringList;
 	}
 
-	public void setAnswerList(ArrayList<Integer> answerList) {
-		this.answerList = answerList;
+	public void setScoringList(Integer[] answerList) {
+		this.scoringList = answerList;
 	}
 
 	public String getStudentInstructions() {
@@ -127,6 +155,10 @@ public class Exam implements Serializable {
 	}
 
 	public boolean isUsedInExamination() {
+		if (examinationList.isEmpty()) {
+			usedInExamination = false;
+		}
+		else usedInExamination = true;
 		return usedInExamination;
 	}
 
@@ -146,8 +178,8 @@ public class Exam implements Serializable {
 	public int getTeacherId() {
 		return teacherId;
 	}
-
-	public void setTeacherId(int teacherId) {
-		this.teacherId = teacherId;
+	
+	public void addQuestionScore(int score) {
+		
 	}
 }

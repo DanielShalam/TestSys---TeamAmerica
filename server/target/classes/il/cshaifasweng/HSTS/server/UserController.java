@@ -3,17 +3,17 @@ package il.cshaifasweng.HSTS.server;
 import il.cshaifasweng.HSTS.entities.User;
 import il.cshaifasweng.HSTS.entities.Course;
 import il.cshaifasweng.HSTS.entities.Role;
+import il.cshaifasweng.HSTS.server.utilities.*;
 
-import java.util.ArrayList;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
-
 
 public class UserController {
 	
 	// TODO return role as enum when the client controllers will be ready
 	
-	public static HashMap<String, Object> getRole(String first_name, String pass) {
+	public static HashMap<String, Object> getRole(String first_name, String password) {
 		List<User> users_list = ConnectToDB.getByAttribute(User.class, "first_name", first_name);
 		HashMap<String, Object> hash = new HashMap<String, Object>();
 		
@@ -24,25 +24,46 @@ public class UserController {
 			return hash;
 		}
 		
+		String encryptedPW = null;
+		try {
+			encryptedPW = Hashing.hashing(password);
+			
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		for (User user : users_list) {
 			
-			if (pass.equals(user.getPassword())){		// If the password is correct
+			if (encryptedPW.equals(user.getPassword())){		// If the password is correct
 				// return user.getRole();
 				hash.put("Role", user.getRole());
 				hash.put("ID", user.getUserId());
+				HashMap<String, Integer> courses = new HashMap<String, Integer>();
+				
+				// Get student courses
 				if (user.getRole() == Role.STUDENT) {
-					hash.put("Courses", user.getCoursesStudying());
-				}
-				else if (user.getRole() == Role.TEACHER) {
-					HashMap<String, Integer> courses = new HashMap<String, Integer>();
-					List <Course> course_list = user.getCoursesTeaching();
+					List <Course> course_list = user.getCoursesStudying();
 					for (Course course: course_list) {
 						courses.put(course.getCourseName(), course.getCourseId());
 					}
 					hash.put("Courses", courses);
 				}
-				return hash;
 				
+				// Get Teacher courses
+				else if (user.getRole() == Role.TEACHER) {	
+					List <Course> course_list = user.getCoursesTeaching();
+
+					for (Course course: course_list) {
+						courses.put(course.getCourseName(), course.getCourseId());
+					}
+					hash.put("Courses", courses);
+				}
+				
+				// Get Principle courses
+				else {
+					hash.put("Courses", null);
+				}
+				return hash;	
 			}
 		}	
 		

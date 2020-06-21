@@ -4,46 +4,25 @@ import java.util.List;
 
 import il.cshaifasweng.HSTS.entities.Question;
 
+
 public class ServerQuestionController {
 	
 	public ServerQuestionController() {
 		
 	}
 
-	// Create new instance of question before committing to database
-	public static String createBeforeCommit(Question question) {
-		// Crate new question
-		Question newQuestion = new Question(
-				question.getCourseId(),
-				question.getQuestion(),
-				question.getAnswers(),
-				question.getInstructions(),
-				question.getCorrectAnswer(),
-				question.getTeacherId());
-		
-		// Commit the new question
-		int return_value = commitQuestionToDB(newQuestion);
-		if (return_value == 1) {
-			return "Question commited successfully. ";
-		}
-		else if (return_value == -2) {
-			return "Error - Course ID is invalied. ";
-		}
-		return "Error - Please try again. ";
-	}
-
 	// Commit new Question to database
-	public static int commitQuestionToDB(Question question) {
+	public static String commitQuestionToDB(Question question) {
 		try {
 			int new_id = ConnectToDB.save(question);
 
 			if (new_id == question.getQuestionId()) {	// Failure
-				return -1;
+				return "Error - Please try again. ";
 			}
-			return 1;	// Success
+			return "Question commited successfully. ";	// Success
 			
 		} catch (Exception logExceptions) {		// Foreign key is invalid
-			return -2;
+			return "Error - Course ID is invalied. ";
 		}
 	}
 

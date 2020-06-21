@@ -1,7 +1,12 @@
 package il.cshaifasweng.HSTS.server;
 
 import java.util.List;
+
+import com.google.protobuf.Duration;
+
 import il.cshaifasweng.HSTS.entities.Exam;
+import il.cshaifasweng.HSTS.entities.ExamType;
+import il.cshaifasweng.HSTS.entities.Examination;
 
 public class ServerExamsController {
 
@@ -10,36 +15,15 @@ public class ServerExamsController {
 	public ServerExamsController() {
 		
 	}
-
 	
-	public static String createBeforeCommit(Exam exam) {
-		Exam newExam = new Exam(
-				exam.getTeacherId(),
-				exam.getCourseId(),
-				exam.getQuestionList(),
-				exam.getAnswerList(),
-				exam.getStudentInstructions(),
-				exam.getTeacherInstructions(),
-				exam.getAssignedDuration());
-		
-		int return_value = commitExamToDB(newExam);
-		if (return_value == 1) {
-			return "Exam commited successfully. ";
-		}
-		else if (return_value == -2) {
-			return "Error - Course ID is invalied. "; //TODO check if thats ok
-		}
-		return "Error - Please try again. ";
-	}
-	
-	public static int commitExamToDB(Exam exam) {
+	public static String commitExamToDB(Exam exam) {
 		int new_id = ConnectToDB.save(exam);
 		// Failure
 		if (new_id == exam.getExamId()) {
-			return -1;
+			return "Error - Please try again. ";
 		}
 		// Success			
-		return 1;		
+		return "Exam commited successfully. ";		
 	}
 	
 	public static Exam getExamById(int id) {	
@@ -70,9 +54,9 @@ public class ServerExamsController {
 	}
 	
 	// Delete exam from database using its id
-	public static String deleteExamByID(int exam_id) {
+	public static String deleteExamByID(int examID) {
 
-		Exam exam = ServerExamsController.getExamById(exam_id);	// Getting the exam
+		Exam exam = ServerExamsController.getExamById(examID);	// Getting the exam
 
 		if (exam == null) {		// Exam id not in database
 			return "Error - Exam not found. ";
@@ -83,10 +67,17 @@ public class ServerExamsController {
 		return "Exam deleted successfully. ";
 	}
 	
+	// Delete exam from database using its id
+	public static String deleteExamByEntity(Exam exam) {
+		//TODO Validation of usedInExamination - Client or Server?
+		ConnectToDB.deleteByInstance(Exam.class, exam);
+		return "Exam deleted successfully. ";
+	}
+	
 	// Update existing exam without creating new instance
-	public static String updateExam(int exam_id) {
+	public static String updateExam(int examID) {
 		
-		Exam exam = ServerExamsController.getExamById(exam_id);	// Getting the exam
+		Exam exam = ServerExamsController.getExamById(examID);	// Getting the exam
 
 		if (exam == null) {		// Exam id not in database
 			return "Error - Exam not found. ";
@@ -98,4 +89,5 @@ public class ServerExamsController {
 		return "Exam updated successfully. ";
 		
 	}
+	
 }
