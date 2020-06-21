@@ -7,6 +7,8 @@ import il.cshaifasweng.HSTS.server.ocsf.ConnectionToClient;
 import java.io.IOException;
 import java.util.*;
 
+import com.sun.xml.bind.v2.model.core.ID;
+
 public class SimpleServer extends AbstractServer {
 
 	public ConnectToDB dbConnector;	   
@@ -47,9 +49,11 @@ public class SimpleServer extends AbstractServer {
 		case "Log me out": {
 			System.out.println("Logging out");
 			int id = (Integer) carrier.carrierMessageMap.get("ID");
-	        synchronized (lock) {
-				SimpleServer.connectedUsers.remove(Integer.valueOf(id));
-	        }
+			if (id > 0){
+		        synchronized (lock) {
+					SimpleServer.connectedUsers.remove(Integer.valueOf(id));
+		        }
+			}
 		}
 		case "Log me in":
 			String UserNameFromClient = (String) carrier.carrierMessageMap.get("userName");
@@ -199,6 +203,7 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				break;
 				
 			case "create exam":
 				Exam new_exam = (Exam) carrier.carrierMessageMap.get("exam");
@@ -213,12 +218,14 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+				break;
+
 			case "get all exams":
 				List <Exam> exam_list = ServerExamsController.getAllExam();
 
-				responseCarrier.carrierType = CarrierType.QUESTION;
+				responseCarrier.carrierType = CarrierType.EXAM;
 				responseCarrier.carrierMessageMap.put("message", "return all questions"); 
+				System.out.println(exam_list);
 				responseCarrier.carrierMessageMap.put("exams", exam_list); 
 				try {
 					client.sendToClient(responseCarrier);
@@ -226,7 +233,8 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+				break;
+
 			case "get all teacher exams":
 				int teacher_id = (int) carrier.carrierMessageMap.get("teacher");
 				List <Exam> teacher_exams = ServerExamsController.getExamsByAtrribute("teacherId", teacher_id);
@@ -240,7 +248,8 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			
+				break;
+
 			case "get all course exams":
 				int course_id = (int) carrier.carrierMessageMap.get("course");
 				List <Exam> course_exams = ServerExamsController.getExamsByAtrribute("courseId", course_id);
@@ -254,7 +263,8 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+				break;
+
 			case "delete exam":
 				int id = (int) carrier.carrierMessageMap.get("id");
 				String status = ServerExamsController.deleteExamByID(id);
@@ -268,6 +278,8 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				break;
+
 		}
 		
 	}
