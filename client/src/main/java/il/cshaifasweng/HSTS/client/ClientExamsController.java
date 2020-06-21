@@ -12,11 +12,13 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ListView;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import il.cshaifasweng.HSTS.entities.Carrier;
@@ -25,6 +27,8 @@ import il.cshaifasweng.HSTS.entities.Question;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleIntegerProperty;
 
 public class ClientExamsController implements Initializable{
 	
@@ -66,7 +70,7 @@ public class ClientExamsController implements Initializable{
     private TextArea answer4TA; // Value injected by FXMLLoader
 
     @FXML // fx:id="courseComboBox"
-    private ChoiceBox<?> courseComboBox; // Value injected by FXMLLoader
+    private ChoiceBox<String> courseComboBox; // Value injected by FXMLLoader
 
     @FXML // fx:id="answer1RB"
     private RadioButton answer1RB; // Value injected by FXMLLoader
@@ -250,26 +254,29 @@ public class ClientExamsController implements Initializable{
     
     @FXML // fx:id="setExamsMenuAP"
     private AnchorPane setExamsMenuAP; // Value injected by FXMLLoader
-
+    
+    @FXML // fx:id="scoreSetExamAP"
+    private ListView<Integer> scoreSetExamAP; // Value injected by FXMLLoader
     
     @FXML
     void cancel(ActionEvent event) {
-
-    }
-
-    @FXML
-    void clearFields(ActionEvent event) {
-
-    }
-
-    @FXML
-    void commitQuestionToDB(ActionEvent event) {
-
+    	setQuestionMenuAP.setVisible(false);
+    	setExamsMenuAP.setVisible(true);
     }
 
     @FXML
     void createExam(ActionEvent event) {
-
+    	addQuestionsAPSetExamAP.setVisible(false);
+		manageExamsAP.setVisible(false);
+    	
+    	addQuestionsAPSetExamAP.setVisible(true);
+    	saveButtonSetExamAP.setDisable(false);
+		removeQuestionButtonSetExamAP.setDisable(false);
+		
+		// TODO - Handle updates of course question table view in case the selection of course 
+		//choice box changes
+    	
+		setExamsMenuAP.setVisible(true);
     }
 
     @FXML
@@ -279,7 +286,24 @@ public class ClientExamsController implements Initializable{
 
     @FXML
     void editExam(ActionEvent event) {
-
+    	Exam exam = viewExamsTV.getSelectionModel().getSelectedItem();
+    	
+    	if (exam == null)
+    	{
+    		System.out.println("No exam was selected!");
+    	} else {
+    		addQuestionsAPSetExamAP.setVisible(false);
+    		manageExamsAP.setVisible(false);
+    		
+    		loadExamDataToSetExamAP(exam);
+    		saveButtonSetExamAP.setDisable(false);
+    		removeQuestionButtonSetExamAP.setDisable(false);
+    		addQuestionsAPSetExamAP.setVisible(true);
+    		
+    		setExamsMenuAP.setVisible(true);
+    		
+    		
+    	}
     }
 
     @FXML
@@ -411,6 +435,7 @@ public class ClientExamsController implements Initializable{
     @FXML
     void showViewCreateEdit(ActionEvent event) {
     	hideCurrentAP();
+    	courseViewExamsCB.getSelectionModel().selectFirst();
     	viewCreateEditExamsAP.setVisible(true);
     }
 
@@ -423,8 +448,14 @@ public class ClientExamsController implements Initializable{
     		System.out.println("No exam was selected!");
     	} else {
     		addQuestionsAPSetExamAP.setVisible(false);
-    		setExamsMenuAP.setVisible(true);
+    		manageExamsAP.setVisible(false);
+    		
     		loadExamDataToSetExamAP(exam);
+    		saveButtonSetExamAP.setDisable(true);
+    		removeQuestionButtonSetExamAP.setDisable(true);
+    		
+    		setExamsMenuAP.setVisible(true);
+    		
     		
     	}
     }
@@ -456,17 +487,26 @@ public class ClientExamsController implements Initializable{
     
     @FXML
     void cancelSetExam(ActionEvent event) {
-
+    	clearSetExam();
+    	
+		setExamsMenuAP.setVisible(false);
+		addQuestionsAPSetExamAP.setVisible(true);
+		manageExamsAP.setVisible(true);
     }
     
     @FXML
     void removeQuestionFromExam(ActionEvent event) {
-
+    	Question question = examQuestionsTVsetExamAP.getSelectionModel().getSelectedItem();
+    	
+    	if (question != null) {
+    		examQuestionsTVsetExamAP.getItems().remove(question);
+    	}    	
     }
     
     @FXML
     void viewQuestion(ActionEvent event) {
-
+    	Question question = examQuestionsTVsetExamAP.getSelectionModel().getSelectedItem();
+    	loadQuestionData(question);  
     }
     
     @FXML
@@ -481,20 +521,13 @@ public class ClientExamsController implements Initializable{
     	examInstTC.setCellValueFactory(new PropertyValueFactory<Exam,String>("teacherInstructions"));
     	examQuestionIdTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,Integer>("questionId"));
     	examQuestionTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
-    	scoreTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Integer[],Integer>("valueOf"));
-    	
-    	/*scoreTCSetExamAP.setCellValueFactory(cellData -> {
-            Integer score = cellData.getValue();
-            return score;
-        });*/
     	
     	for(String course: (LoginController.userReceviedCourses).keySet()) {
     		courseViewExamsCB.getItems().add(course);
+    		courseCBSetExamAP.getItems().add(course);
+    		courseComboBox.getItems().add(course);
     	}
     	
-//    	for(String course: (LoginController.userReceviedCourses).keySet()) {
-//    		courseComboBox.getItems().add(course);
-//    	}
     }
     
     //Load data to table
@@ -509,7 +542,7 @@ public class ClientExamsController implements Initializable{
     }
     
     //Load data to table
-    void loadQuestionData(List<Question> question_list, TableView<Question> TV) {
+    void loadQuestionData(Set<Question> question_list, TableView<Question> TV) {
 
         for (Question questionItem : question_list)
         {
@@ -520,7 +553,6 @@ public class ClientExamsController implements Initializable{
     
     void loadExamDataToSetExamAP (Exam exam) {
     	
-		manageExamsAP.setVisible(false);
 		int courseId = exam.getCourseId();
 		String courseName = null;
 	    for (Entry<String, Integer> entry : LoginController.userReceviedCourses.entrySet()) {
@@ -535,18 +567,68 @@ public class ClientExamsController implements Initializable{
 	    studentInstructionsTASetExamAP.setText(exam.getStudentInstructions());
 	    teacherInstructionsTASetExamAP.setText(exam.getTeacherInstructions());
 	    
-	    List<Question> questionList = exam.getQuestionList();
-	    Integer[] scoringList = exam.getScoringList();
-	    loadScoringData(scoringList, scoreTVSetExamAP);
+	    Set<Question> questionList = exam.getQuestionList();
 	    loadQuestionData(questionList, examQuestionsTVsetExamAP);
 	    
     }
     
-    void loadScoringData(Integer[] scoringList, TableView TV) {
-    	 for (Integer score : scoringList)
-         {
-         	TV.getItems().addAll(score);
-         }
+    void clearSetExam() {
+    	courseCBSetExamAP.getSelectionModel().clearSelection();
+    	examIDSetExamAP.setText(null);
+    	teacherIDSetExamAP.setText(null);
+    	examDurationTFSetExamAP.setText(null);
+    	studentInstructionsTASetExamAP.setText(null);
+    	teacherInstructionsTASetExamAP.setText(null);
+    	
+    	ObservableList<Question> qItems = examQuestionsTVsetExamAP.getItems();
+		
+		if (!qItems.isEmpty()) {
+			examQuestionsTVsetExamAP.getItems().clear();
+		}
+    	
+    }
+    
+    void loadQuestionData(Question question) {
+    	
+    	if (question == null)
+    	{
+    		System.out.println("No question was selected!");
+    	}
+    	else {
+    		setExamsMenuAP.setVisible(false);
+    	  	
+    		questionTA.setText(question.getQuestion());
+    		instructionsTA.setText(question.getInstructions());
+    		answer1TA.setText(question.getAnswers()[0]);
+    		answer2TA.setText(question.getAnswers()[1]);
+    		answer3TA.setText(question.getAnswers()[2]);
+    		answer4TA.setText(question.getAnswers()[3]);
+    		
+    		switch(question.getCorrectAnswer()) {
+    		case 1:
+    			answer1RB.setSelected(true);
+    			break;
+    		case 2:
+    			answer2RB.setSelected(true);
+    			break;
+    		case 3:
+    			answer3RB.setSelected(true);
+    			break;
+    		case 4:
+    			answer4RB.setSelected(true);
+    			break;
+    		}
+    		
+    		int courseId = question.getCourseId();
+    		String courseName = null;
+    	    for (Entry<String, Integer> entry : LoginController.userReceviedCourses.entrySet()) {
+    	        if (courseId == entry.getValue()) {
+    	        	courseName = entry.getKey();
+    	        }
+    	    }
+    		courseComboBox.getSelectionModel().select(courseName);
+    		setQuestionMenuAP.setVisible(true);
+    	}
     }
     	
 }
