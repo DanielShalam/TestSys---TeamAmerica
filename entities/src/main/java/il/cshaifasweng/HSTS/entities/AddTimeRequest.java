@@ -40,6 +40,14 @@ public class AddTimeRequest implements Serializable{
 			approved = false;
 	}
 	
+	public AddTimeRequest(AddTimeRequest other) {
+		this.requestedDuration = other.requestedDuration;
+		this.requestReason = other.requestReason;
+		this.reviewed = false;
+		this.approved = false;
+}
+	
+	
 	public AddTimeRequest() {
 		
 	}

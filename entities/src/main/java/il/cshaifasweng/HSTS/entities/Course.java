@@ -35,9 +35,10 @@ public class Course implements Serializable {
 	@Column(name = "course_name")
 	private String courseName;
 
+	// subject course  relation - Unidirectional
 	@Column(name = "subject_id")
 	private int subjectId;
-
+	
 	// owning side
 	@ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.MERGE}, targetEntity = User.class ) 
 	@JoinTable( name="courses_students", joinColumns = @JoinColumn(name ="course_id"),
@@ -53,9 +54,9 @@ public class Course implements Serializable {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "courseId") // mapping owner side
 	private List<Question> questionList;
 
-	public Course(String courseName, int subjectId, User teacher) {
+	public Course(String courseName, Subject subject, User teacher) {
 		this.courseName = courseName;
-		this.subjectId = subjectId;
+		this.subjectId = subject.getSubjectId();
 		setTeacher(teacher);
 		this.studentList = new ArrayList<User>();
 		this.questionList = new ArrayList<Question>();		

@@ -7,11 +7,14 @@ import il.cshaifasweng.HSTS.server.ocsf.ConnectionToClient;
 import java.io.IOException;
 import java.util.*;
 
+import com.sun.xml.bind.v2.model.core.ID;
 
 public class SimpleServer extends AbstractServer {
 
 	public ConnectToDB dbConnector;	   
-	
+	private static ArrayList<Integer> connectedUsers = new ArrayList<Integer>();
+    private final Object lock = new Object();
+
 	public SimpleServer(int port) {
 		super(port);
 		this.dbConnector = new ConnectToDB();
@@ -40,22 +43,46 @@ public class SimpleServer extends AbstractServer {
 	
 	//// Function to handle Message where Carrier type is USER
 	protected void handleUserMessage(Carrier carrier, ConnectionToClient client) {
-		String UserNameFromClient = (String) carrier.carrierMessageMap.get("userName");
-		String PassFromClient = (String) carrier.carrierMessageMap.get("pass");
-		HashMap<String, Object> checkedRole = UserController.getRole(UserNameFromClient, PassFromClient);
-		Role user_role = (Role) checkedRole.get("Role"); 
-		System.out.println("checkedRole is " + user_role);
-
-		Carrier msg2SimpleClient = new Carrier();
-		msg2SimpleClient.carrierType = CarrierType.USER;
-		msg2SimpleClient.carrierMessageMap.put("Role", user_role); 
-		msg2SimpleClient.carrierMessageMap.put("ID", checkedRole.get("ID"));
-		msg2SimpleClient.carrierMessageMap.put("Courses", checkedRole.get("Courses"));
-		try {
-			client.sendToClient(msg2SimpleClient);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		String message = (String) carrier.carrierMessageMap.get("message");
+		
+		switch (message) {
+		case "Log me out": {
+			System.out.println("Logging out");
+			int id = (Integer) carrier.carrierMessageMap.get("ID");
+			if (id > 0){
+		        synchronized (lock) {
+					SimpleServer.connectedUsers.remove(Integer.valueOf(id));
+		        }
+			}
+		}
+		case "Log me in":
+			String UserNameFromClient = (String) carrier.carrierMessageMap.get("userName");
+			String PassFromClient = (String) carrier.carrierMessageMap.get("password");
+			HashMap<String, Object> checkedRole = UserController.getRole(UserNameFromClient, PassFromClient);
+			Role userRole = (Role) checkedRole.get("Role"); 
+			int userId = (Integer) checkedRole.get("ID");
+	        synchronized (lock) {
+				if (SimpleServer.connectedUsers.contains(userId) == true && userRole != Role.INVALID) {
+					userRole = Role.INVALID;
+					userId = -2;
+				}
+				else {
+					connectedUsers.add(userId);
+				}
+	        }
+			System.out.println("checkedRole is " + userRole);
+	
+			Carrier msg2SimpleClient = new Carrier();
+			msg2SimpleClient.carrierType = CarrierType.USER;
+			msg2SimpleClient.carrierMessageMap.put("Role", userRole); 
+			msg2SimpleClient.carrierMessageMap.put("ID", userId);
+			msg2SimpleClient.carrierMessageMap.put("Courses", checkedRole.get("Courses"));
+			try {
+				client.sendToClient(msg2SimpleClient);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -83,7 +110,7 @@ public class SimpleServer extends AbstractServer {
 
 			case "create question":
 				Question new_question = (Question) carrier.carrierMessageMap.get("question");
-				String status = ServerQuestionController.createBeforeCommit(new_question);
+				String status = ServerQuestionController.commitQuestionToDB(new_question);
 
 				responseCarrier.carrierType = CarrierType.QUESTION;
 				responseCarrier.carrierMessageMap.put("message", "create question status");
@@ -176,10 +203,11 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				break;
 				
 			case "create exam":
 				Exam new_exam = (Exam) carrier.carrierMessageMap.get("exam");
-				String is_success = ServerExamsController.createBeforeCommit(new_exam);
+				String is_success = ServerExamsController.commitExamToDB(new_exam);
 
 				responseCarrier.carrierType = CarrierType.EXAM;
 				responseCarrier.carrierMessageMap.put("message", "create exam status");
@@ -190,12 +218,14 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+				break;
+
 			case "get all exams":
 				List <Exam> exam_list = ServerExamsController.getAllExam();
 
-				responseCarrier.carrierType = CarrierType.QUESTION;
+				responseCarrier.carrierType = CarrierType.EXAM;
 				responseCarrier.carrierMessageMap.put("message", "return all questions"); 
+				System.out.println(exam_list);
 				responseCarrier.carrierMessageMap.put("exams", exam_list); 
 				try {
 					client.sendToClient(responseCarrier);
@@ -203,7 +233,8 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+				break;
+
 			case "get all teacher exams":
 				int teacher_id = (int) carrier.carrierMessageMap.get("teacher");
 				List <Exam> teacher_exams = ServerExamsController.getExamsByAtrribute("teacherId", teacher_id);
@@ -217,7 +248,8 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			
+				break;
+
 			case "get all course exams":
 				int course_id = (int) carrier.carrierMessageMap.get("course");
 				List <Exam> course_exams = ServerExamsController.getExamsByAtrribute("courseId", course_id);
@@ -231,7 +263,8 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+				break;
+
 			case "delete exam":
 				int id = (int) carrier.carrierMessageMap.get("id");
 				String status = ServerExamsController.deleteExamByID(id);
@@ -245,6 +278,8 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				break;
+
 		}
 		
 	}
@@ -257,7 +292,7 @@ public class SimpleServer extends AbstractServer {
 	
 	@Override
 	synchronized protected void clientDisconnected(ConnectionToClient client) {
-		System.out.println("Client Disconnected");
+		System.out.println("Client Disconnected from server. ");
 		super.clientDisconnected(client);
 	}
 	
