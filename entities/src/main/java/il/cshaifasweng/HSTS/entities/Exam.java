@@ -100,8 +100,6 @@ public class Exam implements Serializable {
 	public List<Examination> getExaminationList() {
 		return examinationList;
 	}
-
-
 	
 	
 	public int getExamNum() {

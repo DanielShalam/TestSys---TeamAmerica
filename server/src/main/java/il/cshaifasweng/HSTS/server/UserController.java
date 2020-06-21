@@ -9,9 +9,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 
-import org.hibernate.Session;
-
-
 public class UserController {
 	
 	// TODO return role as enum when the client controllers will be ready
@@ -41,18 +38,30 @@ public class UserController {
 				// return user.getRole();
 				hash.put("Role", user.getRole());
 				hash.put("ID", user.getUserId());
+				HashMap<String, Integer> courses = new HashMap<String, Integer>();
+				
+				// Get student courses
 				if (user.getRole() == Role.STUDENT) {
-					hash.put("Courses", user.getCoursesStudying());
-				}
-				else if (user.getRole() == Role.TEACHER) {
-					HashMap<String, Integer> courses = new HashMap<String, Integer>();
-					List <Course> course_list = user.getCoursesTeaching();
-					System.out.println("Courses");
+					List <Course> course_list = user.getCoursesStudying();
 					for (Course course: course_list) {
-						System.out.println("Courses");
 						courses.put(course.getCourseName(), course.getCourseId());
 					}
 					hash.put("Courses", courses);
+				}
+				
+				// Get Teacher courses
+				else if (user.getRole() == Role.TEACHER) {	
+					List <Course> course_list = user.getCoursesTeaching();
+
+					for (Course course: course_list) {
+						courses.put(course.getCourseName(), course.getCourseId());
+					}
+					hash.put("Courses", courses);
+				}
+				
+				// Get Principle courses
+				else {
+					hash.put("Courses", null);
 				}
 				return hash;	
 			}

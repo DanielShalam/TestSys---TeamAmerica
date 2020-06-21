@@ -106,7 +106,7 @@ public class SimpleServer extends AbstractServer {
 
 			case "create question":
 				Question new_question = (Question) carrier.carrierMessageMap.get("question");
-				String status = ServerQuestionController.createBeforeCommit(new_question);
+				String status = ServerQuestionController.commitQuestionToDB(new_question);
 
 				responseCarrier.carrierType = CarrierType.QUESTION;
 				responseCarrier.carrierMessageMap.put("message", "create question status");
@@ -202,7 +202,7 @@ public class SimpleServer extends AbstractServer {
 				
 			case "create exam":
 				Exam new_exam = (Exam) carrier.carrierMessageMap.get("exam");
-				String is_success = ServerExamsController.createBeforeCommit(new_exam);
+				String is_success = ServerExamsController.commitExamToDB(new_exam);
 
 				responseCarrier.carrierType = CarrierType.EXAM;
 				responseCarrier.carrierMessageMap.put("message", "create exam status");
