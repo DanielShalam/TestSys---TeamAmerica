@@ -242,7 +242,7 @@ public class InitializeDB {
 		Duration duration_1 = Duration.ofMinutes(90);
 		Duration duration_2 = Duration.ofMinutes(120);
 		
-		Integer[] scoringList = {25,25,25,25};
+		Integer[] scoringList = {35,15,30,20};
 		
 		String studentInstructions = "do the test";
 		String teacherInstructions = "this exam is not easy";

@@ -2,6 +2,8 @@ package il.cshaifasweng.HSTS.client;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.RadioButton;
@@ -10,29 +12,27 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ListView;
 
-
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import antlr.Utils;
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.Question;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleIntegerProperty;
 
 public class ClientExamsController implements Initializable{
 	
@@ -265,7 +265,7 @@ public class ClientExamsController implements Initializable{
     private AnchorPane setExamsMenuAP; // Value injected by FXMLLoader
     
     @FXML // fx:id="scoreSetExamAP"
-    private ListView<Integer> scoreSetExamAP; // Value injected by FXMLLoader
+    private ListView<String> scoreSetExamAP; // Value injected by FXMLLoader
     
     @FXML // fx:id="fillInExamDataButtonSetExamAP"
     private Button fillInExamDataButtonSetExamAP; // Value injected by FXMLLoader
@@ -276,7 +276,9 @@ public class ClientExamsController implements Initializable{
     	
     	if (exam == null)
     	{
-    		System.out.println("No exam was selected!");
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Exam was not selected");
+    		errorAlert.showAndWait();
     	} else {
     		addQuestionsAPSetExamAP.setVisible(false);
     		manageExamsAP.setVisible(false);
@@ -290,6 +292,7 @@ public class ClientExamsController implements Initializable{
     		teacherInstructionsTASetExamAP.setDisable(true);
     		examDurationTFSetExamAP.setDisable(true);
     		viewQuestionButtonSetExamAP.setDisable(false);
+    		scoreSetExamAP.setEditable(false);
     		
     		setExamsMenuAP.setVisible(true);
     	}
@@ -319,12 +322,41 @@ public class ClientExamsController implements Initializable{
 		viewQuestionButtonSetExamAP.setDisable(true);
 		examIDSetExamAP.setText("TBD");
 		teacherIDSetExamAP.setText(LoginController.userReceviedID.toString());
+		scoreSetExamAP.setEditable(true);
+		
 		setExamsMenuAP.setVisible(true);
     }
 
     @FXML
     void deleteExam(ActionEvent event) {
-
+    	client = LoginController.client;
+    	
+    	Exam exam = viewExamsTV.getSelectionModel().getSelectedItem();
+    	
+    	if (exam == null) {
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Exam was not selected");
+    		errorAlert.showAndWait();
+    	} else {
+    		if (exam.isUsedInExamination()) {
+    			Alert errorAlert = new Alert(AlertType.ERROR);
+        		errorAlert.setHeaderText("This exam cannot be delete since it was already performed");
+        		errorAlert.showAndWait();
+        	}
+        	else {
+        		String message = "delete exam";
+            	int id = exam.getExamId();
+            	
+            	localCarrier = client.handleMessageFromClientExamController(message, id, exam);
+            	
+            	String status = (String) localCarrier.carrierMessageMap.get("status");
+            	
+            	if (status == "Exam deleted successfully. ") {
+            		viewExamsTV.getItems().remove(exam);
+            	}
+        	}
+    	}
+    	
     }
 
     @FXML
@@ -333,7 +365,9 @@ public class ClientExamsController implements Initializable{
     	
     	if (exam == null)
     	{
-    		System.out.println("No exam was selected!");
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Exam was not selected");
+    		errorAlert.showAndWait();
     	} else {
     		addQuestionsAPSetExamAP.setVisible(false);
     		manageExamsAP.setVisible(false);
@@ -349,6 +383,8 @@ public class ClientExamsController implements Initializable{
     		courseViewQuestionButtonSetExamAP.setDisable(false);
     		addQuestionButtonSetExamAP.setDisable(false);
     		viewQuestionButtonSetExamAP.setDisable(false);
+    		scoreSetExamAP.setDisable(false);
+    		scoreSetExamAP.setEditable(true);
     		
     		Integer courseId = LoginController.userReceviedCourses.get(
 					courseCBSetExamAP.getSelectionModel().getSelectedItem());
@@ -380,6 +416,10 @@ public class ClientExamsController implements Initializable{
 			getCourseQuestions(courseId);
 			
 			addQuestionsAPSetExamAP.setVisible(true);
+		} else {
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Course was not selected");
+    		errorAlert.showAndWait();
 		}
     }
 
@@ -480,7 +520,9 @@ public class ClientExamsController implements Initializable{
     	
     	if (exam == null)
     	{
-    		System.out.println("No exam was selected!");
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Exam was not selected");
+    		errorAlert.showAndWait();
     	} else {
     		examInstigationAP.setVisible(false);
     		setExamsMenuAP.setVisible(true);
@@ -548,13 +590,42 @@ public class ClientExamsController implements Initializable{
     
     @FXML
     void saveExam(ActionEvent event) {
-    	Exam exam = null;
     	
     	if (isExamValid()) {
-    		System.out.println("exam valid");
+    		int teacherId = LoginController.userReceviedID;
+    		int courseId = LoginController.userReceviedCourses.get(courseCBSetExamAP.getSelectionModel().getSelectedItem());
+    		
+    		List<Question> qList = examQuestionsTVsetExamAP.getItems();
+			Set<Question> questionSet = new HashSet<>();;
+			for (Question q : qList) {
+				questionSet.add(q);
+			}
+			
+			Integer[] scoringList = createScoringIntArr();
+			String studentInstructions = studentInstructionsTASetExamAP.getText();
+			String teacherInstructions = teacherInstructionsTASetExamAP.getText();
+			Duration assignedDuration = Duration.ofMinutes(Integer.parseInt(examDurationTFSetExamAP.getText()));
+			
+			Exam exam = new Exam(teacherId, courseId, questionSet, scoringList, studentInstructions,
+					teacherInstructions, assignedDuration);
+			client = LoginController.client;
+        	
+        	String message = "create exam";   	
+        	localCarrier = client.handleMessageFromClientExamController(message, 0, exam);
+        	System.out.println("message from ClientExamController Handled");
+        	
+			String status = (String) localCarrier.carrierMessageMap.get("status");
+			System.out.println(status);
+			
     		clearSetExam();
+    		
+    		setExamsMenuAP.setVisible(false);
+    		manageExamsAP.setVisible(true);
     	} else {
-    		System.out.println("exam not valid");
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Exam could not be saved");
+    		errorAlert.setContentText("Make sure you filled in all fields or performed changes to the exam");
+    		errorAlert.showAndWait();
     	}
     }
     
@@ -574,8 +645,14 @@ public class ClientExamsController implements Initializable{
     	Question question = examQuestionsTVsetExamAP.getSelectionModel().getSelectedItem();
     	
     	if (question != null) {
+    		int index = examQuestionsTVsetExamAP.getSelectionModel().getSelectedIndex();
     		examQuestionsTVsetExamAP.getItems().remove(question);
-    	}    	
+    		scoreSetExamAP.getItems().remove(index);
+    	} else {
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Question was not selected");
+    		errorAlert.showAndWait();
+    	}
 
     }
     
@@ -594,17 +671,30 @@ public class ClientExamsController implements Initializable{
     @FXML
     void addQuestionToExam(ActionEvent event) {
     	Question question = courseQuestionTVSetExamAP.getSelectionModel().getSelectedItem();
-    	Boolean questionExists = false;
     	
-    	List<Question> qList = examQuestionsTVsetExamAP.getItems();
-    	for (Question q : qList) {
-    		if (q.getQuestionId() == question.getQuestionId()) {
-    			questionExists = true;
-    			break;
-    		}
-    	}
-    	if (!questionExists) {
-    		examQuestionsTVsetExamAP.getItems().add(question);
+    	if (question != null) {
+    		Boolean questionExists = false;
+    		
+    		List<Question> qList = examQuestionsTVsetExamAP.getItems();
+        	for (Question q : qList) {
+        		if (q.getQuestionId() == question.getQuestionId()) {
+        			questionExists = true;
+        			break;
+        		}
+        	}
+        	if (!questionExists) {
+        		examQuestionsTVsetExamAP.getItems().add(question);
+        		scoreSetExamAP.getItems().add("0");
+        	} else {
+        		Alert errorAlert = new Alert(AlertType.ERROR);
+        		errorAlert.setHeaderText("Question already exists");
+        		//errorAlert.setContentText("Please select different question");
+        		errorAlert.showAndWait();
+        	}
+    	} else {
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Question was not selected");
+    		errorAlert.showAndWait();
     	}
     }
     
@@ -617,7 +707,7 @@ public class ClientExamsController implements Initializable{
     	examQuestionTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
     	courseQuestionIdTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,Integer>("questionId"));
     	courseQuestionTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
-
+    	scoreSetExamAP.setCellFactory(TextFieldListCell.forListView());
     	
     	for(String course: (LoginController.userReceviedCourses).keySet()) {
     		courseViewExamsCB.getItems().add(course);
@@ -679,15 +769,22 @@ public class ClientExamsController implements Initializable{
 	    courseCBSetExamAP.getSelectionModel().select(courseName);
 	    examIDSetExamAP.setText(String.valueOf(exam.getExamId()));
 	    teacherIDSetExamAP.setText(String.valueOf(exam.getTeacherId()));
-	    //examDurationTFSetExamAP.setText(exam.getAssignedDuration().toString());
-	    examDurationTFSetExamAP.setText(dts(exam.getAssignedDuration())); 
+	    examDurationTFSetExamAP.setText(dtm(exam.getAssignedDuration()));
 
 	    studentInstructionsTASetExamAP.setText(exam.getStudentInstructions());
 	    teacherInstructionsTASetExamAP.setText(exam.getTeacherInstructions());
 	    
 	    Set<Question> questionList = exam.getQuestionList();
 	    Integer[] scoringList = exam.getScoringList();
-//	    loadScoringData(scoringList, scoreTVSetExamAP);
+	    String[] scoringListString = new String[scoringList.length];
+	    
+	    int i;
+	    for (i = 0; i < scoringList.length ; i++) {
+	    	scoringListString[i] = String.valueOf(scoringList[i]);
+	    }
+	    
+	    scoreSetExamAP.getItems().addAll(scoringListString);
+
 	    loadQuestionData(questionList, examQuestionsTVsetExamAP);
 	    
     }
@@ -711,13 +808,19 @@ public class ClientExamsController implements Initializable{
 		if (!qItems.isEmpty()) {
 			courseQuestionTVSetExamAP.getItems().clear();
 		}
+		
+		if (!scoreSetExamAP.getItems().isEmpty()) {
+			scoreSetExamAP.getItems().clear();
+		}
     }
     
     void loadQuestionData(Question question) {
     	
     	if (question == null)
     	{
-    		System.out.println("No question was selected!");
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Question was not selected");
+    		errorAlert.showAndWait();
     	}
     	else {
     		setExamsMenuAP.setVisible(false);
@@ -813,10 +916,10 @@ public class ClientExamsController implements Initializable{
 			}
 			
 			//check if exam was changed
-    		if (examDurationTFSetExamAP.getText().equals(exam.getAssignedDuration().toString()) &&
+    		if (examDurationTFSetExamAP.getText().equals(dtm(exam.getAssignedDuration())) &&
     				studentInstructionsTASetExamAP.getText().equals(exam.getStudentInstructions()) &&
-    				teacherInstructionsTASetExamAP.getText().equals(exam.getTeacherInstructions()) && qSetsEqual) {
-    			System.out.println("questions: " + qSetsEqual);
+    				teacherInstructionsTASetExamAP.getText().equals(exam.getTeacherInstructions()) && 
+    				qSetsEqual && Arrays.equals(createScoringIntArr(), exam.getScoringList())) {
     			return true;
     		}
     		return false;
@@ -849,4 +952,20 @@ public class ClientExamsController implements Initializable{
 	            .toLowerCase();
 	}
 
+    public String dtm(Duration duration) {
+    	return String.valueOf(duration.abs().toMinutes());
+    }
+    
+    Integer[] createScoringIntArr() {
+    	
+    	int j = 0;
+    	List<String> sList = scoreSetExamAP.getItems();
+		Integer[] scoringList = new Integer[sList.size()];
+		
+		for (String score : sList) {
+			scoringList[j] = Integer.parseInt(score);
+			j++;
+		}
+		return scoringList;		
+    }
 }
