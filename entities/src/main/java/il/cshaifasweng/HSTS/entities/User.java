@@ -63,15 +63,17 @@ public class User implements Serializable {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy="teacherId")	// mapping owner side
 	private List<Examination> examinationInstigated;
 	
-	// student courses relation 
-	@ManyToMany(mappedBy = "studentList",	// owner side
-			cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER,
-			targetEntity = Course.class	)
-	private List<Course> coursesStudying;
+	
 	
 	// student examinationStudent relation - Bidirectional
 	@OneToMany(mappedBy = "student")		// mapping owner side
     private Set<ExaminationStudent> examinationList = new HashSet<ExaminationStudent>();
+	
+	// student courses relation 
+		@ManyToMany(mappedBy = "studentList",	// owner side
+				cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER,
+				targetEntity = Course.class	)
+		private List<Course> coursesStudying;
 	
 	public User(String firstName, String lastName, String password, Role role) {
 		this.first_name = firstName;
