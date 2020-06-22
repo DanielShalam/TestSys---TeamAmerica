@@ -2,9 +2,14 @@ package il.cshaifasweng.HSTS.server.utilities;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.Column;
 
 import org.hibernate.Session;
 
@@ -237,7 +242,7 @@ public class InitializeDB {
 		Duration duration_1 = Duration.ofMinutes(90);
 		Duration duration_2 = Duration.ofMinutes(120);
 		
-		Integer[] scoringList = {25,25,25,25};
+		Integer[] scoringList = {35,15,30,20};
 		
 		String studentInstructions = "do the test";
 		String teacherInstructions = "this exam is not easy";
@@ -282,7 +287,35 @@ public class InitializeDB {
 		session.flush();
 		
 		// initialize examination
+//		public Examination(int execuationCode, int teacherId,ExamType examType, Duration duration, 
+//		LocalDate examDate, LocalTime examStartTime, Exam exam)
 		
+		int execCode;
+		int teacherId;
+		ExamType examType;
+		LocalDate examDate;
+		LocalTime examStartTime;
+		Exam exam;
+		
+		execCode = 1234;
+		teacherId = exam_1.getTeacherId();
+		examType = ExamType.COMPUTERIZED;
+		examDate = LocalDate.of(2020, Month.JUNE, 23);
+		examStartTime = LocalTime.of(8,20);
+		Examination examintaion_1 = new Examination(execCode, teacherId, examType,  examDate, examStartTime, exam_1);
+	
+		execCode = 4517;
+		teacherId = exam_2.getTeacherId();
+		examType = ExamType.MANUAL;
+		examDate = LocalDate.of(2020, Month.JUNE, 23);
+		examStartTime = LocalTime.of(10,30);
+		Examination examintaion_2 = new Examination(execCode, teacherId, examType, examDate, examStartTime, exam_2);
+		
+		session.save(examintaion_1);
+		session.save(examintaion_2);
+		session.flush();
+		
+		System.out.println(examintaion_1.getExamination_id());
 	}
 	
 	

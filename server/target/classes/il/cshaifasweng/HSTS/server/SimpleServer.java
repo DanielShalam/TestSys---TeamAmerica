@@ -286,8 +286,8 @@ public class SimpleServer extends AbstractServer {
 				break;
 
 			case "delete exam":
-				int id = (int) carrier.carrierMessageMap.get("id");
-				String status = ServerExamsController.deleteExamByID(id);
+				Exam toDelete = (Exam) carrier.carrierMessageMap.get("exam");
+				String status = ServerExamsController.deleteExamByEntity(toDelete);
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);
 				carrier.carrierType = CarrierType.EXAM;

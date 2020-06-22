@@ -28,7 +28,7 @@ public class WordHandler implements Serializable {
 		XWPFRun tempRun = labelParagraph.createRun();
 		tempRun.setText("\tCourse id: "+examination.getExam().getCourseId());
 		tempRun.addBreak();
-		tempRun.setText("\tDate: "+examination.getDuration());
+		tempRun.setText("\tDate: "+examination.getActualDuration());
 		tempRun.addBreak();
 		tempRun.setText("\tInstructions: "+examination.getExam().getTeacherInstructions());
 		tempRun.addBreak();

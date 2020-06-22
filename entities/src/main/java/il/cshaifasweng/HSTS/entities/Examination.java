@@ -29,15 +29,11 @@ public class Examination implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int examination_id;		//primary key
 	
-	// exam examination relation - Unidirectional
-	@Column(name = "examination_key")
-	private int examId;
-	
 	@Column
 	private int executionCode;
 	
 	@Column
-	private Duration duration;
+	private Duration actualDuration;
 	
 	@Column
 	private LocalDate examDate;
@@ -63,6 +59,7 @@ public class Examination implements Serializable {
 	@Column
 	private int studentsNotFinsished;
 	
+	// exam examination relation - Unidirectional
 	@ManyToOne
 	@JoinColumn(name = "exam_id")
 	private Exam exam;
@@ -74,7 +71,8 @@ public class Examination implements Serializable {
 	@OneToMany(mappedBy = "examination")
     private Set<ExaminationStudent> examineesList = new HashSet<ExaminationStudent>();
 	
-	public Examination(int execuationCode, int teacherId,ExamType examType, Duration duration, Exam exam) {
+	public Examination(int execuationCode, int teacherId,ExamType examType,	LocalDate examDate, 
+						LocalTime examStartTime, Exam exam) {
 		this.executionCode = execuationCode;
 		this.studentsStarted = 0;
 		this.studentsFinished = 0;
@@ -84,8 +82,10 @@ public class Examination implements Serializable {
 		this.examType = examType;
 		this.addTimeRequest = null; 
 		this.exam = exam;
-		this.duration = duration;
-//		setDuration(duration);
+		this.actualDuration = exam.getAssignedDuration();
+		this.examDate = examDate;
+		this.examStartTime = examStartTime;
+		updateExamEndTime();
 	}
 	
 	public Examination() {
@@ -110,12 +110,8 @@ public class Examination implements Serializable {
 		return examination_id;
 	}
 
-	public int getExamId() {
-		return examId;
-	}
-
-	public Duration getDuration() {
-		return duration;
+	public Duration getActualDuration() {
+		return actualDuration;
 	}
 
 	public Exam getExam() {
@@ -127,7 +123,7 @@ public class Examination implements Serializable {
 	}
 	
 	public void setDuration(Duration duration) {
-		this.duration = duration;
+		this.actualDuration = duration;
 		updateExamEndTime();
 	}
 
@@ -201,8 +197,8 @@ public class Examination implements Serializable {
 	}
 	
 	private void updateExamEndTime() {
-		examEndTime.plusHours(duration.toHours());
-		examEndTime.plusMinutes(duration.toMinutes());
+		examEndTime = examStartTime.plusHours(actualDuration.toHours());
+		examEndTime = examStartTime.plusMinutes(actualDuration.toMinutes());
 	}
 	
 }
