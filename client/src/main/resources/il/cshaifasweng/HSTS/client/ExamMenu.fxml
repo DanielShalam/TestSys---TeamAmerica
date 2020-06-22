@@ -240,11 +240,11 @@
             <TextField fx:id="examDurationTFSetExamAP" layoutX="52.0" layoutY="217.0" />
             <Label layoutX="360.0" layoutY="120.0" text="Exam ID:" />
             <TextField fx:id="teacherIDSetExamAP" disable="true" editable="false" layoutX="723.0" layoutY="116.0" />
-            <Label layoutX="51.0" layoutY="183.0" text="Exam Duration:" />
+            <Label layoutX="51.0" layoutY="183.0" text="Exam Duration: [Min]" />
             <TableView fx:id="examQuestionsTVsetExamAP" layoutX="441.0" layoutY="215.0" prefHeight="320.0" prefWidth="313.0">
               <columns>
                 <TableColumn fx:id="examQuestionIdTCSetExamAP" editable="false" prefWidth="75.0" sortable="false" text="Question ID" />
-                <TableColumn fx:id="examQuestionTCSetExamAP" editable="false" prefWidth="237.0" sortable="false" text="Question" />
+                <TableColumn fx:id="examQuestionTCSetExamAP" editable="false" prefWidth="236.0" sortable="false" text="Question" />
               </columns>
             </TableView>
             <Label layoutX="441.0" layoutY="183.0" text="Exam Questions:" />
@@ -273,7 +273,7 @@
                   <Font name="System Bold" size="14.0" />
                </font>
             </Button>
-            <ListView fx:id="scoreSetExamAP" editable="true" layoutX="760.0" layoutY="237.0" prefHeight="299.0" prefWidth="75.0" />
+            <ListView fx:id="scoreSetExamAP" editable="true" layoutX="760.0" layoutY="239.0" prefHeight="297.0" prefWidth="75.0" />
             <Label layoutX="774.0" layoutY="221.0" prefHeight="17.0" prefWidth="61.0" text="Score:">
                <font>
                   <Font name="System Bold" size="12.0" />

@@ -280,7 +280,6 @@ public class ClientQuestionController implements Initializable {
     		String[] answers = {answer1TA.getText(), answer2TA.getText(), answer3TA.getText(), answer4TA.getText()};
 
     		Question question = new Question(courseId, questionTA.getText(), answers, instructionsTA.getText(), correct_answer, LoginController.userReceviedID);
-    		
         	client = LoginController.client;
         	
         	String message = "create question";   	
