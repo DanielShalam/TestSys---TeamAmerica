@@ -658,8 +658,6 @@ public class ClientExamsController implements Initializable{
     }
     
     //Load data to table
-    void loadQuestionData(Set<Question> question_list, TableView<Question> TV) {
-
     void loadQuestionData(List<Question> question_list, TableView<Question> TV) {
 
         for (Question questionItem : question_list)
@@ -689,7 +687,7 @@ public class ClientExamsController implements Initializable{
 	    
 	    Set<Question> questionList = exam.getQuestionList();
 	    Integer[] scoringList = exam.getScoringList();
-	    loadScoringData(scoringList, scoreTVSetExamAP);
+//	    loadScoringData(scoringList, scoreTVSetExamAP);
 	    loadQuestionData(questionList, examQuestionsTVsetExamAP);
 	    
     }
