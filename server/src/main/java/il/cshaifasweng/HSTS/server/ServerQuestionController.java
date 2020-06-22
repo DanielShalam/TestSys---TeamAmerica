@@ -13,17 +13,21 @@ public class ServerQuestionController {
 
 	// Commit new Question to database
 	public static String commitQuestionToDB(Question question) {
-		try {
-			int new_id = ConnectToDB.save(question);
+		Boolean isValid = ConnectToDB.checkForDuplicateQuestion(question);
+		if (isValid) {
+			try {
+				int new_id = ConnectToDB.save(question);
 
-			if (new_id == question.getQuestionId()) {	// Failure
-				return "Error - Please try again. ";
+				if (new_id == question.getQuestionId()) {	// Failure
+					return "Error - Please try again. ";
+				}
+				return "Question commited successfully. ";	// Success
+				
+			} catch (Exception logExceptions) {		// Foreign key is invalid
+				return "Error - Course ID is invalied. ";
 			}
-			return "Question commited successfully. ";	// Success
-			
-		} catch (Exception logExceptions) {		// Foreign key is invalid
-			return "Error - Course ID is invalied. ";
 		}
+		return "Error - Question already in Database. ";
 	}
 
 	// Get question by its id

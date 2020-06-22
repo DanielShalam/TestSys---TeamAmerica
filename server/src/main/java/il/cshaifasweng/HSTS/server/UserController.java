@@ -1,17 +1,15 @@
 package il.cshaifasweng.HSTS.server;
 
 import il.cshaifasweng.HSTS.entities.User;
+import il.cshaifasweng.HSTS.server.utilities.Hashing;
 import il.cshaifasweng.HSTS.entities.Course;
 import il.cshaifasweng.HSTS.entities.Role;
-import il.cshaifasweng.HSTS.server.utilities.*;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 
 public class UserController {
-	
-	// TODO return role as enum when the client controllers will be ready
 	
 	public static HashMap<String, Object> getRole(String first_name, String password) {
 		List<User> users_list = ConnectToDB.getByAttribute(User.class, "first_name", first_name);
@@ -43,7 +41,6 @@ public class UserController {
 				// Get student courses
 				if (user.getRole() == Role.STUDENT) {
 					List <Course> course_list = user.getCoursesStudying();
-					System.out.println(course_list);
 					for (Course course: course_list) {
 						courses.put(course.getCourseName(), course.getCourseId());
 					}
@@ -52,8 +49,7 @@ public class UserController {
 				
 				// Get Teacher courses
 				else if (user.getRole() == Role.TEACHER) {	
-					List <Course> course_list = ConnectToDB.extractCourses(user);
-
+					List <Course> course_list = user.getCoursesTeaching();
 					for (Course course: course_list) {
 						courses.put(course.getCourseName(), course.getCourseId());
 					}

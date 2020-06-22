@@ -8,13 +8,19 @@ import java.util.logging.Logger;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.LogicalExpression;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.hibernate.service.ServiceRegistry;
 
@@ -57,9 +63,9 @@ public class ConnectToDB {
 		Root<T> rootEntry = criteriaQuery.from(object);
 		CriteriaQuery<T> allCriteriaQuery = criteriaQuery.select(rootEntry);
 		TypedQuery<T> allQuery = temp_session.createQuery(allCriteriaQuery);
-		
-    	temp_session.getTransaction().commit();
-    	temp_session.close();
+//		
+//    	temp_session.getTransaction().commit();
+//    	temp_session.close();
 		return allQuery.getResultList();
 	}
 	
@@ -150,6 +156,28 @@ public class ConnectToDB {
         return result;
   }
     
+    public static Boolean checkForDuplicateQuestion(Question question) {
+        Session temp_session = ConnectToDB.sessionFactory.openSession();
+        temp_session.beginTransaction();
+        CriteriaBuilder cb = temp_session.getCriteriaBuilder();
+        CriteriaQuery<Question> cr = cb.createQuery(Question.class);
+        Root<Question> root = cr.from(Question.class);
+        Predicate[] predicates = new Predicate[6];	// Create predicates which combine all our requests with 'AND'
+        predicates[0] = cb.equal(root.get("teacherId"),question.getTeacherId());
+        predicates[1] = cb.equal(root.get("question"),question.getQuestion());
+        predicates[2] = cb.equal(root.get("answers"),question.getAnswers());
+        predicates[3] = cb.equal(root.get("instructions"),question.getInstructions());
+        predicates[4] = cb.equal(root.get("correct_answer"),question.getCorrectAnswer());
+        predicates[5] = cb.equal(root.get("courseId"),question.getCourseId());
+        cr.select(root).where(predicates); 
+        Query<Question> query = temp_session.createQuery(cr);
+        List<Question> result = query.getResultList();
+
+        if (result.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
     
 	public static List<Course> extractCourses(User user){
 	    Session temp_session = ConnectToDB.sessionFactory.openSession();
