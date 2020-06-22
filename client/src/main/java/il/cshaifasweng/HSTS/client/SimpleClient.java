@@ -117,7 +117,7 @@ public class SimpleClient extends ObservableSWRClient {
 		}
 		else if(message == "delete exam")
 		{
-			examCarrier.carrierMessageMap.put("question", exam);
+			examCarrier.carrierMessageMap.put("exam", exam);
 			examCarrier.carrierMessageMap.put("message", "delete exam");
 		}
 		
