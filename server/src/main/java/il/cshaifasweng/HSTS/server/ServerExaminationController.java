@@ -53,7 +53,7 @@ public class ServerExaminationController {
 		}
 	}	
 	
-	public static List<Examination> getExamsByAtrribute(String attribute, int value) {
+	public static List<Examination> getExamsinationsByAtrribute(String attribute, int value) {
 		try {
 			List<Examination> eList = ConnectToDB.getByAttribute(Examination.class, attribute, value);	// Getting by Teacher id
 	    	return eList;	

@@ -338,9 +338,9 @@ public class SimpleServer extends AbstractServer {
 				}
 				break;
 
-			case "get all teacher examinations":
+			case "get teacher examinations":
 				int teacher_id = (int) carrier.carrierMessageMap.get("teacher");
-				List <Examination> teacher_exams = ServerExaminationController.getExamsByAtrribute("teacherId", teacher_id);
+				List <Examination> teacher_exams = ServerExaminationController.getExamsinationsByAtrribute("teacherId", teacher_id);
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);
 				carrier.carrierType = CarrierType.EXAM;
@@ -353,9 +353,10 @@ public class SimpleServer extends AbstractServer {
 				}
 				break;
 
-			case "get all course examinations":
+			case "get course examinations":
+				System.out.println("Courses");
 				int course_id = (int) carrier.carrierMessageMap.get("course");
-				List <Examination> course_exams = ServerExaminationController.getExamsByAtrribute("courseId", course_id);
+				List <Examination> course_exams = ServerExaminationController.getExamsinationsByAtrribute("courseId", course_id);
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);
 				carrier.carrierType = CarrierType.EXAMINATION;
@@ -370,7 +371,7 @@ public class SimpleServer extends AbstractServer {
 			
 			case "get examination by execution code":
 				int exec_code = (int) carrier.carrierMessageMap.get("exec_code");
-				List<Examination> examination_list = ServerExaminationController.getExamsByAtrribute("executionCode", exec_code);
+				List<Examination> examination_list = ServerExaminationController.getExamsinationsByAtrribute("executionCode", exec_code);
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);		
 				
