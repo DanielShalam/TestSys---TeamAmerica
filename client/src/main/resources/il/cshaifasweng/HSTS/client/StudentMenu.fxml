@@ -4,15 +4,16 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="577.0" maxWidth="640.0" prefHeight="577.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.HSTS.client.StudentMenuController">
+<AnchorPane fx:id="execTF" maxHeight="577.0" maxWidth="640.0" prefHeight="577.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.HSTS.client.StudentMenuController">
    <children>
-      <GridPane layoutY="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="640.0">
+      <GridPane layoutY="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="640.0" visible="false">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -103,5 +104,22 @@
           <TableColumn prefWidth="584.0" text="Exam Copy" />
         </columns>
       </TableView>
+      <AnchorPane prefHeight="577.0" prefWidth="640.0">
+         <children>
+            <Label layoutX="80.0" layoutY="415.0" prefHeight="26.0" prefWidth="139.0" text="Enter execution code:">
+               <font>
+                  <Font name="Calibri Bold" size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="execCodeTF" layoutX="220.0" layoutY="415.0" prefHeight="26.0" prefWidth="200.0" />
+            <TableView fx:id="studentExamsTV" layoutX="146.0" layoutY="84.0" prefHeight="310.0" prefWidth="347.0">
+              <columns>
+                <TableColumn fx:id="instCourseTC" prefWidth="109.60003662109375" text="Course" />
+                <TableColumn fx:id="instTeacherTC" prefWidth="111.20001220703125" text="Teacher" />
+                  <TableColumn fx:id="instDateTC" prefWidth="123.99998779296874" text="Date" />
+              </columns>
+            </TableView>
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>

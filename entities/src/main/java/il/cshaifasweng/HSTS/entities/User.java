@@ -18,6 +18,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 
 
 
@@ -44,7 +47,8 @@ public class User implements Serializable {
 	private String password;
 	
 	// teacher courses relation - Bidirectional (owning side)
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,mappedBy="teacher")	// mapping owner side
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@OneToMany(cascade = CascadeType.ALL,mappedBy="teacher")	// mapping owner side
 	private List<Course> coursesTeaching;
 	
 	// teacher questions relation - Unidirectional (owning side)
@@ -61,7 +65,7 @@ public class User implements Serializable {
 	
 	// student courses relation 
 	@ManyToMany(mappedBy = "studentList",	// owner side
-			cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY,
+			cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER,
 			targetEntity = Course.class	)
 	private List<Course> coursesStudying;
 	
