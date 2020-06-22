@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import il.cshaifasweng.HSTS.entities.Carrier;
@@ -33,7 +34,6 @@ public class ClientExamsController implements Initializable{
 	private List <Exam> examsList = null;
 	
 	ObservableList<Exam> examData = FXCollections.observableArrayList();
-	
 	
     @FXML // fx:id="setQuestionMenuAP"
     private AnchorPane setQuestionMenuAP; // Value injected by FXMLLoader
@@ -174,10 +174,10 @@ public class ClientExamsController implements Initializable{
     private Button requestTimeButton; // Value injected by FXMLLoader
 
     @FXML // fx:id="courseExamInstigCB"
-    private ChoiceBox<?> courseExamInstigCB; // Value injected by FXMLLoader
+    private ChoiceBox<String> courseExamInstigCB; // Value injected by FXMLLoader
 
     @FXML // fx:id="instigateExamsTV"
-    private TableView<?> instigateExamsTV; // Value injected by FXMLLoader
+    private TableView<Exam> instigateExamsTV; // Value injected by FXMLLoader
 
     @FXML // fx:id="examIDTC"
     private TableColumn<Exam, Integer> examIDTC; // Value injected by FXMLLoader
@@ -332,7 +332,40 @@ public class ClientExamsController implements Initializable{
 
     @FXML
     void getCourseExamsInst(ActionEvent event) {
+    	client = LoginController.client;
+//    	client.openConnection();
+    	String message = "get all exams";
+    	Exam exam = null;
+    	
+    	int id = 0;
+    	if (courseExamInstigCB.getSelectionModel().getSelectedItem() != null) {
+    		message = "get all course exams";
+    		id = LoginController.userReceviedCourses.get(courseExamInstigCB.getSelectionModel().getSelectedItem());
+    	}
+    	
+    	client.handleMessageFromClientExamController(message, id, exam);
+    	System.out.println("message from ClientExamsController Handled");
+		ObservableList<Exam> eItems = instigateExamsTV.getItems();
+		
+		if (!eItems.isEmpty()) {
+			instigateExamsTV.getItems().removeAll(examsList);
+		}
+		
+    	while (true) {
+			System.out.println("Running");
 
+    		if (client.isAnswerReturned==true) {
+    			
+    			localCarrier = client.answerCarrier;
+    			examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
+    			
+    			loadInstigateData(examsList);
+    			
+    			client.isAnswerReturned=false;
+    			break;
+    		}	
+    		
+    	}
     }
 
     @FXML
@@ -377,7 +410,16 @@ public class ClientExamsController implements Initializable{
 
     @FXML
     void instigateExam(ActionEvent event) {
-
+    	Exam exam = instigateExamsTV.getSelectionModel().getSelectedItem();
+    	
+    	if (exam == null)
+    	{
+    		System.out.println("No exam was selected!");
+    	} else {
+    		examInstigationAP.setVisible(false);
+    		setExamsMenuAP.setVisible(true);
+    		loadExamDataToSetExamAP(exam);
+    	}
     }
 
     @FXML
@@ -394,6 +436,9 @@ public class ClientExamsController implements Initializable{
     void showExamInstigation(ActionEvent event) {
     	hideCurrentAP();
     	examInstigationAP.setVisible(true);
+    	for(String course: (LoginController.userReceviedCourses).keySet()) {
+    		courseExamInstigCB.getItems().add(course);
+    	}
     }
 
     @FXML
@@ -509,7 +554,18 @@ public class ClientExamsController implements Initializable{
     }
     
     //Load data to table
-    void loadQuestionData(List<Question> question_list, TableView<Question> TV) {
+    void loadInstigateData(List<Exam> exam_list) {
+
+        for (Exam examItem : exam_list)
+        {
+        	System.out.println(examItem.getExamId());
+        	instigateExamsTV.getItems().addAll(examItem);
+        }
+        
+    }
+    
+    //Load data to table
+    void loadQuestionData(Set<Question> question_list, TableView<Question> TV) {
 
         for (Question questionItem : question_list)
         {
@@ -535,7 +591,7 @@ public class ClientExamsController implements Initializable{
 	    studentInstructionsTASetExamAP.setText(exam.getStudentInstructions());
 	    teacherInstructionsTASetExamAP.setText(exam.getTeacherInstructions());
 	    
-	    List<Question> questionList = exam.getQuestionList();
+	    Set<Question> questionList = exam.getQuestionList();
 	    Integer[] scoringList = exam.getScoringList();
 	    loadScoringData(scoringList, scoreTVSetExamAP);
 	    loadQuestionData(questionList, examQuestionsTVsetExamAP);

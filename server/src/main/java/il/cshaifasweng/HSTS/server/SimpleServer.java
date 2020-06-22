@@ -19,14 +19,14 @@ public class SimpleServer extends AbstractServer {
 		super(port);
 		this.dbConnector = new ConnectToDB();
 		ConnectToDB.connectToDB();
-		Exam exam = ConnectToDB.getByAttribute(Exam.class, "teacherId", 1).get(0);
-		Examination examination = new Examination(11551, 1,ExamType.MANUAL, Duration.ofMinutes(50), exam);
-		try {
-			WordHandler.CreateWordFile(examination);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		Exam exam = ConnectToDB.getByAttribute(Exam.class, "teacherId", 1).get(0);
+//		Examination examination = new Examination(11551, 1,ExamType.MANUAL, Duration.ofMinutes(50), exam);
+//		try {
+//			WordHandler.CreateWordFile(examination);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 	@Override
