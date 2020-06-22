@@ -55,6 +55,7 @@ public class SimpleServer extends AbstractServer {
 	//// Function to handle Message where Carrier type is USER
 	protected void handleUserMessage(Carrier carrier, ConnectionToClient client) {
 		String message = (String) carrier.carrierMessageMap.get("message");
+		List<Carrier> carrier_list = new ArrayList<Carrier>();
 		
 		switch (message) {
 		case "Log me out": {
@@ -66,12 +67,15 @@ public class SimpleServer extends AbstractServer {
 		        }
 			}
 		}
+		
 		case "Log me in":
 			String UserNameFromClient = (String) carrier.carrierMessageMap.get("userName");
 			String PassFromClient = (String) carrier.carrierMessageMap.get("password");
 			HashMap<String, Object> checkedRole = UserController.getRole(UserNameFromClient, PassFromClient);
-			Role userRole = (Role) checkedRole.get("Role"); 
+			carrier.carrierMessageMap.clear();
+			Role userRole = (Role) checkedRole.get("Role");
 			int userId = (Integer) checkedRole.get("ID");
+			
 	        synchronized (lock) {
 				if (SimpleServer.connectedUsers.contains(userId) == true && userRole != Role.INVALID) {
 					userRole = Role.INVALID;
@@ -82,14 +86,15 @@ public class SimpleServer extends AbstractServer {
 				}
 	        }
 			System.out.println("checkedRole is " + userRole);
-	
-			Carrier msg2SimpleClient = new Carrier();
-			msg2SimpleClient.carrierType = CarrierType.USER;
-			msg2SimpleClient.carrierMessageMap.put("Role", userRole); 
-			msg2SimpleClient.carrierMessageMap.put("ID", userId);
-			msg2SimpleClient.carrierMessageMap.put("Courses", checkedRole.get("Courses"));
+
+			carrier.carrierType = CarrierType.USER;
+			carrier.carrierMessageMap.put("message", "Log me in");
+			carrier.carrierMessageMap.put("Role", userRole);
+			carrier.carrierMessageMap.put("ID", userId);
+			carrier.carrierMessageMap.put("Courses", checkedRole.get("Courses"));
+			carrier_list.add(carrier);
 			try {
-				client.sendToClient(msg2SimpleClient);
+				client.sendToClient(carrier);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -101,18 +106,18 @@ public class SimpleServer extends AbstractServer {
 	//// Function to handle Message where Carrier type is QUESTION
 	protected void handleQuestionMessage(Carrier carrier, ConnectionToClient client) {
 		String msg = (String) carrier.carrierMessageMap.get("message");
-		Carrier responseCarrier = new Carrier();
 
 		switch(msg) {
 			case "get question by id":
 				int question_id = (int) carrier.carrierMessageMap.get("id");
 				Question question = ServerQuestionController.getQuestionById(question_id);
+				carrier.carrierMessageMap.clear();
 
-				responseCarrier.carrierType = CarrierType.QUESTION;
-				responseCarrier.carrierMessageMap.put("message", "return question by id for editing"); 
-				responseCarrier.carrierMessageMap.put("question", question); 
+				carrier.carrierType = CarrierType.QUESTION;
+				carrier.carrierMessageMap.put("message", msg); 
+				carrier.carrierMessageMap.put("question", question); 
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -122,12 +127,13 @@ public class SimpleServer extends AbstractServer {
 			case "create question":
 				Question new_question = (Question) carrier.carrierMessageMap.get("question");
 				String status = ServerQuestionController.commitQuestionToDB(new_question);
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);
 
-				responseCarrier.carrierType = CarrierType.QUESTION;
-				responseCarrier.carrierMessageMap.put("message", "create question status");
-				responseCarrier.carrierMessageMap.put("status", status);
+				carrier.carrierType = CarrierType.QUESTION;
+				carrier.carrierMessageMap.put("status", status);
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -136,12 +142,13 @@ public class SimpleServer extends AbstractServer {
 				
 			case "get all questions":
 				List <Question> question_list = ServerQuestionController.getAllQuestions();
-
-				responseCarrier.carrierType = CarrierType.QUESTION;
-				responseCarrier.carrierMessageMap.put("message", "return all questions"); 
-				responseCarrier.carrierMessageMap.put("questions", question_list); 
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);
+				
+				carrier.carrierType = CarrierType.QUESTION;
+				carrier.carrierMessageMap.put("questions", question_list); 
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -151,12 +158,13 @@ public class SimpleServer extends AbstractServer {
 			case "get all teacher questions":
 				int teacher_id = (int) carrier.carrierMessageMap.get("teacher");
 				List <Question> teacher_questions = ServerQuestionController.getQuestionsByAtrribute("teacherId", teacher_id);
-
-				responseCarrier.carrierType = CarrierType.QUESTION;
-				responseCarrier.carrierMessageMap.put("message", "return all teacher questions"); 
-				responseCarrier.carrierMessageMap.put("questions", teacher_questions); 
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);
+				
+				carrier.carrierType = CarrierType.QUESTION;
+				carrier.carrierMessageMap.put("questions", teacher_questions); 
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -166,12 +174,13 @@ public class SimpleServer extends AbstractServer {
 			case "get all course questions":
 				int course_id = (int) carrier.carrierMessageMap.get("course");
 				List <Question> course_questions = ServerQuestionController.getQuestionsByAtrribute("courseId", course_id);
-
-				responseCarrier.carrierType = CarrierType.QUESTION;
-				responseCarrier.carrierMessageMap.put("message", "return all course questions"); 
-				responseCarrier.carrierMessageMap.put("questions", course_questions); 
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);
+				
+				carrier.carrierType = CarrierType.QUESTION;
+				carrier.carrierMessageMap.put("questions", course_questions); 
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -181,12 +190,12 @@ public class SimpleServer extends AbstractServer {
 			case "delete question":
 				Question question_to_delete = (Question) carrier.carrierMessageMap.get("question");
 				String delete_status = ServerQuestionController.deleteQuestion(question_to_delete);
-
-				responseCarrier.carrierType = CarrierType.QUESTION;
-				responseCarrier.carrierMessageMap.put("message", "delete question status"); 
-				responseCarrier.carrierMessageMap.put("status", delete_status); 
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);
+				carrier.carrierType = CarrierType.QUESTION;
+				carrier.carrierMessageMap.put("status", delete_status); 
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -199,17 +208,17 @@ public class SimpleServer extends AbstractServer {
 	//// Function to handle Message where Carrier type is EXAM
 	protected void handleExamMessage(Carrier carrier, ConnectionToClient client) {
 		String msg = (String) carrier.carrierMessageMap.get("message");
-		Carrier responseCarrier = new Carrier();
 		switch(msg) {
 			case "get exam by id":
 				int exam_id = (int) carrier.carrierMessageMap.get("id");
 				Exam exam = ServerExamsController.getExamById(exam_id);
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);
 				
-				responseCarrier.carrierType = CarrierType.EXAM;
-				responseCarrier.carrierMessageMap.put("message", "return exam by id for editing"); 
-				responseCarrier.carrierMessageMap.put("exam", exam); 
+				carrier.carrierType = CarrierType.EXAM;
+				carrier.carrierMessageMap.put("exam", exam); 
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -219,12 +228,12 @@ public class SimpleServer extends AbstractServer {
 			case "create exam":
 				Exam new_exam = (Exam) carrier.carrierMessageMap.get("exam");
 				String is_success = ServerExamsController.commitExamToDB(new_exam);
-
-				responseCarrier.carrierType = CarrierType.EXAM;
-				responseCarrier.carrierMessageMap.put("message", "create exam status");
-				responseCarrier.carrierMessageMap.put("status", is_success);
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);
+				carrier.carrierType = CarrierType.EXAM;
+				carrier.carrierMessageMap.put("status", is_success);
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -233,13 +242,13 @@ public class SimpleServer extends AbstractServer {
 
 			case "get all exams":
 				List <Exam> exam_list = ServerExamsController.getAllExam();
-
-				responseCarrier.carrierType = CarrierType.EXAM;
-				responseCarrier.carrierMessageMap.put("message", "return all questions"); 
-				System.out.println(exam_list);
-				responseCarrier.carrierMessageMap.put("exams", exam_list); 
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);
+				
+				carrier.carrierType = CarrierType.EXAM;
+				carrier.carrierMessageMap.put("exams", exam_list); 
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -249,13 +258,12 @@ public class SimpleServer extends AbstractServer {
 			case "get all teacher exams":
 				int teacher_id = (int) carrier.carrierMessageMap.get("teacher");
 				List <Exam> teacher_exams = ServerExamsController.getExamsByAtrribute("teacherId", teacher_id);
-				//System.out.println(teacher_exams.length);
-
-				responseCarrier.carrierType = CarrierType.EXAM;
-				responseCarrier.carrierMessageMap.put("message", "return all teacher questions"); 
-				responseCarrier.carrierMessageMap.put("exams", teacher_exams); 
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);
+				carrier.carrierType = CarrierType.EXAM;
+				carrier.carrierMessageMap.put("exams", teacher_exams); 
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -265,12 +273,12 @@ public class SimpleServer extends AbstractServer {
 			case "get all course exams":
 				int course_id = (int) carrier.carrierMessageMap.get("course");
 				List <Exam> course_exams = ServerExamsController.getExamsByAtrribute("courseId", course_id);
-
-				responseCarrier.carrierType = CarrierType.EXAM;
-				responseCarrier.carrierMessageMap.put("message", "return all course questions"); 
-				responseCarrier.carrierMessageMap.put("exams", course_exams); 
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);
+				carrier.carrierType = CarrierType.EXAM;
+				carrier.carrierMessageMap.put("exams", course_exams); 
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -280,12 +288,12 @@ public class SimpleServer extends AbstractServer {
 			case "delete exam":
 				int id = (int) carrier.carrierMessageMap.get("id");
 				String status = ServerExamsController.deleteExamByID(id);
-
-				responseCarrier.carrierType = CarrierType.EXAM;
-				responseCarrier.carrierMessageMap.put("message", "delete exams status"); 
-				responseCarrier.carrierMessageMap.put("status", status); 
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);
+				carrier.carrierType = CarrierType.EXAM;
+				carrier.carrierMessageMap.put("status", status); 
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -299,17 +307,16 @@ public class SimpleServer extends AbstractServer {
 	//// Function to handle Message where Carrier type is EXAM
 	protected void handleExaminationMessage(Carrier carrier, ConnectionToClient client) {
 		String msg = (String) carrier.carrierMessageMap.get("message");
-		Carrier responseCarrier = new Carrier();
 		switch(msg) {
 			case "get examination by id":
 				int exam_id = (int) carrier.carrierMessageMap.get("id");
 				Examination examination = ServerExaminationController.getExaminationById(exam_id);
-				
-				responseCarrier.carrierType = CarrierType.EXAMINATION;
-				responseCarrier.carrierMessageMap.put("message", "return examination by id"); 
-				responseCarrier.carrierMessageMap.put("examination", examination); 
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);
+				carrier.carrierType = CarrierType.EXAMINATION;
+				carrier.carrierMessageMap.put("examination", examination); 
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -319,12 +326,12 @@ public class SimpleServer extends AbstractServer {
 			case "create examination":
 				Examination new_exam = (Examination) carrier.carrierMessageMap.get("examination");
 				String is_success = ServerExaminationController.commitExaminationToDB(new_exam);
-
-				responseCarrier.carrierType = CarrierType.EXAMINATION;
-				responseCarrier.carrierMessageMap.put("message", "create exam status");
-				responseCarrier.carrierMessageMap.put("status", is_success);
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);
+				carrier.carrierType = CarrierType.EXAMINATION;
+				carrier.carrierMessageMap.put("status", is_success);
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -334,12 +341,12 @@ public class SimpleServer extends AbstractServer {
 			case "get all teacher examinations":
 				int teacher_id = (int) carrier.carrierMessageMap.get("teacher");
 				List <Examination> teacher_exams = ServerExaminationController.getExamsByAtrribute("teacherId", teacher_id);
-
-				responseCarrier.carrierType = CarrierType.EXAM;
-				responseCarrier.carrierMessageMap.put("message", "return all teacher examinations"); 
-				responseCarrier.carrierMessageMap.put("exams", teacher_exams); 
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);
+				carrier.carrierType = CarrierType.EXAM;
+				carrier.carrierMessageMap.put("exams", teacher_exams); 
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -349,12 +356,12 @@ public class SimpleServer extends AbstractServer {
 			case "get all course examinations":
 				int course_id = (int) carrier.carrierMessageMap.get("course");
 				List <Examination> course_exams = ServerExaminationController.getExamsByAtrribute("courseId", course_id);
-
-				responseCarrier.carrierType = CarrierType.EXAMINATION;
-				responseCarrier.carrierMessageMap.put("message", "return all course questions"); 
-				responseCarrier.carrierMessageMap.put("exams", course_exams); 
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);
+				carrier.carrierType = CarrierType.EXAMINATION;
+				carrier.carrierMessageMap.put("exams", course_exams); 
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -364,16 +371,18 @@ public class SimpleServer extends AbstractServer {
 			case "get examination by execution code":
 				int exec_code = (int) carrier.carrierMessageMap.get("exec_code");
 				List<Examination> examination_list = ServerExaminationController.getExamsByAtrribute("executionCode", exec_code);
-				if (examination_list != null) {
-					responseCarrier.carrierMessageMap.put("examination", examination_list.get(0)); }
-				else {
-					responseCarrier.carrierMessageMap.put("examination", examination_list); }
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);		
 				
-				responseCarrier.carrierType = CarrierType.EXAMINATION;
-				responseCarrier.carrierMessageMap.put("message", "return examination with execution code"); 
+				if (examination_list != null) {
+					carrier.carrierMessageMap.put("examination", examination_list.get(0)); }
+				else {
+					carrier.carrierMessageMap.put("examination", examination_list); }
+		
+				carrier.carrierType = CarrierType.EXAMINATION;
 
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -383,12 +392,12 @@ public class SimpleServer extends AbstractServer {
 			case "delete examination":
 				Examination examinationToDelete = (Examination) carrier.carrierMessageMap.get("examination");
 				String status = ServerExaminationController.deleteExamByEntity(examinationToDelete);
-
-				responseCarrier.carrierType = CarrierType.EXAMINATION;
-				responseCarrier.carrierMessageMap.put("message", "delete exams status"); 
-				responseCarrier.carrierMessageMap.put("status", status); 
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);		
+				carrier.carrierType = CarrierType.EXAMINATION;
+				carrier.carrierMessageMap.put("status", status); 
 				try {
-					client.sendToClient(responseCarrier);
+					client.sendToClient(carrier);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

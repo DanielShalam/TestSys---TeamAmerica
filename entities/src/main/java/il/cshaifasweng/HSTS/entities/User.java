@@ -44,7 +44,7 @@ public class User implements Serializable {
 	private String password;
 	
 	// teacher courses relation - Bidirectional (owning side)
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,mappedBy="teacher")	// mapping owner side
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy="teacher")	// mapping owner side
 	private List<Course> coursesTeaching;
 	
 	// teacher questions relation - Unidirectional (owning side)
@@ -61,7 +61,7 @@ public class User implements Serializable {
 	
 	// student courses relation 
 	@ManyToMany(mappedBy = "studentList",	// owner side
-			cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+			cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER,
 			targetEntity = Course.class	)
 	private List<Course> coursesStudying;
 	

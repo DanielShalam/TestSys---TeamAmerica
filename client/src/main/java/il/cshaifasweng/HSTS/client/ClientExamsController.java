@@ -305,7 +305,7 @@ public class ClientExamsController implements Initializable{
     		id = LoginController.userReceviedCourses.get(courseViewExamsCB.getSelectionModel().getSelectedItem());
     	}
     	
-    	client.handleMessageFromClientExamController(message, id, exam);
+    	localCarrier = client.handleMessageFromClientExamController(message, id, exam);
     	System.out.println("message from ClientExamsController Handled");
 		ObservableList<Exam> eItems = viewExamsTV.getItems();
 		
@@ -313,21 +313,8 @@ public class ClientExamsController implements Initializable{
 			viewExamsTV.getItems().removeAll(examsList);
 		}
 		
-    	while (true) {
-			System.out.println("Running");
-
-    		if (client.isAnswerReturned==true) {
-    			
-    			localCarrier = client.answerCarrier;
-    			examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
-    			
-    			loadData(examsList);
-    			
-    			client.isAnswerReturned=false;
-    			break;
-    		}	
-    		
-    	}
+		examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
+		loadData(examsList);		
     }
 
     @FXML
@@ -343,29 +330,17 @@ public class ClientExamsController implements Initializable{
     		id = LoginController.userReceviedCourses.get(courseExamInstigCB.getSelectionModel().getSelectedItem());
     	}
     	
-    	client.handleMessageFromClientExamController(message, id, exam);
+    	localCarrier = client.handleMessageFromClientExamController(message, id, exam);
     	System.out.println("message from ClientExamsController Handled");
 		ObservableList<Exam> eItems = instigateExamsTV.getItems();
 		
 		if (!eItems.isEmpty()) {
 			instigateExamsTV.getItems().removeAll(examsList);
 		}
-		
-    	while (true) {
-			System.out.println("Running");
 
-    		if (client.isAnswerReturned==true) {
-    			
-    			localCarrier = client.answerCarrier;
-    			examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
-    			
-    			loadInstigateData(examsList);
-    			
-    			client.isAnswerReturned=false;
-    			break;
-    		}	
-    		
-    	}
+		examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
+		
+		loadInstigateData(examsList);
     }
 
     @FXML
@@ -378,7 +353,7 @@ public class ClientExamsController implements Initializable{
     	Exam exam = null;
     	int id = LoginController.userReceviedID;
     	
-    	client.handleMessageFromClientExamController(message, id, exam);
+    	localCarrier = client.handleMessageFromClientExamController(message, id, exam);
     	System.out.println("message from ClientExamsController Handled");
 		ObservableList<Exam> eItems = viewExamsTV.getItems();
 		
@@ -386,21 +361,9 @@ public class ClientExamsController implements Initializable{
 			viewExamsTV.getItems().removeAll(examsList);
 		}
 		
-    	while (true) {
-			System.out.println("Running");
-
-    		if (client.isAnswerReturned==true) {
-    			
-    			localCarrier = client.answerCarrier;
-    			examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
-    			
-    			loadData(examsList);
-    			
-    			client.isAnswerReturned=false;
-    			break;
-    		}	
-    		
-    	}
+		examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
+		
+		loadData(examsList);
     }
 
     @FXML

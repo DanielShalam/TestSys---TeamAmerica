@@ -5,6 +5,9 @@
 package il.cshaifasweng.HSTS.client.ocsf;
 
 import java.util.*;
+
+import il.cshaifasweng.HSTS.entities.Carrier;
+
 import java.io.*;
 import java.net.*;
 
@@ -195,11 +198,12 @@ public class ObservableSWRClient extends ObservableClient
 
   private synchronized void receive(Object ob)
   {
-    if (expected.contains(ob))
+
+	  if (expected.contains(ob))
     {
-      clearAll();
-      received= ob;
-      notifyAll();
+		clearAll();
+		received= ob;
+		notifyAll();
     }
   }
 
@@ -215,6 +219,7 @@ public class ObservableSWRClient extends ObservableClient
 
     setChanged();
     notifyObservers(message);
+
   }
 
   /**
