@@ -14,6 +14,7 @@ public class ServerExaminationController {
 	
 	static File desktopDir = new File(System.getProperty("user.home"), "Desktop"+".doc");
 			
+
 	public static String commitExaminationToDB(Examination examination) {
 		int new_id = ConnectToDB.save(examination);
 		// Failure
