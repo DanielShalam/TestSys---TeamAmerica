@@ -9,6 +9,7 @@ import il.cshaifasweng.HSTS.client.ocsf.ObservableSWRClient;
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.CarrierType;
 import il.cshaifasweng.HSTS.entities.Exam;
+import il.cshaifasweng.HSTS.entities.Examination;
 import il.cshaifasweng.HSTS.entities.Question;
 
 
@@ -129,6 +130,26 @@ public class SimpleClient extends ObservableSWRClient {
 		}
 		
 		return examCarrier;
+	}
+	
+	protected Carrier handleMessageFromClientStudentController(String message, int id, Examination examination) {
+		Carrier studentCarrier =  new Carrier();
+		studentCarrier.carrierType = CarrierType.EXAMINATION;	
+		System.out.println("get course examinations");
+
+		if (message.equals("get course examinations")) {
+			System.out.println("get course examinations");
+			studentCarrier.carrierMessageMap.put("message", message);
+			studentCarrier.carrierMessageMap.put("ID", id);
+		}
+		
+		try {
+			studentCarrier = (Carrier) this.sendAndWaitForReply(studentCarrier, studentCarrier);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return studentCarrier;
 	}
 	
 	public static SimpleClient getClient() {

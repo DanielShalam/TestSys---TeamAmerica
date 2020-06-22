@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -11,9 +12,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="execTF" maxHeight="577.0" maxWidth="640.0" prefHeight="577.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.HSTS.client.StudentMenuController">
+<AnchorPane fx:id="execAP" maxHeight="577.0" maxWidth="640.0" prefHeight="577.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.HSTS.client.StudentMenuController">
    <children>
-      <GridPane layoutY="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="640.0" visible="false">
+      <GridPane fx:id="mainMenuAP" layoutY="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="640.0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -104,21 +105,25 @@
           <TableColumn prefWidth="584.0" text="Exam Copy" />
         </columns>
       </TableView>
-      <AnchorPane prefHeight="577.0" prefWidth="640.0">
+      <AnchorPane fx:id="instAP" prefHeight="577.0" prefWidth="640.0" visible="false">
          <children>
-            <Label layoutX="80.0" layoutY="415.0" prefHeight="26.0" prefWidth="139.0" text="Enter execution code:">
+            <Label layoutX="80.0" layoutY="454.0" prefHeight="26.0" prefWidth="139.0" text="Enter execution code:">
                <font>
                   <Font name="Calibri Bold" size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="execCodeTF" layoutX="220.0" layoutY="415.0" prefHeight="26.0" prefWidth="200.0" />
-            <TableView fx:id="studentExamsTV" layoutX="146.0" layoutY="84.0" prefHeight="310.0" prefWidth="347.0">
+            <TextField fx:id="execCodeTF" layoutX="220.0" layoutY="454.0" prefHeight="26.0" prefWidth="200.0" />
+            <TableView fx:id="studentExamsTV" layoutX="246.0" layoutY="37.0" prefHeight="390.0" prefWidth="371.0">
               <columns>
                 <TableColumn fx:id="instCourseTC" prefWidth="109.60003662109375" text="Course" />
-                <TableColumn fx:id="instTeacherTC" prefWidth="111.20001220703125" text="Teacher" />
-                  <TableColumn fx:id="instDateTC" prefWidth="123.99998779296874" text="Date" />
+                <TableColumn fx:id="instTeacherTC" prefWidth="129.5999755859375" text="Teacher" />
+                  <TableColumn fx:id="instDateTC" prefWidth="130.4000244140625" text="Date" />
               </columns>
             </TableView>
+            <Button fx:id="cancelButton" layoutX="467.0" layoutY="454.0" onAction="#cancel" mnemonicParsing="false" prefHeight="26.0" prefWidth="77.0" text="Cancel" />
+            <ChoiceBox fx:id="courseCB" layoutX="47.0" layoutY="132.0" prefWidth="150.0" />
+            <Label fx:id="courseLB" layoutX="80.0" layoutY="106.0" text="Choose course:" />
+            <Button fx:id="viewExamsBtn" layoutX="50.0" layoutY="205.0" onAction="#viewCourseExaminations" mnemonicParsing="false" prefHeight="26.0" prefWidth="150.0" text="View exams" />
          </children>
       </AnchorPane>
    </children>
