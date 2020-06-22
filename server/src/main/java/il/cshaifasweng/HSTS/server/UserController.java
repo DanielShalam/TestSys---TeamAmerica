@@ -43,6 +43,7 @@ public class UserController {
 				// Get student courses
 				if (user.getRole() == Role.STUDENT) {
 					List <Course> course_list = user.getCoursesStudying();
+					System.out.println(course_list);
 					for (Course course: course_list) {
 						courses.put(course.getCourseName(), course.getCourseId());
 					}
@@ -51,7 +52,7 @@ public class UserController {
 				
 				// Get Teacher courses
 				else if (user.getRole() == Role.TEACHER) {	
-					List <Course> course_list = user.getCoursesTeaching();
+					List <Course> course_list = ConnectToDB.extractCourses(user);
 
 					for (Course course: course_list) {
 						courses.put(course.getCourseName(), course.getCourseId());

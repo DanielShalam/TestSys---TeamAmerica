@@ -19,4 +19,14 @@ public class Carrier implements Serializable {
 		//return question != null || questionList != null || message != null;
 		return true;
 	}
+	
+	@Override
+    public boolean equals(Object o)
+    {	
+		System.out.println("Override equals");
+		Carrier other = (Carrier) o;
+        // Would still want to check for null etc. first.
+        return this.carrierMessageMap.get("message").equals(other.carrierMessageMap.get("message"));
+    }
+	
 }

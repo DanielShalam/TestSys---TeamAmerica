@@ -196,7 +196,7 @@
                   </Label>
                   <Label layoutX="153.0" layoutY="76.0" text="Select Course:" />
                   <ChoiceBox fx:id="courseExamInstigCB" layoutX="282.0" layoutY="72.0" prefWidth="150.0" />
-                  <TableView fx:id="instigateExamsTV" layoutX="114.0" layoutY="214.0" prefHeight="268.0" prefWidth="463.0" visible="false">
+                  <TableView fx:id="instigateExamsTV" layoutX="114.0" layoutY="214.0" prefHeight="268.0" prefWidth="463.0" visible="true">
                     <columns>
                       <TableColumn fx:id="examIDTC" prefWidth="75.0" text="Exam ID" />
                       <TableColumn fx:id="examInstTC" prefWidth="387.0" text="Exam" />

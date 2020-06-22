@@ -49,27 +49,17 @@ public class LoginController {
     	client = SimpleClient.getClient();
     	client.openConnection();
     	
-    	client.handleMessageFromLogInController(usernameTF.getText(), passwordPF.getText());
-    	System.out.println("meesage from LogInController Handled");
+    	localCarrier = client.handleMessageFromLogInController(usernameTF.getText(), passwordPF.getText());
+    	System.out.println("message from LogInController Handled");
     	
-    	while (true) {
-    		System.out.println("running for ever");
-    		if (client.isAnswerReturned==true){
-    			
-    			localCarrier = client.answerCarrier;
-    			userReceviedRole = (Role) localCarrier.carrierMessageMap.get("Role");
-    			userReceviedID = (Integer) localCarrier.carrierMessageMap.get("ID");
-    			userReceviedCourses = (HashMap<String, Integer>) localCarrier.carrierMessageMap.get("Courses");
-    			
-    			System.out.println("data From SimpleServer :" +  userReceviedRole +" "+ userReceviedID + "");
-    			
-    			client.isAnswerReturned=false;
-    			break;
-    			
-    		}	
-    		
-    	}
-    			
+		System.out.println("running for ever");
+			
+		userReceviedRole = (Role) localCarrier.carrierMessageMap.get("Role");
+		userReceviedID = (Integer) localCarrier.carrierMessageMap.get("ID");
+		userReceviedCourses = (HashMap<String, Integer>) localCarrier.carrierMessageMap.get("Courses");
+		
+		System.out.println("data From SimpleServer :" +  userReceviedRole +" "+ userReceviedID + "");
+
 		switch (userReceviedRole) {
 		case STUDENT:
 			App.setRoot("StudentMenu");
