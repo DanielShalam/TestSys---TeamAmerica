@@ -1,45 +1,26 @@
 package il.cshaifasweng.HSTS.client;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import il.cshaifasweng.HSTS.client.ocsf.AbstractClient;
+import il.cshaifasweng.HSTS.client.ocsf.ObservableSWRClient;
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.CarrierType;
 import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.Question;
 
 
-public class SimpleClient extends AbstractClient {
+public class SimpleClient extends ObservableSWRClient {
 	
 	private static SimpleClient client = null;
-	
-	public boolean isAnswerReturned = false;
-	public Carrier answerCarrier = new Carrier();
 	
 	private SimpleClient(String host, int port) {
 		super(host, port);
 	}
 	
-	
-	@Override
-	protected void handleMessageFromServer(Object msg) {
-		
-		System.out.println("Received Message From SimpleServer");
-		
-		
-		Carrier msgFromSimpleServer = null;
-		msgFromSimpleServer = (Carrier)msg;
-		this.answerCarrier =  msgFromSimpleServer;
-		System.out.println(answerCarrier);
-		if (this.answerCarrier!= null) {
-			System.out.println("key set to true");
-			this.isAnswerReturned = true;
-		}
-		
-		//TODO how to send to logInContoroller
-		// TODO
-	}
-	
+
 	protected void handleLogOut(int userId) {
 		Carrier logoutCarrier =  new Carrier();
 		logoutCarrier.carrierType = CarrierType.USER;
@@ -54,23 +35,29 @@ public class SimpleClient extends AbstractClient {
 		}
 	}
 	
-	protected void handleMessageFromLogInController(String first_name, String pass) {
+	protected Carrier handleMessageFromLogInController(String first_name, String pass) {
+		List<Carrier> logInCarrier_list = new ArrayList<Carrier>();
 		Carrier logInCarrier =  new Carrier();
 		logInCarrier.carrierType = CarrierType.USER;
 		logInCarrier.carrierMessageMap.put("message", "Log me in");
 		logInCarrier.carrierMessageMap.put("userName", first_name);
 		logInCarrier.carrierMessageMap.put("password", pass);
-	
 		
+		logInCarrier_list.add(logInCarrier);
+		System.out.println(logInCarrier.equals(logInCarrier));
+
 		try {
-			this.sendToServer(logInCarrier);
-		} catch (IOException e) {
+			logInCarrier = (Carrier) this.sendAndWaitForReply(logInCarrier, logInCarrier);
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		System.out.println("Message recived from server. ");
+		return logInCarrier;
 	}
 	
-	protected void handleMessageFromClientQuestionController(String message, int id, Question question) {
+	protected Carrier handleMessageFromClientQuestionController(String message, int id, Question question) {
 		Carrier questionCarrier =  new Carrier();
 		questionCarrier.carrierType = CarrierType.QUESTION;	
 		
@@ -100,14 +87,17 @@ public class SimpleClient extends AbstractClient {
 		}
 		
 		try {
-			this.sendToServer(questionCarrier);
-		} catch (IOException e) {
+			questionCarrier = (Carrier) this.sendAndWaitForReply(questionCarrier, questionCarrier);
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		return questionCarrier;
+
 	}
 	
-	protected void handleMessageFromClientExamController(String message, int id, Exam exam) {
+	protected Carrier handleMessageFromClientExamController(String message, int id, Exam exam) {
 		Carrier examCarrier =  new Carrier();
 		examCarrier.carrierType = CarrierType.EXAM;	
 		
@@ -137,11 +127,13 @@ public class SimpleClient extends AbstractClient {
 		}
 		
 		try {
-			this.sendToServer(examCarrier);
-		} catch (IOException e) {
+			examCarrier = (Carrier) this.sendAndWaitForReply(examCarrier, examCarrier);
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		return examCarrier;
 	}
 	
 	public static SimpleClient getClient() {

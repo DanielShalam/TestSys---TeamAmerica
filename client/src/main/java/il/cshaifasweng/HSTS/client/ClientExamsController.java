@@ -14,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ListView;
 
+
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
@@ -40,7 +41,6 @@ public class ClientExamsController implements Initializable{
 	private List <Exam> examsList = null;
 	
 	ObservableList<Exam> examData = FXCollections.observableArrayList();
-	
 	
     @FXML // fx:id="setQuestionMenuAP"
     private AnchorPane setQuestionMenuAP; // Value injected by FXMLLoader
@@ -181,10 +181,10 @@ public class ClientExamsController implements Initializable{
     private Button requestTimeButton; // Value injected by FXMLLoader
 
     @FXML // fx:id="courseExamInstigCB"
-    private ChoiceBox<?> courseExamInstigCB; // Value injected by FXMLLoader
+    private ChoiceBox<String> courseExamInstigCB; // Value injected by FXMLLoader
 
     @FXML // fx:id="instigateExamsTV"
-    private TableView<?> instigateExamsTV; // Value injected by FXMLLoader
+    private TableView<Exam> instigateExamsTV; // Value injected by FXMLLoader
 
     @FXML // fx:id="examIDTC"
     private TableColumn<Exam, Integer> examIDTC; // Value injected by FXMLLoader
@@ -406,33 +406,43 @@ public class ClientExamsController implements Initializable{
     		id = LoginController.userReceviedCourses.get(courseViewExamsCB.getSelectionModel().getSelectedItem());
     	}
     	
-    	client.handleMessageFromClientExamController(message, id, exam);
+    	localCarrier = client.handleMessageFromClientExamController(message, id, exam);
     	System.out.println("message from ClientExamsController Handled");
 		ObservableList<Exam> eItems = viewExamsTV.getItems();
 		
 		if (!eItems.isEmpty()) {
 			viewExamsTV.getItems().removeAll(examsList);
 		}
-		
-    	while (true) {
-			System.out.println("Running");
 
-    		if (client.isAnswerReturned==true) {
-    			
-    			localCarrier = client.answerCarrier;
-    			examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
-    			
-    			loadData(examsList);
-    			
-    			client.isAnswerReturned=false;
-    			break;
-    		}		
-    	}
+		examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
+		loadData(examsList);		
+
     }
 
     @FXML
     void getCourseExamsInst(ActionEvent event) {
+    	client = LoginController.client;
+//    	client.openConnection();
+    	String message = "get all exams";
+    	Exam exam = null;
+    	
+    	int id = 0;
+    	if (courseExamInstigCB.getSelectionModel().getSelectedItem() != null) {
+    		message = "get all course exams";
+    		id = LoginController.userReceviedCourses.get(courseExamInstigCB.getSelectionModel().getSelectedItem());
+    	}
+    	
+    	localCarrier = client.handleMessageFromClientExamController(message, id, exam);
+    	System.out.println("message from ClientExamsController Handled");
+		ObservableList<Exam> eItems = instigateExamsTV.getItems();
+		
+		if (!eItems.isEmpty()) {
+			instigateExamsTV.getItems().removeAll(examsList);
+		}
 
+		examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
+		
+		loadInstigateData(examsList);
     }
 
     @FXML
@@ -445,28 +455,18 @@ public class ClientExamsController implements Initializable{
     	Exam exam = null;
     	int id = LoginController.userReceviedID;
     	
-    	client.handleMessageFromClientExamController(message, id, exam);
+    	localCarrier = client.handleMessageFromClientExamController(message, id, exam);
     	System.out.println("message from ClientExamsController Handled");
 		ObservableList<Exam> eItems = viewExamsTV.getItems();
 		
 		if (!eItems.isEmpty()) {
 			viewExamsTV.getItems().removeAll(examsList);
 		}
-		
-    	while (true) {
-			System.out.println("Running");
 
-    		if (client.isAnswerReturned==true) {
-    			
-    			localCarrier = client.answerCarrier;
-    			examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
-    			
-    			loadData(examsList);
-    			
-    			client.isAnswerReturned=false;
-    			break;
-    		}	
-    	}
+		examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
+		
+		loadData(examsList);
+
     }
 
     @FXML
@@ -476,7 +476,16 @@ public class ClientExamsController implements Initializable{
 
     @FXML
     void instigateExam(ActionEvent event) {
-
+    	Exam exam = instigateExamsTV.getSelectionModel().getSelectedItem();
+    	
+    	if (exam == null)
+    	{
+    		System.out.println("No exam was selected!");
+    	} else {
+    		examInstigationAP.setVisible(false);
+    		setExamsMenuAP.setVisible(true);
+    		loadExamDataToSetExamAP(exam);
+    	}
     }
 
     @FXML
@@ -493,6 +502,9 @@ public class ClientExamsController implements Initializable{
     void showExamInstigation(ActionEvent event) {
     	hideCurrentAP();
     	examInstigationAP.setVisible(true);
+    	for(String course: (LoginController.userReceviedCourses).keySet()) {
+    		courseExamInstigCB.getItems().add(course);
+    	}
     }
 
     @FXML
@@ -514,7 +526,6 @@ public class ClientExamsController implements Initializable{
     	viewCreateEditExamsAP.setVisible(true);
     }
 
-    
     @FXML
     void viewGrades(ActionEvent event) {
 
@@ -551,11 +562,11 @@ public class ClientExamsController implements Initializable{
     void cancelSetExam(ActionEvent event) {
     	clearSetExam();
     	
-		setExamsMenuAP.setVisible(false);
-		fillInExamDataButtonSetExamAP.setDisable(false);
-    	fillInExamDataButtonSetExamAP.setVisible(false);
-		addQuestionsAPSetExamAP.setVisible(true);
-		manageExamsAP.setVisible(true);
+      setExamsMenuAP.setVisible(false);
+      fillInExamDataButtonSetExamAP.setDisable(false);
+      fillInExamDataButtonSetExamAP.setVisible(false);
+      addQuestionsAPSetExamAP.setVisible(true);
+      manageExamsAP.setVisible(true);
     }
     
     @FXML
@@ -565,6 +576,7 @@ public class ClientExamsController implements Initializable{
     	if (question != null) {
     		examQuestionsTVsetExamAP.getItems().remove(question);
     	}    	
+
     }
     
     @FXML
@@ -605,6 +617,7 @@ public class ClientExamsController implements Initializable{
     	examQuestionTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
     	courseQuestionIdTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,Integer>("questionId"));
     	courseQuestionTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
+
     	
     	for(String course: (LoginController.userReceviedCourses).keySet()) {
     		courseViewExamsCB.getItems().add(course);
@@ -632,7 +645,21 @@ public class ClientExamsController implements Initializable{
         }
         
     }
+
+    //Load data to table
+    void loadInstigateData(List<Exam> exam_list) {
+
+        for (Exam examItem : exam_list)
+        {
+        	System.out.println(examItem.getExamId());
+        	instigateExamsTV.getItems().addAll(examItem);
+        }
+        
+    }
     
+    //Load data to table
+    void loadQuestionData(Set<Question> question_list, TableView<Question> TV) {
+
     void loadQuestionData(List<Question> question_list, TableView<Question> TV) {
 
         for (Question questionItem : question_list)
@@ -641,9 +668,9 @@ public class ClientExamsController implements Initializable{
         }
         
     }
-    
+   
     void loadExamDataToSetExamAP (Exam exam) {
-    	
+
 		int courseId = exam.getCourseId();
 		String courseName = null;
 	    for (Entry<String, Integer> entry : LoginController.userReceviedCourses.entrySet()) {
@@ -656,14 +683,13 @@ public class ClientExamsController implements Initializable{
 	    teacherIDSetExamAP.setText(String.valueOf(exam.getTeacherId()));
 	    //examDurationTFSetExamAP.setText(exam.getAssignedDuration().toString());
 	    examDurationTFSetExamAP.setText(dts(exam.getAssignedDuration())); 
-	    
+
 	    studentInstructionsTASetExamAP.setText(exam.getStudentInstructions());
 	    teacherInstructionsTASetExamAP.setText(exam.getTeacherInstructions());
 	    
 	    Set<Question> questionList = exam.getQuestionList();
 	    Integer[] scoringList = exam.getScoringList();
 	    loadScoringData(scoringList, scoreTVSetExamAP);
-
 	    loadQuestionData(questionList, examQuestionsTVsetExamAP);
 	    
     }
@@ -734,31 +760,19 @@ public class ClientExamsController implements Initializable{
     
     void getCourseQuestions (Integer courseId) {
     	List<Question> questionList = null;
-    	client = LoginController.client;
-    	
+    	client = LoginController.client;    	
     	String message = "get all course questions";
     	System.out.println(message);
     	Question question = null;
     	int id = courseId;
     	
-    	client.handleMessageFromClientQuestionController(message, id, question);
+    	localCarrier = client.handleMessageFromClientQuestionController(message, id, question);
     	System.out.println("message from ClientQuestionController Handled");
 		
-    	while (true) {
-			System.out.println("Running");
+      questionList = (List<Question>) localCarrier.carrierMessageMap.get("questions");
+      System.out.println(questionList);
 
-    		if (client.isAnswerReturned==true) {
-    			
-    			localCarrier = client.answerCarrier;
-    			questionList = (List<Question>) localCarrier.carrierMessageMap.get("questions");
-    			System.out.println(questionList);
-    			
-    			loadQuestionData(questionList, courseQuestionTVSetExamAP);
-    			
-    			client.isAnswerReturned=false;
-    			break;
-    		}		
-    	}
+      loadQuestionData(questionList, courseQuestionTVSetExamAP);
     }
     
     Boolean isExamValid() {

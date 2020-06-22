@@ -169,29 +169,15 @@ public class ClientQuestionController implements Initializable {
     		id = LoginController.userReceviedCourses.get(courseCB.getSelectionModel().getSelectedItem());
     	}
     	
-    	client.handleMessageFromClientQuestionController(message, id, question);
+    	localCarrier = client.handleMessageFromClientQuestionController(message, id, question);
     	System.out.println("message from ClientQuestionController Handled");
-    	
-    	while (true) {
-			System.out.println("Running");
-
-    		if (client.isAnswerReturned==true) {
-    			
-    			ObservableList<Question> qItems = questionTV.getItems();
-    			
-    			if (!qItems.isEmpty()) {
-    				questionTV.getItems().removeAll(question_list);
-    			}
-    		
-    			localCarrier = client.answerCarrier;
-    			question_list = (List<Question>) localCarrier.carrierMessageMap.get("questions");
-    			
-    			loadData(question_list);
-    			
-    			client.isAnswerReturned=false;
-    			break;
-    		}		
-    	}
+		ObservableList<Question> qItems = questionTV.getItems();
+		
+		if (!qItems.isEmpty()) {
+			questionTV.getItems().removeAll(question_list);
+		}
+		question_list = (List<Question>) localCarrier.carrierMessageMap.get("questions");
+		loadData(question_list);
     }
 
     @FXML
@@ -204,30 +190,17 @@ public class ClientQuestionController implements Initializable {
     	Question question = null;
     	int id = LoginController.userReceviedID;
     	
-    	client.handleMessageFromClientQuestionController(message, id, question);
+    	localCarrier = client.handleMessageFromClientQuestionController(message, id, question);
     	System.out.println("message from ClientQuestionController Handled");
 		ObservableList<Question> qItems = questionTV.getItems();
 		
 		if (!qItems.isEmpty()) {
 			questionTV.getItems().removeAll(question_list);
 		}
-		
-    	while (true) {
-			System.out.println("Running");
 
-    		if (client.isAnswerReturned==true) {
-    			
-    			localCarrier = client.answerCarrier;
-    			question_list = (List<Question>) localCarrier.carrierMessageMap.get("questions");
-    			
-    			loadData(question_list);
-    			
-    			client.isAnswerReturned=false;
-    			break;
-    		}	
-    		
-    	}
-    	
+		question_list = (List<Question>) localCarrier.carrierMessageMap.get("questions");
+		
+		loadData(question_list);	
     }
 
     @FXML
@@ -311,24 +284,13 @@ public class ClientQuestionController implements Initializable {
         	client = LoginController.client;
         	
         	String message = "create question";   	
-        	client.handleMessageFromClientQuestionController(message, 0, question);
+        	localCarrier = client.handleMessageFromClientQuestionController(message, 0, question);
         	System.out.println("message from ClientQuestionController Handled");
         	
-        	while (true) {
-    			System.out.println("Running");
-
-        		if (client.isAnswerReturned==true) {
-        			
-        			localCarrier = client.answerCarrier;
-        			String status = (String) localCarrier.carrierMessageMap.get("status");
-        			System.out.println(status);
-        			client.isAnswerReturned=false;
-                	setQuestionMenuAP.setVisible(false);
-                	manageQuestionAP.setVisible(true);
-        			break;
-        		}	
-        	}
-    		
+			String status = (String) localCarrier.carrierMessageMap.get("status");
+			System.out.println(status);
+        	setQuestionMenuAP.setVisible(false);
+        	manageQuestionAP.setVisible(true);
     	}
     }
     
