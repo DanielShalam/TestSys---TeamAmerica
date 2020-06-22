@@ -19,7 +19,6 @@ public class SimpleClient extends ObservableSWRClient {
 	private SimpleClient(String host, int port) {
 		super(host, port);
 	}
-	
 
 	protected void handleLogOut(int userId) {
 		Carrier logoutCarrier =  new Carrier();
@@ -36,15 +35,11 @@ public class SimpleClient extends ObservableSWRClient {
 	}
 	
 	protected Carrier handleMessageFromLogInController(String first_name, String pass) {
-		List<Carrier> logInCarrier_list = new ArrayList<Carrier>();
 		Carrier logInCarrier =  new Carrier();
 		logInCarrier.carrierType = CarrierType.USER;
 		logInCarrier.carrierMessageMap.put("message", "Log me in");
 		logInCarrier.carrierMessageMap.put("userName", first_name);
 		logInCarrier.carrierMessageMap.put("password", pass);
-		
-		logInCarrier_list.add(logInCarrier);
-		System.out.println(logInCarrier.equals(logInCarrier));
 
 		try {
 			logInCarrier = (Carrier) this.sendAndWaitForReply(logInCarrier, logInCarrier);
