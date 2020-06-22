@@ -16,11 +16,13 @@ import javafx.scene.control.ListView;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import antlr.Utils;
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.Question;
@@ -563,11 +565,16 @@ public class ClientExamsController implements Initializable{
 	    courseCBSetExamAP.getSelectionModel().select(courseName);
 	    examIDSetExamAP.setText(String.valueOf(exam.getExamId()));
 	    teacherIDSetExamAP.setText(String.valueOf(exam.getTeacherId()));
-	    examDurationTFSetExamAP.setText(exam.getAssignedDuration().toString());
+	    //examDurationTFSetExamAP.setText(exam.getAssignedDuration().toString());
+	    examDurationTFSetExamAP.setText(dts(exam.getAssignedDuration())); 
+	    
 	    studentInstructionsTASetExamAP.setText(exam.getStudentInstructions());
 	    teacherInstructionsTASetExamAP.setText(exam.getTeacherInstructions());
 	    
 	    Set<Question> questionList = exam.getQuestionList();
+	    Integer[] scoringList = exam.getScoringList();
+	    loadScoringData(scoringList, scoreTVSetExamAP);
+
 	    loadQuestionData(questionList, examQuestionsTVsetExamAP);
 	    
     }
@@ -630,5 +637,11 @@ public class ClientExamsController implements Initializable{
     		setQuestionMenuAP.setVisible(true);
     	}
     }
-    	
+    
+    public String dts(Duration duration) {
+	    return duration.toString()
+	            .substring(2)
+	            .replaceAll("(\\d[HMS])(?!$)", "$1 ")
+	            .toLowerCase();
+	}
 }
