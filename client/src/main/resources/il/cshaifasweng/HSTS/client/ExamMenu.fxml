@@ -3,6 +3,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -15,24 +16,9 @@
 
 <AnchorPane maxHeight="620.0" maxWidth="1225.0" prefHeight="620.0" prefWidth="1225.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.HSTS.client.ClientExamsController">
    <children>
-      <AnchorPane fx:id="setQuestionMenuAP" layoutX="10.0" layoutY="10.0" maxHeight="620.0" maxWidth="1225.0" prefHeight="620.0" prefWidth="1225.0" visible="false">
+      <AnchorPane fx:id="setQuestionMenuAP" layoutX="10.0" layoutY="10.0" maxHeight="666.0" maxWidth="1225.0" prefHeight="666.0" prefWidth="1225.0" visible="false">
          <children>
             <Label layoutX="49.0" layoutY="87.0" text="Question:" />
-            <Button fx:id="saveButton" layoutX="154.0" layoutY="570.0" mnemonicParsing="false" onAction="#commitQuestionToDB" prefHeight="30.0" prefWidth="172.0" text="Save">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font>
-            </Button>
-            <Button fx:id="editQuestionsButton1" layoutX="527.0" layoutY="570.0" mnemonicParsing="false" onAction="#clearFields" prefHeight="30.0" prefWidth="172.0" text="Clear">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font>
-            </Button>
-            <Button fx:id="deleteQuestionsButton1" layoutX="884.0" layoutY="570.0" mnemonicParsing="false" onAction="#cancel" prefHeight="30.0" prefWidth="172.0" text="Cancel">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font>
-            </Button>
             <Label layoutX="49.0" layoutY="36.0" text="Add/Edit Question">
                <font>
                   <Font name="System Bold" size="24.0" />
@@ -60,6 +46,11 @@
             <RadioButton fx:id="answer2RB" layoutX="807.0" layoutY="155.0" mnemonicParsing="false" text="Answer 2" toggleGroup="$answerGroup" />
             <RadioButton fx:id="answer4RB" layoutX="959.0" layoutY="155.0" mnemonicParsing="false" text="Answer 4" toggleGroup="$answerGroup" />
             <RadioButton fx:id="answer3RB" layoutX="959.0" layoutY="121.0" mnemonicParsing="false" text="Answer 3" toggleGroup="$answerGroup" />
+            <Button fx:id="deleteQuestionsButton1" layoutX="661.0" layoutY="601.0" mnemonicParsing="false" onAction="#cancel" prefHeight="30.0" prefWidth="172.0" text="Cancel">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
          </children>
       </AnchorPane>
       <AnchorPane fx:id="manageExamsAP" maxHeight="620.0" maxWidth="1239.0" prefHeight="620.0" prefWidth="1239.0">
@@ -250,11 +241,6 @@
                 <TableColumn fx:id="examQuestionTCSetExamAP" editable="false" prefWidth="237.0" sortable="false" text="Question" />
               </columns>
             </TableView>
-            <TableView fx:id="scoreTVSetExamAP" layoutX="773.0" layoutY="216.0" prefHeight="320.0" prefWidth="61.0">
-              <columns>
-                <TableColumn fx:id="scoreTCSetExamAP" prefWidth="62.0" sortable="false" text="Score" />
-              </columns>
-            </TableView>
             <Label layoutX="441.0" layoutY="183.0" text="Exam Questions:" />
             <AnchorPane fx:id="addQuestionsAPSetExamAP" layoutX="852.0" layoutY="163.0" prefHeight="428.0" prefWidth="355.0">
                <children>
@@ -281,6 +267,12 @@
                   <Font name="System Bold" size="14.0" />
                </font>
             </Button>
+            <ListView fx:id="scoreSetExamAP" editable="true" layoutX="760.0" layoutY="237.0" prefHeight="299.0" prefWidth="75.0" />
+            <Label layoutX="774.0" layoutY="221.0" prefHeight="17.0" prefWidth="61.0" text="Score:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
    </children>
