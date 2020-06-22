@@ -562,11 +562,11 @@ public class ClientExamsController implements Initializable{
     void cancelSetExam(ActionEvent event) {
     	clearSetExam();
     	
-      setExamsMenuAP.setVisible(false);
-      fillInExamDataButtonSetExamAP.setDisable(false);
-      fillInExamDataButtonSetExamAP.setVisible(false);
-      addQuestionsAPSetExamAP.setVisible(true);
-      manageExamsAP.setVisible(true);
+    	setExamsMenuAP.setVisible(false);
+    	fillInExamDataButtonSetExamAP.setDisable(false);
+    	fillInExamDataButtonSetExamAP.setVisible(false);
+    	addQuestionsAPSetExamAP.setVisible(true);
+    	manageExamsAP.setVisible(true);
     }
     
     @FXML
@@ -709,7 +709,7 @@ public class ClientExamsController implements Initializable{
 		qItems = courseQuestionTVSetExamAP.getItems();
 		
 		if (!qItems.isEmpty()) {
-			examQuestionsTVsetExamAP.getItems().clear();
+			courseQuestionTVSetExamAP.getItems().clear();
 		}
     }
     

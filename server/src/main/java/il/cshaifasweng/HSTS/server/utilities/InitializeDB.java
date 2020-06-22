@@ -261,14 +261,14 @@ public class InitializeDB {
 		questionList_3.add(question_10);
 		questionList_3.add(question_14);
 		questionList_3.add(question_15);
-		Exam exam_3 = new Exam(teacher_3.getUserId(), 3, questionList_1, scoringList, studentInstructions, teacherInstructions, duration_1);
+		Exam exam_3 = new Exam(teacher_3.getUserId(), 3, questionList_3, scoringList, studentInstructions, teacherInstructions, duration_1);
 		
 		Set<Question> questionList_4 = new HashSet<Question>();
 		questionList_4.add(question_4);
 		questionList_4.add(question_7);
 		questionList_4.add(question_11);
 		questionList_4.add(question_16);
-		Exam exam_4 = new Exam(teacher_2.getUserId(), 4, questionList_1, scoringList, studentInstructions, teacherInstructions, duration_1);
+		Exam exam_4 = new Exam(teacher_2.getUserId(), 4, questionList_4, scoringList, studentInstructions, teacherInstructions, duration_1);
 		
 		session.save(exam_1);
 		session.save(exam_2);
