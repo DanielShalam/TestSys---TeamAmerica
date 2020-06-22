@@ -16,6 +16,8 @@ import javafx.scene.control.ListView;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.Duration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -231,8 +233,14 @@ public class ClientExamsController implements Initializable{
     @FXML // fx:id="addQuestionsAPSetExamAP"
     private AnchorPane addQuestionsAPSetExamAP; // Value injected by FXMLLoader
 
-    @FXML // fx:id="courseQuestionIdTVSetExamAP"
-    private TableView<?> courseQuestionIdTVSetExamAP; // Value injected by FXMLLoader
+    @FXML // fx:id="courseQuestionTVSetExamAP"
+    private TableView<Question> courseQuestionTVSetExamAP; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="courseQuestionIdTCSetExamAP"
+    private TableColumn<Question, Integer> courseQuestionIdTCSetExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="courseQuestionTCSetExamAP"
+    private TableColumn<Question, String> courseQuestionTCSetExamAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="addQuestionButtonSetExamAP"
     private Button addQuestionButtonSetExamAP; // Value injected by FXMLLoader
@@ -258,6 +266,34 @@ public class ClientExamsController implements Initializable{
     @FXML // fx:id="scoreSetExamAP"
     private ListView<Integer> scoreSetExamAP; // Value injected by FXMLLoader
     
+    @FXML // fx:id="fillInExamDataButtonSetExamAP"
+    private Button fillInExamDataButtonSetExamAP; // Value injected by FXMLLoader
+    
+    @FXML
+    void viewExam(ActionEvent event) throws IOException {
+    	Exam exam = viewExamsTV.getSelectionModel().getSelectedItem();
+    	
+    	if (exam == null)
+    	{
+    		System.out.println("No exam was selected!");
+    	} else {
+    		addQuestionsAPSetExamAP.setVisible(false);
+    		manageExamsAP.setVisible(false);
+    		
+    		loadExamDataToSetExamAP(exam);
+    		saveButtonSetExamAP.setDisable(true);
+    		removeQuestionButtonSetExamAP.setDisable(true);
+    		
+    		courseCBSetExamAP.setDisable(true);
+    		studentInstructionsTASetExamAP.setDisable(true);
+    		teacherInstructionsTASetExamAP.setDisable(true);
+    		examDurationTFSetExamAP.setDisable(true);
+    		viewQuestionButtonSetExamAP.setDisable(false);
+    		
+    		setExamsMenuAP.setVisible(true);
+    	}
+    }
+    
     @FXML
     void cancel(ActionEvent event) {
     	setQuestionMenuAP.setVisible(false);
@@ -270,12 +306,18 @@ public class ClientExamsController implements Initializable{
 		manageExamsAP.setVisible(false);
     	
     	addQuestionsAPSetExamAP.setVisible(true);
-    	saveButtonSetExamAP.setDisable(false);
-		removeQuestionButtonSetExamAP.setDisable(false);
-		
-		// TODO - Handle updates of course question table view in case the selection of course 
-		//choice box changes
-    	
+    	saveButtonSetExamAP.setDisable(true);
+		removeQuestionButtonSetExamAP.setDisable(true);
+		examDurationTFSetExamAP.setDisable(true);
+		courseCBSetExamAP.setDisable(false);
+		studentInstructionsTASetExamAP.setDisable(true);
+		teacherInstructionsTASetExamAP.setDisable(true);
+		fillInExamDataButtonSetExamAP.setVisible(true);
+		courseViewQuestionButtonSetExamAP.setDisable(true);
+		addQuestionButtonSetExamAP.setDisable(true);
+		viewQuestionButtonSetExamAP.setDisable(true);
+		examIDSetExamAP.setText("TBD");
+		teacherIDSetExamAP.setText(LoginController.userReceviedID.toString());
 		setExamsMenuAP.setVisible(true);
     }
 
@@ -296,14 +338,48 @@ public class ClientExamsController implements Initializable{
     		manageExamsAP.setVisible(false);
     		
     		loadExamDataToSetExamAP(exam);
+    		
     		saveButtonSetExamAP.setDisable(false);
     		removeQuestionButtonSetExamAP.setDisable(false);
+    		courseCBSetExamAP.setDisable(true);
+    		studentInstructionsTASetExamAP.setDisable(false);
+    		teacherInstructionsTASetExamAP.setDisable(false);
+    		examDurationTFSetExamAP.setDisable(false);
+    		courseViewQuestionButtonSetExamAP.setDisable(false);
+    		addQuestionButtonSetExamAP.setDisable(false);
+    		viewQuestionButtonSetExamAP.setDisable(false);
+    		
+    		Integer courseId = LoginController.userReceviedCourses.get(
+					courseCBSetExamAP.getSelectionModel().getSelectedItem());
+			getCourseQuestions(courseId);
+    		
     		addQuestionsAPSetExamAP.setVisible(true);
-    		
     		setExamsMenuAP.setVisible(true);
-    		
-    		
     	}
+    }
+    
+    @FXML
+    void fillInExamData(ActionEvent event) {
+    	
+		if (!courseCBSetExamAP.getSelectionModel().isEmpty()) {
+			courseCBSetExamAP.setDisable(true);
+			fillInExamDataButtonSetExamAP.setDisable(true);
+			
+			saveButtonSetExamAP.setDisable(false);
+			removeQuestionButtonSetExamAP.setDisable(false);
+			studentInstructionsTASetExamAP.setDisable(false);
+			teacherInstructionsTASetExamAP.setDisable(false);
+			examDurationTFSetExamAP.setDisable(false);
+			courseViewQuestionButtonSetExamAP.setDisable(false);
+			addQuestionButtonSetExamAP.setDisable(false);
+			viewQuestionButtonSetExamAP.setDisable(false);
+			
+			Integer courseId = LoginController.userReceviedCourses.get(
+					courseCBSetExamAP.getSelectionModel().getSelectedItem());
+			getCourseQuestions(courseId);
+			
+			addQuestionsAPSetExamAP.setVisible(true);
+		}
     }
 
     @FXML
@@ -349,8 +425,7 @@ public class ClientExamsController implements Initializable{
     			
     			client.isAnswerReturned=false;
     			break;
-    		}	
-    		
+    		}		
     	}
     }
 
@@ -390,7 +465,6 @@ public class ClientExamsController implements Initializable{
     			client.isAnswerReturned=false;
     			break;
     		}	
-    		
     	}
     }
 
@@ -439,27 +513,7 @@ public class ClientExamsController implements Initializable{
     	viewCreateEditExamsAP.setVisible(true);
     }
 
-    @FXML
-    void viewExam(ActionEvent event) throws IOException {
-    	Exam exam = viewExamsTV.getSelectionModel().getSelectedItem();
-    	
-    	if (exam == null)
-    	{
-    		System.out.println("No exam was selected!");
-    	} else {
-    		addQuestionsAPSetExamAP.setVisible(false);
-    		manageExamsAP.setVisible(false);
-    		
-    		loadExamDataToSetExamAP(exam);
-    		saveButtonSetExamAP.setDisable(true);
-    		removeQuestionButtonSetExamAP.setDisable(true);
-    		
-    		setExamsMenuAP.setVisible(true);
-    		
-    		
-    	}
-    }
-
+    
     @FXML
     void viewGrades(ActionEvent event) {
 
@@ -482,7 +536,14 @@ public class ClientExamsController implements Initializable{
     
     @FXML
     void saveExam(ActionEvent event) {
-
+    	Exam exam = null;
+    	
+    	if (isExamValid()) {
+    		System.out.println("exam valid");
+    		clearSetExam();
+    	} else {
+    		System.out.println("exam not valid");
+    	}
     }
     
     @FXML
@@ -490,6 +551,8 @@ public class ClientExamsController implements Initializable{
     	clearSetExam();
     	
 		setExamsMenuAP.setVisible(false);
+		fillInExamDataButtonSetExamAP.setDisable(false);
+    	fillInExamDataButtonSetExamAP.setVisible(false);
 		addQuestionsAPSetExamAP.setVisible(true);
 		manageExamsAP.setVisible(true);
     }
@@ -510,8 +573,26 @@ public class ClientExamsController implements Initializable{
     }
     
     @FXML
+    void viewCourseQuestion(ActionEvent event) {
+    	Question question = courseQuestionTVSetExamAP.getSelectionModel().getSelectedItem();
+    	loadQuestionData(question);  
+    }
+    
+    @FXML
     void addQuestionToExam(ActionEvent event) {
-
+    	Question question = courseQuestionTVSetExamAP.getSelectionModel().getSelectedItem();
+    	Boolean questionExists = false;
+    	
+    	List<Question> qList = examQuestionsTVsetExamAP.getItems();
+    	for (Question q : qList) {
+    		if (q.getQuestionId() == question.getQuestionId()) {
+    			questionExists = true;
+    			break;
+    		}
+    	}
+    	if (!questionExists) {
+    		examQuestionsTVsetExamAP.getItems().add(question);
+    	}
     }
     
     @Override
@@ -521,13 +602,14 @@ public class ClientExamsController implements Initializable{
     	examInstTC.setCellValueFactory(new PropertyValueFactory<Exam,String>("teacherInstructions"));
     	examQuestionIdTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,Integer>("questionId"));
     	examQuestionTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
+    	courseQuestionIdTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,Integer>("questionId"));
+    	courseQuestionTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
     	
     	for(String course: (LoginController.userReceviedCourses).keySet()) {
     		courseViewExamsCB.getItems().add(course);
     		courseCBSetExamAP.getItems().add(course);
     		courseComboBox.getItems().add(course);
     	}
-    	
     }
     
     //Load data to table
@@ -538,11 +620,19 @@ public class ClientExamsController implements Initializable{
         	System.out.println(examItem.getExamId());
         	viewExamsTV.getItems().addAll(examItem);
         }
-        
     }
     
     //Load data to table
     void loadQuestionData(Set<Question> question_list, TableView<Question> TV) {
+
+        for (Question questionItem : question_list)
+        {
+        	TV.getItems().addAll(questionItem);
+        }
+        
+    }
+    
+    void loadQuestionData(List<Question> question_list, TableView<Question> TV) {
 
         for (Question questionItem : question_list)
         {
@@ -574,11 +664,11 @@ public class ClientExamsController implements Initializable{
     
     void clearSetExam() {
     	courseCBSetExamAP.getSelectionModel().clearSelection();
-    	examIDSetExamAP.setText(null);
-    	teacherIDSetExamAP.setText(null);
-    	examDurationTFSetExamAP.setText(null);
-    	studentInstructionsTASetExamAP.setText(null);
-    	teacherInstructionsTASetExamAP.setText(null);
+    	examIDSetExamAP.setText("");
+    	teacherIDSetExamAP.setText("");
+    	examDurationTFSetExamAP.setText("");
+    	studentInstructionsTASetExamAP.setText("");
+    	teacherInstructionsTASetExamAP.setText("");
     	
     	ObservableList<Question> qItems = examQuestionsTVsetExamAP.getItems();
 		
@@ -586,6 +676,11 @@ public class ClientExamsController implements Initializable{
 			examQuestionsTVsetExamAP.getItems().clear();
 		}
     	
+		qItems = courseQuestionTVSetExamAP.getItems();
+		
+		if (!qItems.isEmpty()) {
+			examQuestionsTVsetExamAP.getItems().clear();
+		}
     }
     
     void loadQuestionData(Question question) {
@@ -629,6 +724,104 @@ public class ClientExamsController implements Initializable{
     		courseComboBox.getSelectionModel().select(courseName);
     		setQuestionMenuAP.setVisible(true);
     	}
+    }
+    
+    void getCourseQuestions (Integer courseId) {
+    	List<Question> questionList = null;
+    	client = LoginController.client;
+    	
+    	String message = "get all course questions";
+    	System.out.println(message);
+    	Question question = null;
+    	int id = courseId;
+    	
+    	client.handleMessageFromClientQuestionController(message, id, question);
+    	System.out.println("message from ClientQuestionController Handled");
+		
+    	while (true) {
+			System.out.println("Running");
+
+    		if (client.isAnswerReturned==true) {
+    			
+    			localCarrier = client.answerCarrier;
+    			questionList = (List<Question>) localCarrier.carrierMessageMap.get("questions");
+    			System.out.println(questionList);
+    			
+    			loadQuestionData(questionList, courseQuestionTVSetExamAP);
+    			
+    			client.isAnswerReturned=false;
+    			break;
+    		}		
+    	}
+    }
+    
+    Boolean isExamValid() {
+    	if (!emptyFieldsExist()) {
+    		if (!examExists()) {
+    			return true;
+    		} else {
+    			return false;
+    		}
+    	} else {
+    		return false;
+    	}
+    }
+    
+    Boolean emptyFieldsExist() {
+    	if (examDurationTFSetExamAP.getText().isBlank() ||
+    			studentInstructionsTASetExamAP.getText().isBlank() ||
+    			teacherInstructionsTASetExamAP.getText().isBlank() ||
+    			examQuestionsTVsetExamAP.getItems().isEmpty()) {
+    		return true;
+    	}
+    	return false;
+    }
+    
+    Boolean examExists() {
+    	Exam exam = viewExamsTV.getSelectionModel().getSelectedItem();;
+    	
+		if (exam != null) {
+			//compare original questions with current questions
+			List<Question> qList = examQuestionsTVsetExamAP.getItems();
+			Set<Question> qSet = new HashSet<>();;
+			for (Question q : qList) {
+				qSet.add(q);
+			}
+			Set<Question> originalQuestionSet = exam.getQuestionList();
+			
+			Boolean qSetsEqual = questionSetsEqual(qSet,originalQuestionSet);
+			if (qSetsEqual) {
+				qSetsEqual = questionSetsEqual(originalQuestionSet, qSet);
+			}
+			
+			//check if exam was changed
+    		if (examDurationTFSetExamAP.getText().equals(exam.getAssignedDuration().toString()) &&
+    				studentInstructionsTASetExamAP.getText().equals(exam.getStudentInstructions()) &&
+    				teacherInstructionsTASetExamAP.getText().equals(exam.getTeacherInstructions()) && qSetsEqual) {
+    			System.out.println("questions: " + qSetsEqual);
+    			return true;
+    		}
+    		return false;
+		}
+		return false;
+    }
+    
+    Boolean questionSetsEqual(Set<Question> qSet1, Set<Question> qSet2) {
+    	
+    	Boolean equals = false;
+    	
+    	for (Question q1 : qSet1) {
+    		for (Question q2 : qSet2) {
+    			if (q1.getQuestionId() == q2.getQuestionId()) {
+    				equals = true;
+    			}
+    		}
+    		if (!equals) { // q1 not found in qSet2
+    			return false;
+    		}
+    		equals = false;
+    	}
+    	return true; // all qSet1 questions exist in qSet2
     }
     	
 }
