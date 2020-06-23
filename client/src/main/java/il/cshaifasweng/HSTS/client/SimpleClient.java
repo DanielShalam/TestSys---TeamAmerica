@@ -135,12 +135,11 @@ public class SimpleClient extends ObservableSWRClient {
 	protected Carrier handleMessageFromClientStudentController(String message, int id, Examination examination) {
 		Carrier studentCarrier =  new Carrier();
 		studentCarrier.carrierType = CarrierType.EXAMINATION;	
-		System.out.println("get course examinations");
-
+		
 		if (message.equals("get course examinations")) {
 			System.out.println("get course examinations");
 			studentCarrier.carrierMessageMap.put("message", message);
-			studentCarrier.carrierMessageMap.put("ID", id);
+			studentCarrier.carrierMessageMap.put("course", id);		// AMIT changed "ID" to "course"
 		}
 		
 		try {

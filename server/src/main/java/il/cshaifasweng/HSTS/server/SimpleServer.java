@@ -304,7 +304,7 @@ public class SimpleServer extends AbstractServer {
 		
 	}
 
-	//// Function to handle Message where Carrier type is EXAM
+	//// Function to handle Message where Carrier type is EXAMINATION
 	protected void handleExaminationMessage(Carrier carrier, ConnectionToClient client) {
 		String msg = (String) carrier.carrierMessageMap.get("message");
 		switch(msg) {
@@ -352,15 +352,17 @@ public class SimpleServer extends AbstractServer {
 					e.printStackTrace();
 				}
 				break;
-
+			
 			case "get course examinations":
-				System.out.println("Courses");
+				System.out.println("Courses hello");
+				//int course_id = 1;
 				int course_id = (int) carrier.carrierMessageMap.get("course");
+				System.out.println("courses2");
 				List <Examination> course_exams = ServerExaminationController.getExamsinationsByAtrribute("courseId", course_id);
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);
 				carrier.carrierType = CarrierType.EXAMINATION;
-				carrier.carrierMessageMap.put("exams", course_exams); 
+				carrier.carrierMessageMap.put("examinations", course_exams); 
 				try {
 					client.sendToClient(carrier);
 				} catch (IOException e) {

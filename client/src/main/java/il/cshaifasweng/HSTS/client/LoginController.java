@@ -86,6 +86,7 @@ public class LoginController {
     	
     }
     static void logMeOut() {
+    	System.out.println("logging out");
     	client.handleLogOut(userReceviedID);
     }
 
