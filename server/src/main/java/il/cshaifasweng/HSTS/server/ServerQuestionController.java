@@ -12,16 +12,27 @@ public class ServerQuestionController {
 	}
 
 	// Commit new Question to database
-	public static String commitQuestionToDB(Question question) {
+	public static String commitQuestionToDB(Question question, int id) {
 		Boolean isValid = ConnectToDB.checkForDuplicateQuestion(question);
 		if (isValid) {
 			try {
-				int new_id = ConnectToDB.save(question);
+				if(id == -1) { // Adding new question
+					int new_id = ConnectToDB.save(question);
 
-				if (new_id == question.getQuestionId()) {	// Failure
-					return "Error - Please try again. ";
+					if (new_id == question.getQuestionId()) {	// Failure
+						return "Error - Please try again. ";
+					}
+					return "Question commited successfully. ";	// Success	
 				}
-				return "Question commited successfully. ";	// Success
+				
+				else {	// Edit existing one
+					Question questionToEdit = ConnectToDB.getById(Question.class, id);	// Get question for update
+					questionToEdit.setQuestion(question.getQuestion());
+					questionToEdit.setAnswers(question.getAnswers());
+					questionToEdit.setInstructions(question.getInstructions());
+					questionToEdit.setCorrectAnswer(question.getCorrectAnswer());
+					ConnectToDB.update(questionToEdit);
+				}
 				
 			} catch (Exception logExceptions) {		// Foreign key is invalid
 				return "Error - Course ID is invalied. ";
@@ -67,18 +78,12 @@ public class ServerQuestionController {
 	}
 	
 	// Update existing question without creating new instance
-	public static Question updateQuestion(int question_id) {
+	public static void updateQuestion(Question question) {
 		
-		Question question = ServerQuestionController.getQuestionById(question_id);	// Getting the question
-
-		if (question == null) {		// Question id not in database
-			return null;
+		if (!question.getUsedInTest()) {		// Question id not in database
+			question.setUsedInTest(true);
+			ConnectToDB.update(question);
 		}
-		
-		question.setUsedInTest(true);
-		
-		ConnectToDB.update(question);
-		return ServerQuestionController.getQuestionById(question_id);
-		
+
 	}
 }

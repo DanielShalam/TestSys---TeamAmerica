@@ -7,6 +7,7 @@ import com.google.protobuf.Duration;
 import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.ExamType;
 import il.cshaifasweng.HSTS.entities.Examination;
+import il.cshaifasweng.HSTS.entities.Question;
 
 public class ServerExamsController {
 
@@ -17,7 +18,12 @@ public class ServerExamsController {
 	}
 	
 	public static String commitExamToDB(Exam exam) {
+		for (Question question: exam.getQuestionList()) {	// Update questions if needed
+			ServerQuestionController.updateQuestion(question);
+		}
+		
 		int new_id = ConnectToDB.save(exam);
+		
 		// Failure
 		if (new_id == exam.getExamId()) {
 			return "Error - Please try again. ";
@@ -75,17 +81,13 @@ public class ServerExamsController {
 	}
 	
 	// Update existing exam without creating new instance
-	public static String updateExam(int examID) {
+	public static String updateExam(Exam exam) {
 		
-		Exam exam = ServerExamsController.getExamById(examID);	// Getting the exam
-
-		if (exam == null) {		// Exam id not in database
-			return "Error - Exam not found. ";
+		if (!exam.isUsedInExamination()) {
+			exam.setUsedInExamination(true);
+			ConnectToDB.update(exam);
 		}
-		
-		exam.setUsedInExamination(true);
-		
-		ConnectToDB.update(exam);
+				
 		return "Exam updated successfully. ";
 		
 	}
