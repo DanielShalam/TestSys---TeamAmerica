@@ -15,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableColumn;
@@ -23,6 +24,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.event.ActionEvent;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Alert.AlertType;
 import il.cshaifasweng.HSTS.entities.Question;
 import javafx.scene.control.cell.PropertyValueFactory;
 
@@ -33,6 +35,7 @@ public class ClientQuestionController implements Initializable {
 	private Carrier localCarrier = null;
 	private List <Question> question_list = null;
 	ObservableList<Question> questionData = FXCollections.observableArrayList();
+	private int originalQuestionId = -1;
 	
 	
     @FXML // fx:id="addNewQuestionsButton"
@@ -140,19 +143,7 @@ public class ClientQuestionController implements Initializable {
         	int id = question.getQuestionId();
         	
         	client.handleMessageFromClientQuestionController(message, id, question);
-        	
-        	
-        	/*while (true) {
-    			System.out.println("Running");
 
-        		if (client.isAnswerReturned==true) {
-        			System.out.println("you deleted me!");
-        			
-        			client.isAnswerReturned=false;
-        			break;
-        		}	
-        		
-        	}*/
     	}
     }
 
@@ -208,10 +199,17 @@ public class ClientQuestionController implements Initializable {
     	Question question = questionTV.getSelectionModel().getSelectedItem();
     	if (question == null)
     	{
-    		System.out.println("No question was selected!");
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Question was not selected");
+    		errorAlert.showAndWait();
     	}
     	else {
     		manageQuestionAP.setVisible(false);
+            
+    		if (question.getUsedInTest()) {
+            	originalQuestionId = question.getQuestionId();
+            }
+    		
     		questionTA.setText(question.getQuestion());
     		instructionsTA.setText(question.getInstructions());
     		answer1TA.setText(question.getAnswers()[0]);
@@ -250,6 +248,7 @@ public class ClientQuestionController implements Initializable {
     @FXML
     void cancel(ActionEvent event) {
     	clearData();
+    	originalQuestionId = -1;
     	setQuestionMenuAP.setVisible(false);
     	manageQuestionAP.setVisible(true);
     }
@@ -280,14 +279,18 @@ public class ClientQuestionController implements Initializable {
     		String[] answers = {answer1TA.getText(), answer2TA.getText(), answer3TA.getText(), answer4TA.getText()};
 
     		Question question = new Question(courseId, questionTA.getText(), answers, instructionsTA.getText(), correct_answer, LoginController.userReceviedID);
+    		
         	client = LoginController.client;
         	
-        	String message = "create question";   	
-        	localCarrier = client.handleMessageFromClientQuestionController(message, 0, question);
+        	String message = "create question";   	 
+        	
+        	localCarrier = client.handleMessageFromClientQuestionController(message, originalQuestionId, question);
         	System.out.println("message from ClientQuestionController Handled");
         	
 			String status = (String) localCarrier.carrierMessageMap.get("status");
 			System.out.println(status);
+			
+			originalQuestionId = -1;
         	setQuestionMenuAP.setVisible(false);
         	manageQuestionAP.setVisible(true);
     	}

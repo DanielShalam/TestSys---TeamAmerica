@@ -343,8 +343,8 @@ public class SimpleServer extends AbstractServer {
 				List <Examination> teacher_exams = ServerExaminationController.getExamsinationsByAtrribute("teacherId", teacher_id);
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);
-				carrier.carrierType = CarrierType.EXAM;
-				carrier.carrierMessageMap.put("exams", teacher_exams); 
+				carrier.carrierType = CarrierType.EXAMINATION;
+				carrier.carrierMessageMap.put("examinations", teacher_exams); 
 				try {
 					client.sendToClient(carrier);
 				} catch (IOException e) {

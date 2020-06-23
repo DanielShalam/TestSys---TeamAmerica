@@ -18,9 +18,10 @@ public class ServerExaminationController {
 	public static String commitExaminationToDB(Examination examination) {
 		int new_id = ConnectToDB.save(examination);
 		// Failure
-		if (new_id == examination.getExamination_id()) {
-			return "Error - Please try again. ";
-		}
+//		if (new_id == examination.getExamination_id()) {
+//			System.out.println("new_id: " + new_id + " examination id: " + examination.getExamination_id());
+//			return "Error - Please try again. ";
+//		}
 		// Success			
 		return "Exam commited successfully. ";		
 	}
