@@ -1021,24 +1021,23 @@ public class ClientExamsController implements Initializable{
     
     @FXML
     void instigate(ActionEvent event) {
-    	if (isIntigationValid()) {
-    		int execution = Integer.parseInt(execCodeTFInstExamAP.getText());
-    		int teacherId = LoginController.userReceviedID;
-    		Exam exam = instigateExamsTV.getSelectionModel().getSelectedItem();
-    		//SimpleDateFormat format = new SimpleDateFormat("HH:mm").parse(startTimeTFInstExamAP.getText()); 
-    		
-    		String examTypeCB = examTypeCBInstExamAP.getSelectionModel().getSelectedItem();
-    		ExamType examType;
-    		switch (examTypeCB) {
-    			case "Manual":
-    				examType = ExamType.MANUAL;
-    				break;
-    			case "Computerized":
-    				examType = ExamType.COMPUTERIZED;
-    				break;
-    		}
-    		
-    	}
+//    	if (isIntigationValid()) {
+//    		int execution = Integer.parseInt(execCodeTFInstExamAP.getText());
+//    		int teacherId = LoginController.userReceviedID;
+//    		Exam exam = instigateExamsTV.getSelectionModel().getSelectedItem();
+//    		//SimpleDateFormat format = new SimpleDateFormat("HH:mm").parse(startTimeTFInstExamAP.getText()); 
+//    		
+//    		String examTypeCB = examTypeCBInstExamAP.getSelectionModel().getSelectedItem();
+//    		ExamType examType;
+//    		switch (examTypeCB) {
+//    			case "Manual":
+//    				examType = ExamType.MANUAL;
+//    				break;
+//    			case "Computerized":
+//    				examType = ExamType.COMPUTERIZED;
+//    				break;
+//    		}
+//    	}
     }
     
     void setExamAPToViewOnly(Exam exam) {

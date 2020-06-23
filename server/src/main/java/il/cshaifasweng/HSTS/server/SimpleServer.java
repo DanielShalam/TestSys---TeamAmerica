@@ -85,6 +85,7 @@ public class SimpleServer extends AbstractServer {
 			carrier.carrierMessageMap.put("message", "Log me in");
 			carrier.carrierMessageMap.put("Role", userRole);
 			carrier.carrierMessageMap.put("ID", userId);
+			carrier.carrierMessageMap.put("fullName", checkedRole.get("fullName"));
 			carrier.carrierMessageMap.put("Courses", checkedRole.get("Courses"));
 			carrier_list.add(carrier);
 			try {
