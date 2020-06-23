@@ -14,17 +14,24 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.converter.DateTimeStringConverter;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.control.ListView;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 import java.util.Map.Entry;
 
 import il.cshaifasweng.HSTS.entities.Carrier;
@@ -35,6 +42,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 
 public class ClientExamsController implements Initializable{
+	
+	static final int EXECUTION_CODE_LEN = 4;
 	
 	private SimpleClient client;
 	private Carrier localCarrier = null;
@@ -270,6 +279,21 @@ public class ClientExamsController implements Initializable{
     @FXML // fx:id="fillInExamDataButtonSetExamAP"
     private Button fillInExamDataButtonSetExamAP; // Value injected by FXMLLoader
     
+    @FXML // fx:id="instigateExamAP"
+    private AnchorPane instigateExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="examTypeCBInstExamAP"
+    private ChoiceBox<String> examTypeCBInstExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="execCodeTFInstExamAP"
+    private TextField execCodeTFInstExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="startTimeTFInstExamAP"
+    private TextField startTimeTFInstExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="instigateButtonInstExamAP"
+    private Button instigateButtonInstExamAP; // Value injected by FXMLLoader
+    
     @FXML
     void viewExam(ActionEvent event) throws IOException {
     	Exam exam = viewExamsTV.getSelectionModel().getSelectedItem();
@@ -280,20 +304,9 @@ public class ClientExamsController implements Initializable{
     		errorAlert.setHeaderText("Exam was not selected");
     		errorAlert.showAndWait();
     	} else {
-    		addQuestionsAPSetExamAP.setVisible(false);
     		manageExamsAP.setVisible(false);
-    		
-    		loadExamDataToSetExamAP(exam);
     		saveButtonSetExamAP.setDisable(true);
-    		removeQuestionButtonSetExamAP.setDisable(true);
-    		
-    		courseCBSetExamAP.setDisable(true);
-    		studentInstructionsTASetExamAP.setDisable(true);
-    		teacherInstructionsTASetExamAP.setDisable(true);
-    		examDurationTFSetExamAP.setDisable(true);
-    		viewQuestionButtonSetExamAP.setDisable(false);
-    		scoreSetExamAP.setEditable(false);
-    		
+    		setExamAPToViewOnly(exam);
     		setExamsMenuAP.setVisible(true);
     	}
     }
@@ -524,9 +537,12 @@ public class ClientExamsController implements Initializable{
     		errorAlert.setHeaderText("Exam was not selected");
     		errorAlert.showAndWait();
     	} else {
-    		examInstigationAP.setVisible(false);
+    		manageExamsAP.setVisible(false);
+    		setExamAPToViewOnly(exam);
+    		instigateButtonInstExamAP.setVisible(true);
+    		saveButtonSetExamAP.setVisible(false);
     		setExamsMenuAP.setVisible(true);
-    		loadExamDataToSetExamAP(exam);
+    		instigateExamAP.setVisible(true);
     	}
     }
 
@@ -635,7 +651,9 @@ public class ClientExamsController implements Initializable{
     	
     	setExamsMenuAP.setVisible(false);
     	fillInExamDataButtonSetExamAP.setDisable(false);
-    	fillInExamDataButtonSetExamAP.setVisible(false);
+    	instigateButtonInstExamAP.setVisible(false);
+    	instigateExamAP.setVisible(false);
+    	saveButtonSetExamAP.setVisible(true);
     	addQuestionsAPSetExamAP.setVisible(true);
     	manageExamsAP.setVisible(true);
     }
@@ -714,6 +732,34 @@ public class ClientExamsController implements Initializable{
     		courseCBSetExamAP.getItems().add(course);
     		courseComboBox.getItems().add(course);
     	}
+    	
+    	UnaryOperator<Change> modifyChange = c -> {
+    	    if (c.isContentChange()) {
+    	        int newLength = c.getControlNewText().length();
+    	        if (newLength > EXECUTION_CODE_LEN) {
+    	            // replace the input text with the last len chars
+    	            String tail = c.getControlNewText().substring(0, EXECUTION_CODE_LEN);
+    	            c.setText(tail);
+    	            // replace the range to complete text
+    	            // valid coordinates for range is in terms of old text
+    	            int oldLength = c.getControlText().length();
+    	            c.setRange(0, oldLength);
+    	        }
+    	    }
+    	    if (c.getText().matches("[0-9]*")) {
+                return c;
+            }
+    	    return null;
+    	};
+    	execCodeTFInstExamAP.setTextFormatter(new TextFormatter<Change>(modifyChange));
+    	
+    	SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    	try {
+			startTimeTFInstExamAP.setTextFormatter(new TextFormatter<>(new DateTimeStringConverter(format), format.parse("00:00")));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     //Load data to table
@@ -791,11 +837,14 @@ public class ClientExamsController implements Initializable{
     
     void clearSetExam() {
     	courseCBSetExamAP.getSelectionModel().clearSelection();
+    	examTypeCBInstExamAP.getSelectionModel().clearSelection();
     	examIDSetExamAP.setText("");
     	teacherIDSetExamAP.setText("");
     	examDurationTFSetExamAP.setText("");
     	studentInstructionsTASetExamAP.setText("");
     	teacherInstructionsTASetExamAP.setText("");
+    	execCodeTFInstExamAP.setText("");
+    	startTimeTFInstExamAP.setText("");
     	
     	ObservableList<Question> qItems = examQuestionsTVsetExamAP.getItems();
 		
@@ -967,5 +1016,22 @@ public class ClientExamsController implements Initializable{
 			j++;
 		}
 		return scoringList;		
+    }
+    
+    @FXML
+    void instigate(ActionEvent event) {
+    	
+    }
+    
+    void setExamAPToViewOnly(Exam exam) {
+		loadExamDataToSetExamAP(exam);
+		removeQuestionButtonSetExamAP.setDisable(true);
+		courseCBSetExamAP.setDisable(true);
+		studentInstructionsTASetExamAP.setDisable(true);
+		teacherInstructionsTASetExamAP.setDisable(true);
+		examDurationTFSetExamAP.setDisable(true);
+		viewQuestionButtonSetExamAP.setDisable(false);
+		addQuestionsAPSetExamAP.setVisible(false);
+		scoreSetExamAP.setEditable(false);
     }
 }
