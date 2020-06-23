@@ -8,9 +8,9 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -173,6 +173,7 @@
             </Label>
          </children>
       </AnchorPane>
+
       <AnchorPane fx:id="autoExamAP" layoutY="-1.0" prefHeight="578.0" prefWidth="640.0" visible="false">
          <children>
             <RadioButton fx:id="answer1RB" layoutX="89.0" layoutY="353.0" mnemonicParsing="false" text="1.">
@@ -188,7 +189,6 @@
             <TextField fx:id="answer2TF" editable="false" layoutX="138.0" layoutY="382.0" prefHeight="26.0" prefWidth="335.0" />
             <TextField fx:id="answer3TF" editable="false" layoutX="138.0" layoutY="415.0" prefHeight="26.0" prefWidth="335.0" />
             <TextField fx:id="answer4TF" editable="false" layoutX="138.0" layoutY="448.0" prefHeight="26.0" prefWidth="335.0" />
-            <TextField fx:id="timer" editable="false" layoutX="496.0" layoutY="42.0" prefHeight="26.0" prefWidth="78.0" />
             <TextArea fx:id="questionTA" editable="false" layoutX="67.0" layoutY="89.0" prefHeight="70.0" prefWidth="499.0" />
             <TextField editable="false" layoutX="67.0" layoutY="176.0" text="Instructions:" />
             <TextArea fx:id="instructionTA" editable="false" layoutX="67.0" layoutY="220.0" prefHeight="54.0" prefWidth="398.0" />
@@ -196,6 +196,16 @@
             <Button fx:id="nextQuestion" layoutX="510.0" layoutY="519.0" mnemonicParsing="false" onAction="#showNextQuestion" text="Next question" />
             <Button fx:id="prevQuestion" layoutX="37.0" layoutY="519.0" mnemonicParsing="false" onAction="#showPrevQuestion" text="Previous question" />
             <Button fx:id="startOrSubmitBtn" layoutX="279.0" layoutY="510.0" mnemonicParsing="false" onAction="#startSubmitExamination" prefHeight="44.0" prefWidth="81.0" text="Start exam" />
+            <Label layoutX="293.0" layoutY="46.0" prefHeight="18.0" prefWidth="68.0" text="TIME LEFT:">
+               <font>
+                  <Font name="Calibri" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="autoTimeLB" layoutX="368.0" layoutY="46.0" prefHeight="18.0" prefWidth="150.0">
+               <font>
+                  <Font name="Calibri" size="14.0" />
+               </font>
+            </Label>
          </children></AnchorPane>
    </children>
 </AnchorPane>

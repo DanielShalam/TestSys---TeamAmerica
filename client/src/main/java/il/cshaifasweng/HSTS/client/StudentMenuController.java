@@ -26,6 +26,7 @@ import il.cshaifasweng.HSTS.client.utilities.WordHandler;
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.Examination;
+import il.cshaifasweng.HSTS.entities.ExaminationStudent;
 import il.cshaifasweng.HSTS.entities.Question;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -214,6 +215,9 @@ public class StudentMenuController implements Initializable{
     private Label nameLB;
     
     @FXML
+    private Label autoTimeLB;
+    
+    @FXML
     void createStudentExamPageBoundary(ActionEvent event) {
     	mainMenuAP.setVisible(false);
     	instAP.setVisible(true);
@@ -245,7 +249,9 @@ public class StudentMenuController implements Initializable{
     		errorAlert.setHeaderText("No examinations are ready for this course. ");
     		errorAlert.showAndWait();
 		}
-		loadExaminationDataToSetInstAP(examinationsList);
+		else {
+			loadExaminationDataToSetInstAP(examinationsList);			
+		}
     }
 
     @FXML
@@ -321,16 +327,23 @@ public class StudentMenuController implements Initializable{
 			fileIsOpenAlert.showAndWait();
 			return;
     	}
+    	
+    	if (LocalTime.now().isBefore(examination.getExamStartTime())) {
+			Alert fileIsOpenAlert = new Alert(AlertType.ERROR);
+			fileIsOpenAlert.setHeaderText("Exam starting at " + examination.getExamStartTime());
+			fileIsOpenAlert.showAndWait();
+			return;
+    	}
 
     	if (execCode.equals(examination.getExecutionCode())) {
 			
 	    	switch (examination.getExamType()) {
 	    	case MANUAL:
-	    			ActivateManualExam();
+	    		ActivateManualExam();
 	    		break;
 	    		
 	    	case COMPUTERIZED:
-	    			loadComputerizedExamination();
+	    		activateComputerizedExamination();
 	    		break;
 	    			
 	    	default:
@@ -379,7 +392,8 @@ public class StudentMenuController implements Initializable{
 		animation.play();
 
     }
-    public void loadComputerizedExamination() {
+    
+    public void activateComputerizedExamination() {
     	
     	instAP.setVisible(false);
     	autoExamAP.setVisible(true);
@@ -391,6 +405,34 @@ public class StudentMenuController implements Initializable{
     	answer3RB.setDisable(true);
     	answer4RB.setDisable(true);
     	showQuestion();
+    	
+        LocalTime endTime = examination.getExamEndTime();
+        // Timer
+		Timeline animation = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+	              @Override public void handle(ActionEvent actionEvent) {
+	            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), endTime).toSeconds();
+	            	  
+	            	  if (elapsedTime <= 0) {	// Time is up
+	            		  startOrSubmitBtn.setDisable(true);
+	            		  saveAutoExam();
+	            	  }
+	            	  else {	// Every 1 second
+	            		  int hours = (int) (elapsedTime / 3600);
+	            		  int minutes = (int) ((elapsedTime % 3600) / 60);
+	            		  int seconds = (int) (elapsedTime % 60);
+
+	            		  autoTimeLB.setText(String.format("%02d : %02d : %02d", hours, minutes, seconds));
+	            	  }
+
+	              }}
+	          	));
+
+		animation.setCycleCount((int) (Timeline.INDEFINITE)); // Running times
+		animation.play();
+    }
+    
+    void saveAutoExam() {
+
     }
     
     
@@ -442,7 +484,11 @@ public class StudentMenuController implements Initializable{
     
     public void loadExaminationDataToSetInstAP(List<Examination> examinationList) {
     	
-    	studentExamsTV.getItems().addAll(examinationList);
+    	for(Examination examination: examinationList) {
+    		if(LocalTime.now().isBefore(examination.getExamEndTime())) {
+    	    	studentExamsTV.getItems().addAll(examination);
+    		}
+    	}
     }
     
     @FXML

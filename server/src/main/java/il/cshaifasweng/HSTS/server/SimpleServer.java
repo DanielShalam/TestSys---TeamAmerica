@@ -120,8 +120,9 @@ public class SimpleServer extends AbstractServer {
 				break;
 
 			case "create question":
-				Question new_question = (Question) carrier.carrierMessageMap.get("question");
-				String status = ServerQuestionController.commitQuestionToDB(new_question);
+				Question newQuestion = (Question) carrier.carrierMessageMap.get("question");
+				int questionID = (int) carrier.carrierMessageMap.get("ID");
+				String status = ServerQuestionController.commitQuestionToDB(newQuestion, questionID);
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);
 

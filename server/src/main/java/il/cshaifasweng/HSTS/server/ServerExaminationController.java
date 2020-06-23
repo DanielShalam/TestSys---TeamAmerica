@@ -16,6 +16,8 @@ public class ServerExaminationController {
 			
 
 	public static String commitExaminationToDB(Examination examination) {
+		ServerExamsController.updateExam(examination.getExam());	// Update the exam if needed
+
 		int new_id = ConnectToDB.save(examination);
 		// Failure
 		if (new_id == examination.getExamination_id()) {
