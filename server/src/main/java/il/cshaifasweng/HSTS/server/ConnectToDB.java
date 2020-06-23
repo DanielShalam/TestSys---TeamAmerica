@@ -101,6 +101,19 @@ public class ConnectToDB {
 		return entity;
     }
     
+//    public static List<Examination> extractExaminations(int courseId){
+//    	Session temp_session = sessionFactory.openSession();
+//        temp_session.beginTransaction();
+//		Course course =  temp_session.get(Course.class, courseId);
+//		List<Examination> examinations = course.getExaminationList();
+//		System.out.println("Examinations");
+//		System.out.println(examinations.size());
+//
+//    	temp_session.getTransaction().commit();
+//		temp_session.close();
+//		return examinations;
+//    }
+//    
 	// Function to insert object into the database
     public static <T> int save(T o){
         Session temp_session = ConnectToDB.sessionFactory.openSession();
@@ -140,7 +153,7 @@ public class ConnectToDB {
         temp_session.close();
 
         return result;
-  }
+    }
     
     public static <T> List<T> getByAttribute(final Class<T> type, String key, String value)  {
         Session temp_session = ConnectToDB.sessionFactory.openSession();
@@ -178,32 +191,6 @@ public class ConnectToDB {
         }
         return false;
     }
-    
-	public static List<Course> extractCourses(User user){
-	    Session temp_session = ConnectToDB.sessionFactory.openSession();
-		List<Course> myCourses = new ArrayList<Course>(); 
-        temp_session.beginTransaction();
-        switch (user.getRole()) {
-		case STUDENT: {
-			myCourses = user.getCoursesStudying();
-			break;
-		}
-		case TEACHER:{
-			myCourses = user.getCoursesTeaching();
-			break;
-		}
-		case PRINCIPLE:
-			myCourses =  null;
-			break;
-
-		default:
-			break;
-		}
-        temp_session.getTransaction().commit();
-        temp_session.close();
-        return myCourses;
-  }
-
 	
 	public static void printUsers() throws Exception {
 		

@@ -3,10 +3,12 @@ package il.cshaifasweng.HSTS.server;
 import il.cshaifasweng.HSTS.server.ocsf.AbstractServer;
 import il.cshaifasweng.HSTS.entities.*;
 import il.cshaifasweng.HSTS.server.ocsf.ConnectionToClient;
-import il.cshaifasweng.HSTS.server.utilities.WordHandler;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.Month;
 import java.util.*;
 
 public class SimpleServer extends AbstractServer {
@@ -19,14 +21,6 @@ public class SimpleServer extends AbstractServer {
 		super(port);
 		this.dbConnector = new ConnectToDB();
 		ConnectToDB.connectToDB();
-//		Exam exam = ConnectToDB.getByAttribute(Exam.class, "teacherId", 1).get(0);
-//		Examination examination = new Examination(11551, 1,ExamType.MANUAL, Duration.ofMinutes(50), exam);
-//		try {
-//			WordHandler.CreateWordFile(examination);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	}
 
 	@Override

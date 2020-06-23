@@ -95,6 +95,9 @@ public class StudentMenuController implements Initializable{
     private Button viewExamsBtn;
     
     @FXML
+    private Button startBtn;
+    
+    @FXML
     void createStudentExamPageBoundary(ActionEvent event) {
     	mainMenuAP.setVisible(false);
     	instAP.setVisible(true);
@@ -107,7 +110,7 @@ public class StudentMenuController implements Initializable{
 
     @FXML
     void getGrades(ActionEvent event) {
-
+    	
     }
     
     @FXML
@@ -122,8 +125,9 @@ public class StudentMenuController implements Initializable{
 		int courseId = LoginController.userReceviedCourses.get(courseCB.getSelectionModel().getSelectedItem());
 		localCarrier = client.handleMessageFromClientStudentController("get course examinations", courseId, null);
 		List<Examination> examinationsList = (List<Examination>) localCarrier.carrierMessageMap.get("examinations");
-		if (examinationsList == null) {
-			Alert errorAlert = new Alert(AlertType.ERROR);
+		if (examinationsList.isEmpty()) {
+			studentExamsTV.getItems().clear();
+			Alert errorAlert = new Alert(AlertType.INFORMATION);
     		errorAlert.setHeaderText("No examinations are ready for this course. ");
     		errorAlert.showAndWait();
 		}
@@ -133,6 +137,17 @@ public class StudentMenuController implements Initializable{
     @FXML
     void viewExams(ActionEvent event) {
 
+    }
+    
+    @FXML
+    void activateExam(ActionEvent event) {
+    	String execCode = execCodeTF.getText();
+    	Examination examination = studentExamsTV.getSelectionModel().getSelectedItem();
+    	if (!execCode.equals(examination.getExecutionCode())) {
+			Alert errorAlert = new Alert(AlertType.WARNING);
+    		errorAlert.setHeaderText("Wrong execution code. Please try again. ");
+    		errorAlert.showAndWait();
+    	}
     }
     
     @Override
@@ -145,21 +160,7 @@ public class StudentMenuController implements Initializable{
     
     void loadExaminationDataToSetInstAP(List<Examination> examinationList) {
     	
-    	// option #1
-    	//https://medium.com/@keeptoo/adding-data-to-javafx-tableview-stepwise-df582acbae4f
-//        ObservableList<Examination> exl = FXCollections.observableArrayList(examinationList);
-//        studentExamsTV.setItems(exl);
- 
-    	// option #2
     	studentExamsTV.getItems().addAll(examinationList);
-    	
-     	
-    	// option #3
-//        for (Examination examinationItem : examinationList)
-//        {
-//        	System.out.println("my teacher "+examinationItem.getTeacherId());
-//        	studentExamsTV.getItems().add(examinationItem);
-//        }
     }
 
 }

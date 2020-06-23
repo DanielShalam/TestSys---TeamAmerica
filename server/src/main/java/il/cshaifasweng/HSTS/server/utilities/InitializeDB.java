@@ -290,29 +290,44 @@ public class InitializeDB {
 //		public Examination(int execuationCode, int teacherId,ExamType examType, Duration duration, 
 //		LocalDate examDate, LocalTime examStartTime, Exam exam)
 		
-		int execCode;
+		String execCode;
 		int teacherId;
 		ExamType examType;
 		LocalDate examDate;
 		LocalTime examStartTime;
 		Exam exam;
 		
-		execCode = 1234;
+		execCode = "1234";
 		teacherId = exam_1.getTeacherId();
 		examType = ExamType.COMPUTERIZED;
 		examDate = LocalDate.of(2020, Month.JUNE, 23);
 		examStartTime = LocalTime.of(4,20);
 		Examination examintaion_1 = new Examination(execCode, teacherId, examType,  examDate, examStartTime, exam_1);
-	
-		execCode = 4517;
+		course_1.addExamination(examintaion_1);
+		
+		execCode = "4517";
 		teacherId = exam_2.getTeacherId();
 		examType = ExamType.MANUAL;
 		examDate = LocalDate.of(2020, Month.JUNE, 23);
 		examStartTime = LocalTime.of(10,30);
 		Examination examintaion_2 = new Examination(execCode, teacherId, examType, examDate, examStartTime, exam_2);
+		course_2.addExamination(examintaion_2);
+
+		execCode = "AD88";
+		teacherId = teacher_3.getUserId();
+		examType = ExamType.MANUAL;
+		examDate = LocalDate.of(2020, Month.JUNE, 23);
+		examStartTime = LocalTime.of(12,30);
+		Examination examintaion_3 = new Examination(execCode, teacherId, examType, examDate, examStartTime, exam_2);
+		course_2.addExamination(examintaion_3);
 		
+		session.save(course_1);
+		session.save(course_2);
+
 		session.save(examintaion_1);
 		session.save(examintaion_2);
+		session.save(examintaion_3);
+
 		session.flush();
 		
 		System.out.println(examintaion_1.getExamination_id());
