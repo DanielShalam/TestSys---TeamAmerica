@@ -1,25 +1,41 @@
 package il.cshaifasweng.HSTS.client;
 
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalUnit;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+
+import il.cshaifasweng.HSTS.client.utilities.WordHandler;
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.Examination;
 import il.cshaifasweng.HSTS.entities.Question;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -34,6 +50,9 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.util.Duration;
 import javafx.scene.control.TextArea;
 
 
@@ -165,14 +184,40 @@ public class StudentMenuController implements Initializable{
     private Button startOrSubmitBtn; // Value injected by FXMLLoader
     
     @FXML
+    private AnchorPane manualExamAP;
+
+    @FXML
+    private Button downloadExamBtn;
+
+    @FXML
+    private Button submitBtn;
+
+    @FXML
+    private Label manualLB;
+    
+    @FXML
+    private Label timeLeftLB;
+
+    @FXML
+    private Label timeTagLB;
+
+    @FXML
+    private Label hourLb;
+
+    @FXML
+    private Label mintLB;
+
+    @FXML
+    private Label scndLB;
+    
+    @FXML
+    private Label nameLB;
+    
+    @FXML
     void createStudentExamPageBoundary(ActionEvent event) {
     	mainMenuAP.setVisible(false);
     	instAP.setVisible(true);
-    	
-    	for(String course: (LoginController.userReceviedCourses).keySet()) {
-    		courseCB.getItems().add(course);
-    	}
-    	courseCB.getSelectionModel().selectFirst();
+
     }
 
     @FXML
@@ -188,6 +233,8 @@ public class StudentMenuController implements Initializable{
     
     @FXML
     void viewCourseExaminations(ActionEvent event) {
+		studentExamsTV.getItems().clear();
+
     	client = LoginController.client;
 		int courseId = LoginController.userReceviedCourses.get(courseCB.getSelectionModel().getSelectedItem());
 		localCarrier = client.handleMessageFromClientStudentController("get course examinations", courseId, null);
@@ -203,13 +250,78 @@ public class StudentMenuController implements Initializable{
 
     @FXML
     void viewExams(ActionEvent event) {
+    	
+    }
+    
 
+    @FXML
+    void submitExam(ActionEvent event) {
+    	// TODO need to handle cases where user uploaded number of exams.
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Word doc(*.docx)", "*.docx"));
+		File chosenfile = fileChooser.showOpenDialog(null);
+        // create a Label 
+        if (chosenfile != null) { 
+        	manualLB.setText("Exam submitted succesfully. Good luck! "); 
+        } 
+        
+        else {
+        	manualLB.setText("No directory was chosen. ");
+        }
+    }
+    
+
+    @FXML
+    void downloadExam(ActionEvent event) {
+    	Examination examination = studentExamsTV.getSelectionModel().getSelectedItem();
+    	manualLB.setText(""); 
+
+    	try {
+    		XWPFDocument manualExam = WordHandler.CreateWordFile(examination);
+    		FileChooser fileChooser = new FileChooser();
+    		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Word doc(*.docx)", "*.docx"));
+    		fileChooser.setInitialFileName("TestSys-Exam.docx");
+    		File chosenDir = fileChooser.showSaveDialog(null);
+    		if (chosenDir == null) {
+            	manualLB.setText("No directory was chosen. "); 
+            	return;
+    		}
+    		// Download file
+    		if(!chosenDir.getName().contains(".")) {	// Extension validation
+    			chosenDir = new File(chosenDir.getAbsolutePath() + "docx");
+    		}
+    		
+			FileOutputStream out = new FileOutputStream(chosenDir);
+			manualExam.write(out);
+			manualExam.close();
+        	manualLB.setText("Exam downloaded. Good luck! "); 
+			out.close();
+			    		
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			Alert fileIsOpenAlert = new Alert(AlertType.ERROR);
+			fileIsOpenAlert.setHeaderText("File is open. Close it and try again.");
+			fileIsOpenAlert.showAndWait();
+		}
+//    	File chosenDir = dirChooser.showDialog(primaryStage);
+		 catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+		}
     }
     
     @FXML
     void activateExam(ActionEvent event) {
     	String execCode = execCodeTF.getText();
-    	examination = studentExamsTV.getSelectionModel().getSelectedItem();
+    	Examination examination = studentExamsTV.getSelectionModel().getSelectedItem();
+    	
+    	if (examination == null){	// Examination selected validation
+			Alert fileIsOpenAlert = new Alert(AlertType.ERROR);
+			fileIsOpenAlert.setHeaderText("Exam not selected.");
+			fileIsOpenAlert.showAndWait();
+			return;
+      }
+
     	if (execCode.equals(examination.getExecutionCode())) {
 			
 	    	switch (examination.getExamType()) {
@@ -232,6 +344,44 @@ public class StudentMenuController implements Initializable{
 			errorAlert.showAndWait();
 			execCodeTF.clear();
     	}
+    	
+    	if (!execCode.equals(examination.getExecutionCode())) {		// Execution code validation
+			Alert fileIsOpenAlert = new Alert(AlertType.ERROR);
+			fileIsOpenAlert.setHeaderText("Wrong Execution code. Try again. ");
+			fileIsOpenAlert.showAndWait();
+    		return;
+    	}
+
+        manualLB.setAlignment(Pos.CENTER);
+        // Timer
+		Timeline animation = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+	              @Override public void handle(ActionEvent actionEvent) {
+	            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), examination.getExamEndTime()).toSeconds();
+	            	  
+	            	  if (elapsedTime <= 0) {	// Time is up
+		                  submitBtn.setDisable(true);
+		                  downloadExamBtn.setDisable(true);
+		                  manualLB.setText("Exam time is over. "); 
+	            	  }
+	            	  else {	// Every 1 second
+	            		  int hours = (int) (elapsedTime / 3600);
+	            		  int minutes = (int) ((elapsedTime % 3600) / 60);
+	            		  int seconds = (int) (elapsedTime % 60);
+
+	            		  hourLb.setText(String.format("%02d", hours));
+	            		  mintLB.setText(String.format("%02d", minutes));
+	            		  scndLB.setText(String.format("%02d", seconds));
+	            	  }
+
+	              }
+	          	}));
+
+		animation.setCycleCount((int) (Timeline.INDEFINITE)); // Running times
+		animation.play();
+
+    	instAP.setVisible(false);
+    	manualExamAP.setVisible(true);
+    	
     }
     
     
@@ -288,9 +438,15 @@ public class StudentMenuController implements Initializable{
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {   	
+    	nameLB.setText("Hello " + LoginController.userReceviedfullName + ".");
     	instCourseTC.setCellValueFactory(new PropertyValueFactory<Examination,Integer>("courseId"));       
         instTeacherTC.setCellValueFactory(new PropertyValueFactory<Examination,Integer>("teacherId"));     
         instDateTC.setCellValueFactory(new PropertyValueFactory<Examination,LocalDate>("examDate")); 	
+        
+    	for(String course: (LoginController.userReceviedCourses).keySet()) {
+    		courseCB.getItems().add(course);
+    	}
+    	courseCB.getSelectionModel().selectFirst();
     }
     
     

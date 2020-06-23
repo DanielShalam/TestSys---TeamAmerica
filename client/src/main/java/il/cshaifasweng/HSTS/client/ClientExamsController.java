@@ -1024,6 +1024,7 @@ public class ClientExamsController implements Initializable{
     
     @FXML
     void instigate(ActionEvent event) {
+
     	//if (isIntigationValid()) {
     		int execution = Integer.parseInt(execCodeTFInstExamAP.getText());
     		int teacherId = LoginController.userReceviedID;
@@ -1040,8 +1041,6 @@ public class ClientExamsController implements Initializable{
     				examType = ExamType.COMPUTERIZED;
     				break;
     		}
-    		
-    //	}
     }
     
     void setExamAPToViewOnly(Exam exam) {

@@ -24,6 +24,7 @@ public class LoginController {
 	
 	static public SimpleClient client;
 	private Carrier localCarrier = null;
+	static public String userReceviedfullName = null;
 	static public Integer userReceviedID = null;
 	static public HashMap<String, Integer> userReceviedCourses = null;
 	Role userReceviedRole=  null;
@@ -53,7 +54,7 @@ public class LoginController {
     	System.out.println("message from LogInController Handled");
     	
 		System.out.println("running for ever");
-			
+		userReceviedfullName = (String) localCarrier.carrierMessageMap.get("fullName");
 		userReceviedRole = (Role) localCarrier.carrierMessageMap.get("Role");
 		userReceviedID = (Integer) localCarrier.carrierMessageMap.get("ID");
 		userReceviedCourses = (HashMap<String, Integer>) localCarrier.carrierMessageMap.get("Courses");

@@ -21,7 +21,7 @@ public class ServerExaminationController {
 		if (new_id == examination.getExamination_id()) {
 			return "Error - Please try again. ";
 		}
-		// Success			
+		// Success
 		return "Exam commited successfully. ";		
 	}
 	

@@ -80,7 +80,7 @@ public class InitializeDB {
 		session.flush();
 		
 		// initialize courses data
-		Course course_1 = new Course("introduction to CS", subject_1, teacher_3);
+		Course course_1 = new Course("Introduction to CS", subject_1, teacher_3);
 		Course course_2 = new Course("Algorithms", subject_1, teacher_1);
 		Course course_3 = new Course("OOP", subject_2, teacher_3);
 		Course course_4 = new Course("Data structures", subject_2, teacher_2);
@@ -301,7 +301,7 @@ public class InitializeDB {
 		teacherId = exam_1.getTeacherId();
 		examType = ExamType.COMPUTERIZED;
 		examDate = LocalDate.of(2020, Month.JUNE, 23);
-		examStartTime = LocalTime.of(4,20);
+		examStartTime = LocalTime.of(20,00);
 		Examination examintaion_1 = new Examination(execCode, teacherId, examType,  examDate, examStartTime, exam_1);
 		course_1.addExamination(examintaion_1);
 		
@@ -309,7 +309,7 @@ public class InitializeDB {
 		teacherId = exam_2.getTeacherId();
 		examType = ExamType.MANUAL;
 		examDate = LocalDate.of(2020, Month.JUNE, 23);
-		examStartTime = LocalTime.of(10,30);
+		examStartTime = LocalTime.of(21,30);
 		Examination examintaion_2 = new Examination(execCode, teacherId, examType, examDate, examStartTime, exam_2);
 		course_2.addExamination(examintaion_2);
 
@@ -317,7 +317,7 @@ public class InitializeDB {
 		teacherId = teacher_3.getUserId();
 		examType = ExamType.MANUAL;
 		examDate = LocalDate.of(2020, Month.JUNE, 23);
-		examStartTime = LocalTime.of(12,30);
+		examStartTime = LocalTime.of(20,30);
 		Examination examintaion_3 = new Examination(execCode, teacherId, examType, examDate, examStartTime, exam_2);
 		course_2.addExamination(examintaion_3);
 		
