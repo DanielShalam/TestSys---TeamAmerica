@@ -18,6 +18,7 @@ import javafx.util.converter.DateTimeStringConverter;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ListView;
 
 import java.io.IOException;
@@ -52,7 +53,9 @@ public class ClientExamsController implements Initializable{
 	
 	ObservableList<Exam> examData = FXCollections.observableArrayList();
 	
-    @FXML // fx:id="setQuestionMenuAP"
+	
+	
+	@FXML // fx:id="setQuestionMenuAP"
     private AnchorPane setQuestionMenuAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="saveButton"
@@ -87,7 +90,7 @@ public class ClientExamsController implements Initializable{
 
     @FXML // fx:id="answer1RB"
     private RadioButton answer1RB; // Value injected by FXMLLoader
-
+    
     @FXML // fx:id="answerGroup"
     private ToggleGroup answerGroup; // Value injected by FXMLLoader
 
@@ -1021,23 +1024,23 @@ public class ClientExamsController implements Initializable{
     
     @FXML
     void instigate(ActionEvent event) {
-//    	if (isIntigationValid()) {
-//    		int execution = Integer.parseInt(execCodeTFInstExamAP.getText());
-//    		int teacherId = LoginController.userReceviedID;
-//    		Exam exam = instigateExamsTV.getSelectionModel().getSelectedItem();
-//    		//SimpleDateFormat format = new SimpleDateFormat("HH:mm").parse(startTimeTFInstExamAP.getText()); 
-//    		
-//    		String examTypeCB = examTypeCBInstExamAP.getSelectionModel().getSelectedItem();
-//    		ExamType examType;
-//    		switch (examTypeCB) {
-//    			case "Manual":
-//    				examType = ExamType.MANUAL;
-//    				break;
-//    			case "Computerized":
-//    				examType = ExamType.COMPUTERIZED;
-//    				break;
-//    		}
-//    	}
+
+    	//if (isIntigationValid()) {
+    		int execution = Integer.parseInt(execCodeTFInstExamAP.getText());
+    		int teacherId = LoginController.userReceviedID;
+    		Exam exam = instigateExamsTV.getSelectionModel().getSelectedItem();
+    		//SimpleDateFormat format = new SimpleDateFormat("HH:mm").parse(startTimeTFInstExamAP.getText()); 
+    		
+    		String examTypeCB = examTypeCBInstExamAP.getSelectionModel().getSelectedItem();
+    		ExamType examType;
+    		switch (examTypeCB) {
+    			case "Manual":
+    				examType = ExamType.MANUAL;
+    				break;
+    			case "Computerized":
+    				examType = ExamType.COMPUTERIZED;
+    				break;
+    		}
     }
     
     void setExamAPToViewOnly(Exam exam) {
