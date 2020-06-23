@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.Exam;
@@ -29,6 +30,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -157,7 +159,7 @@ public class StudentMenuController implements Initializable{
     private Button nextQuestion; // Value injected by FXMLLoader
 
     @FXML // fx:id="prevQuestiob"
-    private Button prevQuestiob; // Value injected by FXMLLoader
+    private Button prevQuestion; // Value injected by FXMLLoader
 
     @FXML // fx:id="startOrSubmitBtn"
     private Button startOrSubmitBtn; // Value injected by FXMLLoader
@@ -207,24 +209,28 @@ public class StudentMenuController implements Initializable{
     @FXML
     void activateExam(ActionEvent event) {
     	String execCode = execCodeTF.getText();
-    	//Examination examination = studentExamsTV.getSelectionModel().getSelectedItem();
     	examination = studentExamsTV.getSelectionModel().getSelectedItem();
-    	if (!execCode.equals(examination.getExecutionCode())) {
-			Alert errorAlert = new Alert(AlertType.WARNING);
-    		errorAlert.setHeaderText("Wrong execution code. Please try again. ");
-    		errorAlert.showAndWait();
+    	if (execCode.equals(examination.getExecutionCode())) {
+			
+	    	switch (examination.getExamType()) {
+	    	case MANUAL:
+	    		
+	    		break;
+	    		
+	    	case COMPUTERIZED:
+	    			loadComputerizedExamination();
+	    		break;
+	    			
+	    	default:
+	    		System.out.println("ERROR: exam type not defined - please contact the assigning teacher");
+	    	}
     	}
-    	switch (examination.getExamType()) {
-    	case MANUAL:
-    		
-    		break;
-    		
-    	case COMPUTERIZED:
-    			loadComputerizedExamination();
-    		break;
-    			
-    	default:
-    		System.out.println("ERROR: exam type not defined - please contact the assigning teacher");
+    	else
+    	{
+	    	Alert errorAlert = new Alert(AlertType.WARNING);
+			errorAlert.setHeaderText("Wrong execution code. Please try again. ");
+			errorAlert.showAndWait();
+			execCodeTF.clear();
     	}
     }
     
@@ -234,10 +240,16 @@ public class StudentMenuController implements Initializable{
     	instAP.setVisible(false);
     	autoExamAP.setVisible(true);
     	examination.getExam();
-    	Set<Question> qSet = examination.getExam().getQuestionList();
-    	qList = new ArrayList<Question>(qSet); 
+    	//Set<Question> qSet = examination.getExam().getQuestionList();
+    	qList = new ArrayList<Question>(examination.getExam().getQuestionList());
+    	//qList = new ArrayList<Question>(qSet); 
     	timer.setText(Integer.toString(questionIndex));
 //    	timer.setText(Integer.toString(qList.size()));
+    	prevQuestion.setDisable(true);
+    	answer1RB.setDisable(true);
+    	answer2RB.setDisable(true);
+    	answer3RB.setDisable(true);
+    	answer4RB.setDisable(true);
     	showQuestion() ;
     }
     
@@ -257,12 +269,20 @@ public class StudentMenuController implements Initializable{
     @FXML
     void showNextQuestion(ActionEvent event) {
     	questionIndex++;
+    	if (questionIndex == qList.size()-1) {
+    		nextQuestion.setDisable(true);
+    	}
+    	prevQuestion.setDisable(false);
     	showQuestion();
     }
     
     @FXML
     void showPrevQuestion(ActionEvent event) {
     	questionIndex--;
+    	if (questionIndex == 0) {
+    		prevQuestion.setDisable(true);
+    	}
+    	nextQuestion.setDisable(false);
     	showQuestion();
     }
     
@@ -278,5 +298,39 @@ public class StudentMenuController implements Initializable{
     	
     	studentExamsTV.getItems().addAll(examinationList);
     }
+    
+    @FXML
+    void startSubmitExamination(ActionEvent event) {
+    	answer1RB.setDisable(false);
+    	answer2RB.setDisable(false);
+    	answer3RB.setDisable(false);
+    	answer4RB.setDisable(false);
+    	
+    	TextInputDialog dialog = new TextInputDialog("id here");
+    	dialog.setTitle("ID required");
+    	dialog.setContentText("Please enter your ID:");
 
+    	Optional<String> input = dialog.showAndWait();
+    	if (input.isPresent()) {	// check user didn't exit the dialog window
+    		
+	    	String strInput = input.get();
+	    	String id = Integer.toString(LoginController.userReceviedID);
+	    	if (id.equals(strInput)) {
+	    		System.out.println("Id matches");
+	    		examStarted();
+	    	}
+	    	else {
+	    		System.out.println("Id doesn't match");
+	    	}
+	    }
+    }
+
+    void examStarted() {
+    	// change button name to "submit"
+    	// change button functionality
+    	// enable buttons
+    	// show timer
+    	// save answers when clicking radio buttons
+    	
+    }
 }

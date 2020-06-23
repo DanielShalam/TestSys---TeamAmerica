@@ -137,22 +137,22 @@
                   <ToggleGroup fx:id="answerGroup" />
                </toggleGroup>
             </RadioButton>
-            <TextField fx:id="question_num" layoutX="67.0" layoutY="43.0" />
+            <TextField fx:id="question_num" editable="false" layoutX="67.0" layoutY="43.0" />
             <RadioButton fx:id="answer2RB" layoutX="89.0" layoutY="387.0" mnemonicParsing="false" text="2." toggleGroup="$answerGroup" />
             <RadioButton fx:id="answer3RB" layoutX="89.0" layoutY="420.0" mnemonicParsing="false" text="3." toggleGroup="$answerGroup" />
             <RadioButton fx:id="answer4RB" layoutX="89.0" layoutY="453.0" mnemonicParsing="false" text="4." toggleGroup="$answerGroup" />
-            <TextField fx:id="answer1TF" layoutX="138.0" layoutY="349.0" prefHeight="26.0" prefWidth="335.0" />
-            <TextField fx:id="answer2TF" layoutX="138.0" layoutY="382.0" prefHeight="26.0" prefWidth="335.0" />
-            <TextField fx:id="answer3TF" layoutX="138.0" layoutY="415.0" prefHeight="26.0" prefWidth="335.0" />
-            <TextField fx:id="answer4TF" layoutX="138.0" layoutY="448.0" prefHeight="26.0" prefWidth="335.0" />
-            <TextField fx:id="timer" layoutX="496.0" layoutY="42.0" prefHeight="26.0" prefWidth="78.0" />
-            <TextArea fx:id="questionTA" layoutX="67.0" layoutY="89.0" prefHeight="70.0" prefWidth="499.0" />
-            <TextField layoutX="67.0" layoutY="176.0" text="Instructions:" />
-            <TextArea fx:id="instructionTA" layoutX="67.0" layoutY="220.0" prefHeight="54.0" prefWidth="398.0" />
-            <TextField layoutX="64.0" layoutY="308.0" prefHeight="26.0" prefWidth="193.0" text="Choose the correct answer:" />
+            <TextField fx:id="answer1TF" editable="false" layoutX="138.0" layoutY="349.0" prefHeight="26.0" prefWidth="335.0" />
+            <TextField fx:id="answer2TF" editable="false" layoutX="138.0" layoutY="382.0" prefHeight="26.0" prefWidth="335.0" />
+            <TextField fx:id="answer3TF" editable="false" layoutX="138.0" layoutY="415.0" prefHeight="26.0" prefWidth="335.0" />
+            <TextField fx:id="answer4TF" editable="false" layoutX="138.0" layoutY="448.0" prefHeight="26.0" prefWidth="335.0" />
+            <TextField fx:id="timer" editable="false" layoutX="496.0" layoutY="42.0" prefHeight="26.0" prefWidth="78.0" />
+            <TextArea fx:id="questionTA" editable="false" layoutX="67.0" layoutY="89.0" prefHeight="70.0" prefWidth="499.0" />
+            <TextField editable="false" layoutX="67.0" layoutY="176.0" text="Instructions:" />
+            <TextArea fx:id="instructionTA" editable="false" layoutX="67.0" layoutY="220.0" prefHeight="54.0" prefWidth="398.0" />
+            <TextField editable="false" layoutX="64.0" layoutY="308.0" prefHeight="26.0" prefWidth="193.0" text="Choose the correct answer:" />
             <Button fx:id="nextQuestion" layoutX="510.0" layoutY="519.0" mnemonicParsing="false" onAction="#showNextQuestion" text="Next question" />
-            <Button fx:id="prevQuestiob" layoutX="37.0" layoutY="519.0" mnemonicParsing="false" onAction="#showPrevQuestion" text="Previous question" />
-            <Button fx:id="startOrSubmitBtn" layoutX="279.0" layoutY="510.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="81.0" text="Start exam" />
+            <Button fx:id="prevQuestion" layoutX="37.0" layoutY="519.0" mnemonicParsing="false" onAction="#showPrevQuestion" text="Previous question" />
+            <Button fx:id="startOrSubmitBtn" layoutX="279.0" layoutY="510.0" mnemonicParsing="false" onAction="#startSubmitExamination" prefHeight="44.0" prefWidth="81.0" text="Start exam" />
          </children></AnchorPane>
    </children>
 </AnchorPane>
