@@ -293,7 +293,7 @@
                   	<items>
         				<FXCollections fx:factory="observableArrayList">
             				<String fx:value="Manual" />
-            				<String fx:value="computerized" />
+            				<String fx:value="Computerized" />
         				</FXCollections>
     				</items>
     			  </ChoiceBox>
@@ -313,7 +313,7 @@
                         <Font size="16.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="startTimeTFInstExamAP" layoutX="209.0" layoutY="191.0" promptText="HH:MM" />
+                  <TextField fx:id="startTimeTFInstExamAP" layoutX="209.0" layoutY="191.0" />
                </children>
             </AnchorPane>
             <Button fx:id="instigateButtonInstExamAP" layoutX="151.0" layoutY="625.0" mnemonicParsing="false" onAction="#instigate" prefHeight="30.0" prefWidth="172.0" text="Instigate" visible="false">
