@@ -36,8 +36,10 @@ public class UserController {
 				// return user.getRole();
 				hash.put("Role", user.getRole());
 				hash.put("ID", user.getUserId());
+				String fullName = (String) user.getFirstName() + " " + user.getLastname();
 				HashMap<String, Integer> courses = new HashMap<String, Integer>();
-				
+				hash.put("fullName", fullName);
+
 				// Get student courses
 				if (user.getRole() == Role.STUDENT) {
 					List <Course> course_list = user.getCoursesStudying();

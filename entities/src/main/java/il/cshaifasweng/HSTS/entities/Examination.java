@@ -30,8 +30,8 @@ public class Examination implements Serializable {
 	private int examination_id;		//primary key
 	
 	@Column
-	private int executionCode;
-	
+	private String executionCode;
+
 	@Column
 	private Duration actualDuration;
 	
@@ -71,14 +71,11 @@ public class Examination implements Serializable {
 	// course examination relation - Unidirectional
 	@Column(name = "course_id")
 	private int courseId;
-	
-	
-
 
 	@OneToMany(mappedBy = "examination")
     private Set<ExaminationStudent> examineesList = new HashSet<ExaminationStudent>();
 	
-	public Examination(int execuationCode, int teacherId,ExamType examType,	LocalDate examDate, 
+	public Examination(String execuationCode, int teacherId,ExamType examType,	LocalDate examDate, 
 						LocalTime examStartTime, Exam exam) {
 		this.executionCode = execuationCode;
 		this.studentsStarted = 0;
@@ -188,6 +185,9 @@ public class Examination implements Serializable {
 		this.teacherId = teacherId;
 	}
 
+	public String getExecutionCode() {
+		return executionCode;
+	}
 
 	public LocalDate getExamDate() {
 		return examDate;

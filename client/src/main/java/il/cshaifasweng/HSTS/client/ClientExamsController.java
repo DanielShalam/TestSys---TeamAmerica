@@ -20,6 +20,7 @@ import javafx.util.converter.LocalTimeStringConverter;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ListView;
 
 import java.io.IOException;
@@ -56,7 +57,9 @@ public class ClientExamsController implements Initializable{
 	private List <Exam> examsList = null;
 	private List <Examination> activeExamList = null;
 	
-    @FXML // fx:id="setQuestionMenuAP"
+	
+	
+	@FXML // fx:id="setQuestionMenuAP"
     private AnchorPane setQuestionMenuAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="saveButton"
@@ -91,7 +94,7 @@ public class ClientExamsController implements Initializable{
 
     @FXML // fx:id="answer1RB"
     private RadioButton answer1RB; // Value injected by FXMLLoader
-
+    
     @FXML // fx:id="answerGroup"
     private ToggleGroup answerGroup; // Value injected by FXMLLoader
 
@@ -1098,6 +1101,7 @@ public class ClientExamsController implements Initializable{
     }
     
     @FXML
+
     void instigate(ActionEvent event) {    	
 		int teacherId = LoginController.userReceviedID;
 		Exam exam = instigateExamsTV.getSelectionModel().getSelectedItem();

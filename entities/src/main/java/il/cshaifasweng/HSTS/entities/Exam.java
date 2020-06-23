@@ -3,6 +3,7 @@ package il.cshaifasweng.HSTS.entities;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -43,7 +44,7 @@ public class Exam implements Serializable {
 	@JoinTable(name = "exam_question", 
 	           joinColumns = { @JoinColumn(name = "exam_id") }, 
 	           inverseJoinColumns = { @JoinColumn(name = "question_id") })
-	private Set<Question> questionList; 
+	private Set<Question> questionList = new LinkedHashSet<>(); 
 	
 	
 	@Column(name = "scoring_list")

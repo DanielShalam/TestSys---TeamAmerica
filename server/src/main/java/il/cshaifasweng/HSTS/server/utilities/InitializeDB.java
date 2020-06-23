@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -40,7 +41,7 @@ public class InitializeDB {
 		User teacher_1 = new User("Barak", "Obama", Hashing.hashing("plonter"), Role.TEACHER);
 		User teacher_2 = new User("Rudy", "Giuliani", Hashing.hashing("theBigApple"), Role.TEACHER);
 		User teacher_3 = new User("Linus", "Torvalds", Hashing.hashing("Linux"), Role.TEACHER);
-		User student_1 = new User("Donald", "Trump", Hashing.hashing("duckface"), Role.STUDENT);
+		User student_1 = new User("Donald", "Trump", Hashing.hashing("duck"), Role.STUDENT);
 		User student_2 = new User("John", "Rockefeller", Hashing.hashing("stillRichest"), Role.STUDENT);
 		User student_3 = new User("Mayer", "Amschel Rothschild", Hashing.hashing("conspiracy101"), Role.STUDENT); 
 		User student_4 = new User("kyle", "broflovski", Hashing.hashing("ginGer"), Role.STUDENT);
@@ -79,7 +80,7 @@ public class InitializeDB {
 		session.flush();
 		
 		// initialize courses data
-		Course course_1 = new Course("introduction to CS", subject_1, teacher_3);
+		Course course_1 = new Course("Introduction to CS", subject_1, teacher_3);
 		Course course_2 = new Course("Algorithms", subject_1, teacher_1);
 		Course course_3 = new Course("OOP", subject_2, teacher_3);
 		Course course_4 = new Course("Data structures", subject_2, teacher_2);
@@ -247,28 +248,28 @@ public class InitializeDB {
 		String studentInstructions = "do the test";
 		String teacherInstructions = "this exam is not easy";
 		
-		Set<Question> questionList_1 = new HashSet<Question>();
+		Set<Question> questionList_1 = new LinkedHashSet<Question>();
 		questionList_1.add(question_1);
 		questionList_1.add(question_5);
 		questionList_1.add(question_12);
 		questionList_1.add(question_13);
 		Exam exam_1 = new Exam(teacher_3.getUserId(), 1, questionList_1, scoringList, studentInstructions, teacherInstructions, duration_1);
 		
-		Set<Question> questionList_2 = new HashSet<Question>();
+		Set<Question> questionList_2 = new LinkedHashSet<Question>();
 		questionList_2.add(question_2);
 		questionList_2.add(question_6);
 		questionList_2.add(question_8);
 		questionList_2.add(question_9);
 		Exam exam_2 = new Exam(teacher_1.getUserId(), 2, questionList_2, scoringList, studentInstructions, teacherInstructions, duration_1);
 		
-		Set<Question> questionList_3 = new HashSet<Question>();
+		Set<Question> questionList_3 = new LinkedHashSet<Question>();
 		questionList_3.add(question_3);
 		questionList_3.add(question_10);
 		questionList_3.add(question_14);
 		questionList_3.add(question_15);
 		Exam exam_3 = new Exam(teacher_3.getUserId(), 3, questionList_3, scoringList, studentInstructions, teacherInstructions, duration_1);
 		
-		Set<Question> questionList_4 = new HashSet<Question>();
+		Set<Question> questionList_4 = new LinkedHashSet<Question>();
 		questionList_4.add(question_4);
 		questionList_4.add(question_7);
 		questionList_4.add(question_11);
@@ -290,29 +291,43 @@ public class InitializeDB {
 //		public Examination(int execuationCode, int teacherId,ExamType examType, Duration duration, 
 //		LocalDate examDate, LocalTime examStartTime, Exam exam)
 		
-		int execCode;
+		String execCode;
 		int teacherId;
 		ExamType examType;
 		LocalDate examDate;
 		LocalTime examStartTime;
-		Exam exam;
 		
-		execCode = 1234;
+		execCode = "1234";
 		teacherId = exam_1.getTeacherId();
 		examType = ExamType.COMPUTERIZED;
 		examDate = LocalDate.of(2020, Month.JUNE, 23);
-		examStartTime = LocalTime.of(4,20);
+		examStartTime = LocalTime.of(22,20);
 		Examination examintaion_1 = new Examination(execCode, teacherId, examType,  examDate, examStartTime, exam_1);
-	
-		execCode = 4517;
+		course_1.addExamination(examintaion_1);
+		
+		execCode = "4517";
 		teacherId = exam_2.getTeacherId();
 		examType = ExamType.MANUAL;
 		examDate = LocalDate.of(2020, Month.JUNE, 23);
-		examStartTime = LocalTime.of(10,30);
+		examStartTime = LocalTime.of(21,30);
 		Examination examintaion_2 = new Examination(execCode, teacherId, examType, examDate, examStartTime, exam_2);
+		course_2.addExamination(examintaion_2);
+
+		execCode = "AD88";
+		teacherId = teacher_3.getUserId();
+		examType = ExamType.MANUAL;
+		examDate = LocalDate.of(2020, Month.JUNE, 23);
+		examStartTime = LocalTime.of(20,30);
+		Examination examintaion_3 = new Examination(execCode, teacherId, examType, examDate, examStartTime, exam_2);
+		course_2.addExamination(examintaion_3);
 		
+		session.save(course_1);
+		session.save(course_2);
+
 		session.save(examintaion_1);
 		session.save(examintaion_2);
+		session.save(examintaion_3);
+
 		session.flush();
 		
 		System.out.println(examintaion_1.getExamination_id());

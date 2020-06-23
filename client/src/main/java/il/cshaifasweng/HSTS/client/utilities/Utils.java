@@ -1,4 +1,4 @@
-package il.cshaifasweng.HSTS.client;
+package il.cshaifasweng.HSTS.client.utilities;
 
 
 	import java.time.Duration;

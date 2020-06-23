@@ -58,8 +58,14 @@ public class Course implements Serializable {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "courseId") // mapping owner side
 	private List<Examination> examinationList;
 	
-	
-	
+	public List<Examination> getExaminationList() {
+		return examinationList;
+	}
+
+	public void setExaminationList(List<Examination> examinationList) {
+		this.examinationList = examinationList;
+	}
+
 	public Course(String courseName, Subject subject, User teacher) {
 		this.courseName = courseName;
 		this.subjectId = subject.getSubjectId();
@@ -71,6 +77,10 @@ public class Course implements Serializable {
 
 	public Course() {
 
+	}
+	
+	public void addExamination(Examination examination) {
+		this.examinationList.add(examination);
 	}
 	
 	/* add teacher to course 
