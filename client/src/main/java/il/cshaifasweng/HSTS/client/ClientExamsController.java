@@ -87,7 +87,7 @@ public class ClientExamsController implements Initializable{
 
     @FXML // fx:id="answer1RB"
     private RadioButton answer1RB; // Value injected by FXMLLoader
-
+    
     @FXML // fx:id="answerGroup"
     private ToggleGroup answerGroup; // Value injected by FXMLLoader
 
@@ -1021,7 +1021,7 @@ public class ClientExamsController implements Initializable{
     
     @FXML
     void instigate(ActionEvent event) {
-    	if (isIntigationValid()) {
+    	//if (isIntigationValid()) {
     		int execution = Integer.parseInt(execCodeTFInstExamAP.getText());
     		int teacherId = LoginController.userReceviedID;
     		Exam exam = instigateExamsTV.getSelectionModel().getSelectedItem();
@@ -1038,7 +1038,7 @@ public class ClientExamsController implements Initializable{
     				break;
     		}
     		
-    	}
+    //	}
     }
     
     void setExamAPToViewOnly(Exam exam) {
