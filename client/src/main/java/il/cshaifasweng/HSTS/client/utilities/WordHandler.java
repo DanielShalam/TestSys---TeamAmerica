@@ -1,4 +1,4 @@
-package il.cshaifasweng.HSTS.server.utilities;
+package il.cshaifasweng.HSTS.client.utilities;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,7 +14,6 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
-import com.mysql.cj.xdevapi.Table;
 
 public class WordHandler implements Serializable {
 	private static final long serialVersionUID = 1L;

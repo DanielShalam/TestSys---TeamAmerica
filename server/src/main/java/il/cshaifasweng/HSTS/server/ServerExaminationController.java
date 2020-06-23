@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 
+import il.cshaifasweng.HSTS.entities.Course;
 import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.ExamType;
 import il.cshaifasweng.HSTS.entities.Examination;
-import il.cshaifasweng.HSTS.server.utilities.WordHandler;
 
 public class ServerExaminationController {
 	
@@ -37,11 +37,10 @@ public class ServerExaminationController {
 	}
 	
 	public void calcExaminationStatistics(int exec_code) {
-		
 	}	
 	
 //	public static WordHandler createManualExam(Examination examination) throws IOException {
-//	}	
+//	}
 	
 	public static Examination getByExecutionCode(int exec_code) {
 		try {
@@ -56,12 +55,18 @@ public class ServerExaminationController {
 	public static List<Examination> getExamsinationsByAtrribute(String attribute, int value) {
 		try {
 			List<Examination> eList = ConnectToDB.getByAttribute(Examination.class, attribute, value);	// Getting by Teacher id
-			return eList;	
+			return eList;
 	    	
 		} catch (Exception illegalArgumentException) {	// No examination match this attrubute
 			return null;
 		}
 	}
+	
+//	public static List<Examination> getExaminationsByCourse(int value) {
+//		List <Examination> examinationsList = ConnectToDB.extractExaminations(value);
+//		System.out.println(examinationsList);
+//		return examinationsList;
+//	}
 	
 	// Delete exam from database using its id
 	public static String deleteExamByEntity(Examination examination) {

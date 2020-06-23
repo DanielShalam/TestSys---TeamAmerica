@@ -120,11 +120,13 @@
                   <TableColumn fx:id="instDateTC" prefWidth="130.4000244140625" text="Date" />
               </columns>
             </TableView>
-            <Button fx:id="cancelButton" layoutX="467.0" layoutY="454.0" onAction="#cancel" mnemonicParsing="false" prefHeight="26.0" prefWidth="77.0" text="Cancel" />
+            <Button fx:id="cancelButton" layoutX="466.0" layoutY="494.0" mnemonicParsing="false" onAction="#cancel" prefHeight="26.0" prefWidth="77.0" text="Return" />
             <ChoiceBox fx:id="courseCB" layoutX="47.0" layoutY="132.0" prefWidth="150.0" />
             <Label fx:id="courseLB" layoutX="80.0" layoutY="106.0" text="Choose course:" />
-            <Button fx:id="viewExamsBtn" layoutX="50.0" layoutY="205.0" onAction="#viewCourseExaminations" mnemonicParsing="false" prefHeight="26.0" prefWidth="150.0" text="View exams" />
+            <Button fx:id="viewExamsBtn" layoutX="50.0" layoutY="205.0" mnemonicParsing="false" onAction="#viewCourseExaminations" prefHeight="26.0" prefWidth="150.0" text="View exams" />
+            <Button fx:id="startBtn" layoutX="246.0" layoutY="494.0" mnemonicParsing="false" onAction="#activateExam" prefHeight="26.0" prefWidth="126.0" text="Start exam" />
          </children>
       </AnchorPane>
+      <AnchorPane fx:id="autoExamAP" prefHeight="578.0" prefWidth="640.0" visible="false" />
    </children>
 </AnchorPane>
