@@ -273,7 +273,7 @@ public class StudentMenuController implements Initializable{
 
     @FXML
     void downloadExam(ActionEvent event) {
-    	Examination examination = studentExamsTV.getSelectionModel().getSelectedItem();
+    	examination = studentExamsTV.getSelectionModel().getSelectedItem();
     	manualLB.setText(""); 
 
     	try {
@@ -313,20 +313,20 @@ public class StudentMenuController implements Initializable{
     @FXML
     void activateExam(ActionEvent event) {
     	String execCode = execCodeTF.getText();
-    	Examination examination = studentExamsTV.getSelectionModel().getSelectedItem();
+    	examination = studentExamsTV.getSelectionModel().getSelectedItem();
     	
     	if (examination == null){	// Examination selected validation
 			Alert fileIsOpenAlert = new Alert(AlertType.ERROR);
 			fileIsOpenAlert.setHeaderText("Exam not selected.");
 			fileIsOpenAlert.showAndWait();
 			return;
-      }
+    	}
 
     	if (execCode.equals(examination.getExecutionCode())) {
 			
 	    	switch (examination.getExamType()) {
 	    	case MANUAL:
-	    		
+	    			ActivateManualExam();
 	    		break;
 	    		
 	    	case COMPUTERIZED:
@@ -343,20 +343,19 @@ public class StudentMenuController implements Initializable{
 			errorAlert.setHeaderText("Wrong execution code. Please try again. ");
 			errorAlert.showAndWait();
 			execCodeTF.clear();
+			return;
     	}
-    	
-    	if (!execCode.equals(examination.getExecutionCode())) {		// Execution code validation
-			Alert fileIsOpenAlert = new Alert(AlertType.ERROR);
-			fileIsOpenAlert.setHeaderText("Wrong Execution code. Try again. ");
-			fileIsOpenAlert.showAndWait();
-    		return;
-    	}
-
+    }
+    
+    public void ActivateManualExam() {
+    	instAP.setVisible(false);
+    	manualExamAP.setVisible(true);
         manualLB.setAlignment(Pos.CENTER);
+        LocalTime endTime = examination.getExamEndTime();
         // Timer
 		Timeline animation = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 	              @Override public void handle(ActionEvent actionEvent) {
-	            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), examination.getExamEndTime()).toSeconds();
+	            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), endTime).toSeconds();
 	            	  
 	            	  if (elapsedTime <= 0) {	// Time is up
 		                  submitBtn.setDisable(true);
@@ -373,34 +372,25 @@ public class StudentMenuController implements Initializable{
 	            		  scndLB.setText(String.format("%02d", seconds));
 	            	  }
 
-	              }
-	          	}));
+	              }}
+	          	));
 
 		animation.setCycleCount((int) (Timeline.INDEFINITE)); // Running times
 		animation.play();
 
-    	instAP.setVisible(false);
-    	manualExamAP.setVisible(true);
-    	
     }
-    
-    
     public void loadComputerizedExamination() {
     	
     	instAP.setVisible(false);
     	autoExamAP.setVisible(true);
     	examination.getExam();
-    	//Set<Question> qSet = examination.getExam().getQuestionList();
     	qList = new ArrayList<Question>(examination.getExam().getQuestionList());
-    	//qList = new ArrayList<Question>(qSet); 
-    	timer.setText(Integer.toString(questionIndex));
-//    	timer.setText(Integer.toString(qList.size()));
     	prevQuestion.setDisable(true);
     	answer1RB.setDisable(true);
     	answer2RB.setDisable(true);
     	answer3RB.setDisable(true);
     	answer4RB.setDisable(true);
-    	showQuestion() ;
+    	showQuestion();
     }
     
     
