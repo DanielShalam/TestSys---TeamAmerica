@@ -6,6 +6,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -14,7 +15,8 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.AnchorPane;
-import javafx.util.converter.DateTimeStringConverter;
+import javafx.util.converter.LocalDateStringConverter;
+import javafx.util.converter.LocalTimeStringConverter;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
@@ -23,9 +25,10 @@ import javafx.scene.control.ListView;
 
 import java.io.IOException;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -35,9 +38,11 @@ import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.Map.Entry;
 
+import il.cshaifasweng.HSTS.entities.AddTimeRequest;
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.ExamType;
+import il.cshaifasweng.HSTS.entities.Examination;
 import il.cshaifasweng.HSTS.entities.Question;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -50,8 +55,7 @@ public class ClientExamsController implements Initializable{
 	private SimpleClient client;
 	private Carrier localCarrier = null;
 	private List <Exam> examsList = null;
-	
-	ObservableList<Exam> examData = FXCollections.observableArrayList();
+	private List <Examination> activeExamList = null;
 	
 	
 	
@@ -298,6 +302,51 @@ public class ClientExamsController implements Initializable{
     @FXML // fx:id="instigateButtonInstExamAP"
     private Button instigateButtonInstExamAP; // Value injected by FXMLLoader
     
+    @FXML // fx:id="dateDPInstExamAP"
+    private DatePicker dateDPInstExamAP; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="orgDurationTF"
+    private TextField orgDurationTF; // Value injected by FXMLLoader
+
+    @FXML // fx:id="requestedExamDurationTF"
+    private TextField requestedExamDurationTF; // Value injected by FXMLLoader
+
+    @FXML // fx:id="reasonTimeAdditionTA"
+    private TextArea reasonTimeAdditionTA; // Value injected by FXMLLoader
+
+    @FXML // fx:id="submitTimeAdditionButton"
+    private Button submitTimeAdditionButton; // Value injected by FXMLLoader
+
+    @FXML // fx:id="cancelTimeAdditionButton"
+    private Button cancelTimeAdditionButton; // Value injected by FXMLLoader
+
+    @FXML // fx:id="activeExamsTV"
+    private TableView<Examination> activeExamsTV; // Value injected by FXMLLoader
+
+    @FXML // fx:id="examinationIDTCTimeAddition"
+    private TableColumn<Examination, Integer> examinationIDTCTimeAddition; // Value injected by FXMLLoader
+
+    @FXML // fx:id="courseIDTCTimeAddition"
+    private TableColumn<Examination, Integer> courseIDTCTimeAddition; // Value injected by FXMLLoader
+
+    @FXML // fx:id="examTypeTCTimeAddition"
+    private TableColumn<Examination, ExamType> examTypeTCTimeAddition; // Value injected by FXMLLoader
+
+    @FXML // fx:id="dateTCTimeAddition"
+    private TableColumn<Examination, LocalDate> dateTCTimeAddition; // Value injected by FXMLLoader
+
+    @FXML // fx:id="startTimeTCTimeAddition"
+    private TableColumn<Examination, LocalTime> startTimeTCTimeAddition; // Value injected by FXMLLoader
+
+    @FXML // fx:id="endTimeTCTimeAddition"
+    private TableColumn<Examination, LocalTime> endTimeTCTimeAddition; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="timeAdditionRequestAP"
+    private AnchorPane timeAdditionRequestAP; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="viewExamTeacherInstructionsTC"
+    private TableColumn<Exam, String> viewExamTeacherInstructionsTC; // Value injected by FXMLLoader
+    
     @FXML
     void viewExam(ActionEvent event) throws IOException {
     	Exam exam = viewExamsTV.getSelectionModel().getSelectedItem();
@@ -368,9 +417,9 @@ public class ClientExamsController implements Initializable{
             	
             	String status = (String) localCarrier.carrierMessageMap.get("status");
             	
-            	if (status == "Exam deleted successfully. ") {
-            		viewExamsTV.getItems().remove(exam);
-            	}
+//            	if (status == "Exam deleted successfully. ") {
+//            		viewExamsTV.getItems().remove(exam);
+//            	}
         	}
     	}
     	
@@ -442,64 +491,71 @@ public class ClientExamsController implements Initializable{
 
     @FXML
     void getActiveExams(ActionEvent event) {
+    	instigateExamsTV.setVisible(false);
+    	instigateExamButton.setVisible(false);
+    	activeExamsTV.setVisible(true);
+    	requestTimeButton.setVisible(true);
+    	
+    	client = LoginController.client;
 
+    	String message = "get teacher examinations";
+    	int id = LoginController.userReceviedID;
+    	Examination examination = null;
+    
+    	localCarrier = client.handleMessageFromClientExaminationController(message, id, examination);
+    	System.out.println("message from ClientExaminationController Handled");
+		
+    	ObservableList<Examination> aItems = activeExamsTV.getItems();
+		if (!aItems.isEmpty()) {
+			activeExamsTV.getItems().removeAll(aItems);
+		}
+
+		List <Examination> activeExamList = (List<Examination>) localCarrier.carrierMessageMap.get("examinations");
+		
+		if (activeExamList != null) {
+			loadActiveExamData(activeExamList);
+		} else {
+			Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("No active exams");
+    		errorAlert.showAndWait();
+		}
+		
+    	
     }
 
-    @FXML
+    void loadActiveExamData(List<Examination> activeExamList) {
+		for (Examination activeExamination : activeExamList) {
+			activeExamsTV.getItems().add(activeExamination);
+		}
+	}
+
+	@FXML
     void getAutoCheckedExams(ActionEvent event) {
 
     }
 
     @FXML
-    void getCourseExams(ActionEvent event) throws IOException {
-    	client = LoginController.client;
-//    	client.openConnection();
-    	String message = "get all exams";
-    	Exam exam = null;
+    void getCourseExams(ActionEvent event) throws IOException {    	
+    	examsList = getCourseExams(viewExamsTV,courseViewExamsCB);
     	
-    	int id = 0;
-    	if (courseViewExamsCB.getSelectionModel().getSelectedItem() != null) {
-    		message = "get all course exams";
-    		id = LoginController.userReceviedCourses.get(courseViewExamsCB.getSelectionModel().getSelectedItem());
+    	if (examsList != null) {
+    		loadData(examsList);
     	}
-    	
-    	localCarrier = client.handleMessageFromClientExamController(message, id, exam);
-    	System.out.println("message from ClientExamsController Handled");
-		ObservableList<Exam> eItems = viewExamsTV.getItems();
-		
-		if (!eItems.isEmpty()) {
-			viewExamsTV.getItems().removeAll(examsList);
-		}
-
-		examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
-		loadData(examsList);		
-
+				
     }
 
     @FXML
     void getCourseExamsInst(ActionEvent event) {
-    	client = LoginController.client;
-//    	client.openConnection();
-    	String message = "get all exams";
-    	Exam exam = null;
+    	activeExamsTV.setVisible(false);
+    	instigateExamsTV.setVisible(true);
+    	instigateExamButton.setVisible(true);
+    	requestTimeButton.setVisible(false);
     	
-    	int id = 0;
-    	if (courseExamInstigCB.getSelectionModel().getSelectedItem() != null) {
-    		message = "get all course exams";
-    		id = LoginController.userReceviedCourses.get(courseExamInstigCB.getSelectionModel().getSelectedItem());
+    	examsList = getCourseExams(instigateExamsTV,courseExamInstigCB);
+    	
+    	if (examsList != null) {
+    		loadInstigateData(examsList);
     	}
-    	
-    	localCarrier = client.handleMessageFromClientExamController(message, id, exam);
-    	System.out.println("message from ClientExamsController Handled");
-		ObservableList<Exam> eItems = instigateExamsTV.getItems();
-		
-		if (!eItems.isEmpty()) {
-			instigateExamsTV.getItems().removeAll(examsList);
-		}
-
-		examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
-		
-		loadInstigateData(examsList);
     }
 
     @FXML
@@ -508,7 +564,6 @@ public class ClientExamsController implements Initializable{
 //    	client.openConnection();
     	
     	String message = "get all teacher exams";
-    	System.out.println(message);
     	Exam exam = null;
     	int id = LoginController.userReceviedID;
     	
@@ -552,7 +607,21 @@ public class ClientExamsController implements Initializable{
 
     @FXML
     void requestAdditionTime(ActionEvent event) {
-
+    	Examination activeExamination = activeExamsTV.getSelectionModel().getSelectedItem();
+    	if (activeExamination != null) {
+    		instigateExamButton.setVisible(false);
+        	requestTimeButton.setVisible(false);
+        	showActiveExamsButton.setDisable(true);
+        	showCourseExamsInstButton.setDisable(true);
+        	timeAdditionRequestAP.setVisible(true);
+        	orgDurationTF.setText(dtm(activeExamination.getExam().getAssignedDuration()));
+    	} else {
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Examination was not selected");
+    		errorAlert.showAndWait();
+    	}
+    	
+    	
     }
 
     @FXML
@@ -564,9 +633,6 @@ public class ClientExamsController implements Initializable{
     void showExamInstigation(ActionEvent event) {
     	hideCurrentAP();
     	examInstigationAP.setVisible(true);
-    	for(String course: (LoginController.userReceviedCourses).keySet()) {
-    		courseExamInstigCB.getItems().add(course);
-    	}
     }
 
     @FXML
@@ -584,7 +650,7 @@ public class ClientExamsController implements Initializable{
     @FXML
     void showViewCreateEdit(ActionEvent event) {
     	hideCurrentAP();
-    	courseViewExamsCB.getSelectionModel().selectFirst();
+    	//courseViewExamsCB.getSelectionModel().selectFirst();
     	viewCreateEditExamsAP.setVisible(true);
     }
 
@@ -723,25 +789,34 @@ public class ClientExamsController implements Initializable{
     @Override
     public void initialize(URL url, ResourceBundle rb) {
     	viewExamTC.setCellValueFactory(new PropertyValueFactory<Exam,Integer>("examId"));
+    	viewExamTeacherInstructionsTC.setCellValueFactory(new PropertyValueFactory<Exam,String>("teacherInstructions"));
     	examIDTC.setCellValueFactory(new PropertyValueFactory<Exam,Integer>("examId"));
     	examInstTC.setCellValueFactory(new PropertyValueFactory<Exam,String>("teacherInstructions"));
     	examQuestionIdTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,Integer>("questionId"));
     	examQuestionTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
     	courseQuestionIdTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,Integer>("questionId"));
     	courseQuestionTCSetExamAP.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
+    	examinationIDTCTimeAddition.setCellValueFactory(new PropertyValueFactory<Examination, Integer>("Examination_id"));
+    	courseIDTCTimeAddition.setCellValueFactory(new PropertyValueFactory<Examination, Integer>("courseId"));
+    	examTypeTCTimeAddition.setCellValueFactory(new PropertyValueFactory<Examination, ExamType>("examType"));
+    	dateTCTimeAddition.setCellValueFactory(new PropertyValueFactory<Examination, LocalDate>("examDate"));
+    	startTimeTCTimeAddition.setCellValueFactory(new PropertyValueFactory<Examination, LocalTime>("examStartTime"));
+    	endTimeTCTimeAddition.setCellValueFactory(new PropertyValueFactory<Examination, LocalTime>("examEndTime"));
+
     	scoreSetExamAP.setCellFactory(TextFieldListCell.forListView());
     	
     	for(String course: (LoginController.userReceviedCourses).keySet()) {
     		courseViewExamsCB.getItems().add(course);
     		courseCBSetExamAP.getItems().add(course);
     		courseComboBox.getItems().add(course);
+    		courseExamInstigCB.getItems().add(course);
     	}
     	
     	UnaryOperator<Change> modifyChange = c -> {
     	    if (c.isContentChange()) {
     	        int newLength = c.getControlNewText().length();
     	        if (newLength > EXECUTION_CODE_LEN) {
-    	            // replace the input text with the last len chars
+    	            // replace the input text with the first EXECUTION_CODE_LEN chars
     	            String tail = c.getControlNewText().substring(0, EXECUTION_CODE_LEN);
     	            c.setText(tail);
     	            // replace the range to complete text
@@ -755,15 +830,21 @@ public class ClientExamsController implements Initializable{
             }
     	    return null;
     	};
+    	UnaryOperator<Change> modifyDurationChange = c -> {
+    	    if (c.getText().matches("[0-9]*")) {
+                return c;
+            }
+    	    return null;
+    	};
     	execCodeTFInstExamAP.setTextFormatter(new TextFormatter<Change>(modifyChange));
+    	requestedExamDurationTF.setTextFormatter(new TextFormatter<Change>(modifyDurationChange));
+    	examDurationTFSetExamAP.setTextFormatter(new TextFormatter<Change>(modifyDurationChange));
     	
-    	SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-    	try {
-			startTimeTFInstExamAP.setTextFormatter(new TextFormatter<>(new DateTimeStringConverter(format), format.parse("00:00")));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	TextFormatter<LocalTime> timeFieldFormatter =
+    	        new TextFormatter<>(new LocalTimeStringConverter());
+    	startTimeTFInstExamAP.setTextFormatter(timeFieldFormatter);
+    	timeFieldFormatter.setValue(LocalTime.now());
+    	
     }
     
     //Load data to table
@@ -791,7 +872,6 @@ public class ClientExamsController implements Initializable{
 
         for (Exam examItem : exam_list)
         {
-        	System.out.println(examItem.getExamId());
         	instigateExamsTV.getItems().addAll(examItem);
         }
         
@@ -916,7 +996,6 @@ public class ClientExamsController implements Initializable{
     	List<Question> questionList = null;
     	client = LoginController.client;    	
     	String message = "get all course questions";
-    	System.out.println(message);
     	Question question = null;
     	int id = courseId;
     	
@@ -924,7 +1003,6 @@ public class ClientExamsController implements Initializable{
     	System.out.println("message from ClientQuestionController Handled");
 		
       questionList = (List<Question>) localCarrier.carrierMessageMap.get("questions");
-      System.out.println(questionList);
 
       loadQuestionData(questionList, courseQuestionTVSetExamAP);
     }
@@ -1023,27 +1101,61 @@ public class ClientExamsController implements Initializable{
     }
     
     @FXML
-    void instigate(ActionEvent event) {
 
-    	//if (isIntigationValid()) {
-    		int execution = Integer.parseInt(execCodeTFInstExamAP.getText());
-    		int teacherId = LoginController.userReceviedID;
-    		Exam exam = instigateExamsTV.getSelectionModel().getSelectedItem();
-    		//SimpleDateFormat format = new SimpleDateFormat("HH:mm").parse(startTimeTFInstExamAP.getText()); 
+    void instigate(ActionEvent event) {    	
+		int teacherId = LoginController.userReceviedID;
+		Exam exam = instigateExamsTV.getSelectionModel().getSelectedItem();
+		LocalTime examStartTime = LocalTime.parse(startTimeTFInstExamAP.getText(), DateTimeFormatter.ofPattern("H[H]:MM"));
+		
+		String examTypeCB = examTypeCBInstExamAP.getSelectionModel().getSelectedItem();
+		ExamType examType = null;
+		switch (examTypeCB) {
+			case "MANUAL":
+				examType = ExamType.MANUAL;
+				break;
+			case "COMPUTERIZED":
+				examType = ExamType.COMPUTERIZED;
+				break;
+		} 
+		
+    	if (isIntigationValid()) {
+    		int executionCode = Integer.parseInt(execCodeTFInstExamAP.getText());
+    		LocalDate examDate = dateDPInstExamAP.getValue();
+    		Examination examination = new Examination(executionCode, teacherId, examType, 
+    				examDate, examStartTime, exam);		
     		
-    		String examTypeCB = examTypeCBInstExamAP.getSelectionModel().getSelectedItem();
-    		ExamType examType;
-    		switch (examTypeCB) {
-    			case "Manual":
-    				examType = ExamType.MANUAL;
-    				break;
-    			case "Computerized":
-    				examType = ExamType.COMPUTERIZED;
-    				break;
-    		}
+    		String message = "create examination";
+    		int id = 0;
+    		
+    		localCarrier = client.handleMessageFromClientExaminationController(message, id, examination);
+    		System.out.println("message from ClientExaminationController Handled");
+        	
+    		String status = (String) localCarrier.carrierMessageMap.get("status");
+        	System.out.println(status);
+        	
+        	manageExamsAP.setVisible(true);
+        	clearSetExam();
+    		instigateButtonInstExamAP.setVisible(false);
+    		saveButtonSetExamAP.setVisible(true);
+    		setExamsMenuAP.setVisible(false);
+    		instigateExamAP.setVisible(false);
+        	
+    	}
     }
     
-    void setExamAPToViewOnly(Exam exam) {
+    private boolean isIntigationValid() {
+    	if (execCodeTFInstExamAP.getText() != "" && dateDPInstExamAP.getValue() != null) {
+    		int executionCode = Integer.parseInt(execCodeTFInstExamAP.getText());
+  
+    		if (String.valueOf(executionCode).length() == 4) {
+        		return true;
+        	}
+    		return false;
+    	}
+    	return false;
+	}
+
+	void setExamAPToViewOnly(Exam exam) {
 		loadExamDataToSetExamAP(exam);
 		removeQuestionButtonSetExamAP.setDisable(true);
 		courseCBSetExamAP.setDisable(true);
@@ -1053,5 +1165,71 @@ public class ClientExamsController implements Initializable{
 		viewQuestionButtonSetExamAP.setDisable(false);
 		addQuestionsAPSetExamAP.setVisible(false);
 		scoreSetExamAP.setEditable(false);
+    }
+	
+
+    @FXML
+    void submitTimeAdditionRequest(ActionEvent event) {
+    	if (requestedExamDurationTF.getText().isBlank() ||
+    			reasonTimeAdditionTA.getText().isBlank()) {
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Fill in all the fields and retry");
+    		errorAlert.showAndWait();
+    	} else {
+    		int examinationId = activeExamsTV.getSelectionModel().getSelectedItem().getExamination_id();
+    		Duration additionalExamDuration = Duration.ofMinutes(Integer.parseInt(requestedExamDurationTF.getText()));
+    		
+    		AddTimeRequest timeRequest = new AddTimeRequest(reasonTimeAdditionTA.getText(), 
+    				additionalExamDuration, examinationId);
+    		String message = "ask for time request";
+    		
+    		localCarrier = client.handleMessageFromClientTimeRequestController(message, timeRequest);
+        	System.out.println("message from ClienttTimeRequestController Handled");
+        	clearTimeAdditionRequestData();
+    	}
+    	showCourseExamsInstButton.setDisable(false);
+    	showActiveExamsButton.setDisable(false);
+    }
+    
+    @FXML
+    void cancelTimeAdditionRequest(ActionEvent event) {
+    	clearTimeAdditionRequestData();   	
+    }
+    
+    void clearTimeAdditionRequestData() {
+    	requestedExamDurationTF.setText("");
+    	reasonTimeAdditionTA.setText("");
+    	orgDurationTF.setText("");
+    	timeAdditionRequestAP.setVisible(false);
+    	
+    	showCourseExamsInstButton.setDisable(false);
+    	showActiveExamsButton.setDisable(false);
+    	requestTimeButton.setVisible(true);
+    }
+    
+    List <Exam> getCourseExams (TableView<Exam> TV, ChoiceBox<String> CB) {
+    	client = LoginController.client;
+    	
+    	if (CB.getSelectionModel().getSelectedItem() != null) {
+    		String message = "get all course exams";
+    		int id = LoginController.userReceviedCourses.get(CB.getSelectionModel().getSelectedItem());
+    		Exam exam = null;
+    		
+    		localCarrier = client.handleMessageFromClientExamController(message, id, exam);
+        	System.out.println("message from ClientExamsController Handled");
+    		ObservableList<Exam> eItems = TV.getItems();
+    		
+    		if (!eItems.isEmpty()) {
+    			TV.getItems().removeAll(examsList);
+    		}
+    		
+    		examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
+    	} else {
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Course was not selected");
+    		errorAlert.showAndWait();
+    		examsList = null;
+    	}
+    	return examsList;
     }
 }

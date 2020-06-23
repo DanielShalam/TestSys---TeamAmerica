@@ -20,10 +20,11 @@ public class ServerExaminationController {
 
 		int new_id = ConnectToDB.save(examination);
 		// Failure
-		if (new_id == examination.getExamination_id()) {
-			return "Error - Please try again. ";
-		}
-		// Success
+//		if (new_id == examination.getExamination_id()) {
+//			System.out.println("new_id: " + new_id + " examination id: " + examination.getExamination_id());
+//			return "Error - Please try again. ";
+//		}
+		// Success			
 		return "Exam commited successfully. ";		
 	}
 	

@@ -340,7 +340,7 @@ public class SimpleServer extends AbstractServer {
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);
 				carrier.carrierType = CarrierType.EXAMINATION;
-				carrier.carrierMessageMap.put("exams", teacher_exams); 
+				carrier.carrierMessageMap.put("examinations", teacher_exams); 
 				try {
 					client.sendToClient(carrier);
 				} catch (IOException e) {
