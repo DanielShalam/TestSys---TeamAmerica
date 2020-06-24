@@ -27,6 +27,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -142,13 +143,25 @@ public class ClientExamsController implements Initializable{
     private AnchorPane gradesStatisticsAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="performedExamsTV"
-    private TableView<?> performedExamsTV; // Value injected by FXMLLoader
+    private TableView<ExaminationStudent> performedExamsTV; // Value injected by FXMLLoader
 
-    @FXML // fx:id="performedExamsTC"
-    private TableColumn<?, ?> performedExamsTC; // Value injected by FXMLLoader
+    @FXML // fx:id="courseCBStatAP"
+    private ChoiceBox<String> courseCBStatAP; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="examsIDTCStatAP"
+    private TableColumn<ExaminationStudent, Integer> examsIDTCStatAP; // Value injected by FXMLLoader
 
-    @FXML // fx:id="performedExamsDateTC"
-    private TableColumn<?, ?> performedExamsDateTC; // Value injected by FXMLLoader
+    @FXML // fx:id="courseIdTCStatAP"
+    private TableColumn<ExaminationStudent, Integer> courseIdTCStatAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="studentIdTCStatAP"
+    private TableColumn<ExaminationStudent, Integer> studentIdTCStatAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="DateTCStatAP"
+    private TableColumn<ExaminationStudent, LocalDate> DateTCStatAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="gradeTCStatAP"
+    private TableColumn<ExaminationStudent, Integer> gradeTCStatAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="viewGradesButton"
     private Button viewGradesButton; // Value injected by FXMLLoader
@@ -666,7 +679,40 @@ public class ClientExamsController implements Initializable{
 
     @FXML
     void getPerformedExams(ActionEvent event) {
+client = LoginController.client;
+		
+		ExaminationStudent sExamination = null;
+		
+		if (courseCBStatAP.getSelectionModel().getSelectedItem() != null) {
+			String message = "get final course student examinations";
+			int courseId = LoginController.userReceviedCourses.get(courseCBStatAP.getSelectionModel().getSelectedItem());
+			
+			ExaminationStatus status = ExaminationStatus.FINALIZED;
+	    	int teacherId = LoginController.userReceviedID;
+	    	
+	    	localCarrier = client.handleMessageStudentExaminationsFromClientExamsController(message,
+	    			teacherId, status, courseId, sExamination);
+	    	System.out.println("message from ClientExamsController Handled");
+			ObservableList<ExaminationStudent> eItems = performedExamsTV.getItems();
+			
+			if (!eItems.isEmpty()) {
+				performedExamsTV.getItems().removeAll(eItems);
+			}
 
+			List<ExaminationStudent> examList = (List<ExaminationStudent>) localCarrier.carrierMessageMap.get("studentExamination");
+			
+			if (examList != null) {
+				loadCheckedExamData(examList);
+			} else {
+				Alert errorAlert = new Alert(AlertType.ERROR);
+	    		errorAlert.setHeaderText("No performed exams");
+	    		errorAlert.showAndWait(); 
+			}
+		} else {
+			Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Course was not selected");
+    		errorAlert.showAndWait();
+		}
     }
 
     @FXML
@@ -722,14 +768,12 @@ public class ClientExamsController implements Initializable{
     }
 
     void loadDataToCheckExamAP(ExaminationStudent sExamination) {
-		Set<Question> questionSet = sExamination.getExamination().getExam().getQuestionList();
-		List<Question> questionList = null;
+		Set<Question> questionSet = new LinkedHashSet<>();
+		questionSet.addAll(sExamination.getExamination().getExam().getQuestionList());
+		List<Question> questionList = new ArrayList<>();
 		List<Integer> studentAnswerList = sExamination.getStudentsAnswers();
 		String questionAnswerSummary = "QUESTION: ";
-		
-		for (Question question : questionSet) {
-			questionList.add(question);
-		}
+		questionList.addAll(questionSet);
 		
 		int i = 0;
 		for (Question question : questionList) {
@@ -796,9 +840,10 @@ public class ClientExamsController implements Initializable{
     		
     		List<Question> qList = examQuestionsTVsetExamAP.getItems();
 			Set<Question> questionSet = new LinkedHashSet<>();;
-			for (Question q : qList) {
+			questionSet.addAll(qList);
+			/*for (Question q : qList) {
 				questionSet.add(q);
-			}
+			}*/
 			
 			Integer[] scoringList = createScoringIntArr();
 			String studentInstructions = studentInstructionsTASetExamAP.getText();
@@ -919,6 +964,11 @@ public class ClientExamsController implements Initializable{
     	endTimeTCTimeAddition.setCellValueFactory(new PropertyValueFactory<Examination, LocalTime>("examEndTime"));
     	checkedExamsTC.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination().getExamination_id()));
     	checkedExamsDateTC.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination().getExamDate()));
+    	examsIDTCStatAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination().getExamination_id()));
+    	courseIdTCStatAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination().getCourseId()));
+    	studentIdTCStatAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getStudent().getUserId()));
+    	DateTCStatAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination().getExamDate()));
+    	gradeTCStatAP.setCellValueFactory(new PropertyValueFactory<ExaminationStudent, Integer>("getGrade"));
     	
     	scoreSetExamAP.setCellFactory(TextFieldListCell.forListView());
     	
@@ -928,6 +978,7 @@ public class ClientExamsController implements Initializable{
     		courseComboBox.getItems().add(course);
     		courseExamInstigCB.getItems().add(course);
     		courseCBGradeExamAP.getItems().add(course);
+    		courseCBStatAP.getItems().add(course);
     	}
     	
     	UnaryOperator<Change> modifyChange = c -> {
@@ -1022,7 +1073,8 @@ public class ClientExamsController implements Initializable{
 	    studentInstructionsTASetExamAP.setText(exam.getStudentInstructions());
 	    teacherInstructionsTASetExamAP.setText(exam.getTeacherInstructions());
 	    
-	    Set<Question> questionList = exam.getQuestionList();
+	    Set<Question> questionList = new LinkedHashSet<>();
+	    questionList.addAll(exam.getQuestionList());
 	    Integer[] scoringList = exam.getScoringList();
 	    String[] scoringListString = new String[scoringList.length];
 	    
@@ -1154,9 +1206,10 @@ public class ClientExamsController implements Initializable{
 			//compare original questions with current questions
 			List<Question> qList = examQuestionsTVsetExamAP.getItems();
 			Set<Question> qSet = new LinkedHashSet<>();;
-			for (Question q : qList) {
-				qSet.add(q);
-			}
+			qSet.addAll(qList);
+//			for (Question q : qList) {
+//				qSet.add(q);
+//			}
 			Set<Question> originalQuestionSet = exam.getQuestionList();
 			
 			Boolean qSetsEqual = questionSetsEqual(qSet,originalQuestionSet);
@@ -1264,9 +1317,9 @@ public class ClientExamsController implements Initializable{
     
     private boolean isIntigationValid() {
     	if (execCodeTFInstExamAP.getText() != "" && dateDPInstExamAP.getValue() != null) {
-    		int executionCode = Integer.parseInt(execCodeTFInstExamAP.getText());
+    		String executionCode = execCodeTFInstExamAP.getText();
   
-    		if (String.valueOf(executionCode).length() == 4) {
+    		if (executionCode.length() == 4) {
         		return true;
         	}
     		return false;
