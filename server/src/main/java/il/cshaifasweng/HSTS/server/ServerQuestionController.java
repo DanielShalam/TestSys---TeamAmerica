@@ -18,7 +18,7 @@ public class ServerQuestionController {
 			try {
 				if(id == -1) { // Adding new question
 					int new_id = ConnectToDB.save(question);
-
+					
 					if (new_id == question.getQuestionId()) {	// Failure
 						return "Error - Please try again. ";
 					}
@@ -26,7 +26,7 @@ public class ServerQuestionController {
 				}
 				
 				else {	// Edit existing one
-					Question questionToEdit = ConnectToDB.getById(Question.class, id);	// Get question for update
+					Question questionToEdit = ConnectToDB.getById(Question.class, id);	// Get question for updateQuestion
 					questionToEdit.setQuestion(question.getQuestion());
 					questionToEdit.setAnswers(question.getAnswers());
 					questionToEdit.setInstructions(question.getInstructions());

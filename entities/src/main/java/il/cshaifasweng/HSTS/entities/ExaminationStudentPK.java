@@ -34,6 +34,8 @@ public class ExaminationStudentPK implements Serializable{
 	}
 	
 	public ExaminationStudentPK(int studentId, int examinationId){
+		System.out.println(studentId);
+		System.out.println(examinationId);
 		this.examinationId = examinationId;
 		this.studentId = studentId;
 	}
