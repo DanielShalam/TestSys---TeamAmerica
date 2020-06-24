@@ -70,6 +70,7 @@ public class SimpleClient extends ObservableSWRClient {
 		else if (message.equals("create question")) 
 		{
 			questionCarrier.carrierMessageMap.put("question", question);
+			questionCarrier.carrierMessageMap.put("ID", id);
 			questionCarrier.carrierMessageMap.put("message", "create question");
 		}
 		else if (message.equals("get all course questions"))
@@ -90,6 +91,7 @@ public class SimpleClient extends ObservableSWRClient {
 			e.printStackTrace();
 		}
 		
+		System.out.println("recieved from server");
 		return questionCarrier;
 
 	}

@@ -40,7 +40,9 @@ import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.ExamType;
 import il.cshaifasweng.HSTS.entities.Examination;
+import il.cshaifasweng.HSTS.entities.ExaminationStudent;
 import il.cshaifasweng.HSTS.entities.Question;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 
@@ -125,13 +127,13 @@ public class ClientExamsController implements Initializable{
     private Button checkExamButton; // Value injected by FXMLLoader
 
     @FXML // fx:id="checkedExamsTV"
-    private TableView<?> checkedExamsTV; // Value injected by FXMLLoader
+    private TableView<ExaminationStudent> checkedExamsTV; // Value injected by FXMLLoader
 
     @FXML // fx:id="checkedExamsTC"
-    private TableColumn<?, ?> checkedExamsTC; // Value injected by FXMLLoader
+    private TableColumn<ExaminationStudent, Integer> checkedExamsTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="checkedExamsDateTC"
-    private TableColumn<?, ?> checkedExamsDateTC; // Value injected by FXMLLoader
+    private TableColumn<ExaminationStudent, LocalDate> checkedExamsDateTC; // Value injected by FXMLLoader
 
     @FXML // fx:id="gradeExamsButton"
     private Button gradeExamsButton; // Value injected by FXMLLoader
@@ -527,7 +529,25 @@ public class ClientExamsController implements Initializable{
 
 	@FXML
     void getAutoCheckedExams(ActionEvent event) {
+		//TODO
+		client = LoginController.client;
+//    	client.openConnection();
+    	
+    	String message = "get all teacher exams";
+    	Exam exam = null;
+    	int id = LoginController.userReceviedID;
+    	
+    	localCarrier = client.handleMessageFromClientExamController(message, id, exam);
+    	System.out.println("message from ClientExamsController Handled");
+		ObservableList<Exam> eItems = viewExamsTV.getItems();
+		
+		if (!eItems.isEmpty()) {
+			viewExamsTV.getItems().removeAll(examsList);
+		}
 
+		examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
+		
+		loadData(examsList);
     }
 
     @FXML
@@ -798,7 +818,9 @@ public class ClientExamsController implements Initializable{
     	dateTCTimeAddition.setCellValueFactory(new PropertyValueFactory<Examination, LocalDate>("examDate"));
     	startTimeTCTimeAddition.setCellValueFactory(new PropertyValueFactory<Examination, LocalTime>("examStartTime"));
     	endTimeTCTimeAddition.setCellValueFactory(new PropertyValueFactory<Examination, LocalTime>("examEndTime"));
-
+    	checkedExamsTC.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination().getExamination_id()));
+    	checkedExamsDateTC.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination().getExamDate()));
+    	
     	scoreSetExamAP.setCellFactory(TextFieldListCell.forListView());
     	
     	for(String course: (LoginController.userReceviedCourses).keySet()) {
