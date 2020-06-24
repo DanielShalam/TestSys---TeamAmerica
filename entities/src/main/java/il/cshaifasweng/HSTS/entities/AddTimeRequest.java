@@ -33,9 +33,10 @@ public class AddTimeRequest implements Serializable{
 	@Column
 	private boolean approved;
 	
-	public AddTimeRequest(String requestReason, Duration requestedDuration) {
+	public AddTimeRequest(String requestReason, Duration requestedDuration, int examination_id) {
 			this.requestedDuration = requestedDuration;
 			this.requestReason = requestReason;
+			this.examination_id = examination_id;
 			reviewed = false;
 			approved = false;
 	}
