@@ -230,7 +230,7 @@ public class ClientQuestionController implements Initializable {
             
     		if (!question.getUsedInTest()) {
             	originalQuestionId = question.getQuestionId();
-            	if (LoginController.userReceviedID == question.getTeacherId()) {
+            	if (LoginController.userReceviedID == question.getQuestionNum()) {
             		originalQuestionId = -1;
             	}
             }
