@@ -138,6 +138,7 @@ public class SimpleClient extends AbstractClient  {
 			e.printStackTrace();
 		}
 		
+		System.out.println("recieved from server");
 		return questionCarrier;
 
 	}
