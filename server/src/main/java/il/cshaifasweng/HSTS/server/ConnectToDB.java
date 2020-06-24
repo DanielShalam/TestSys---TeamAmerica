@@ -1,6 +1,7 @@
 package il.cshaifasweng.HSTS.server;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -141,7 +142,37 @@ public class ConnectToDB {
         temp_session.getTransaction().commit();
     	temp_session.close();
     	return exmnStudent;
-      }
+    }
+    
+    
+    public static void updateExmnStudent(Carrier carrier) {
+    	
+    	Session temp_session = ConnectToDB.sessionFactory.openSession();
+        temp_session.beginTransaction();
+        
+//        ExaminationStudent exmnToSubmit = (ExaminationStudent)carrier.carrierMessageMap.get("exmnStudent");
+//        System.out.println("status:   --  "+exmnToSubmit.getExaminationStatus());
+        int studentId = (int) carrier.carrierMessageMap.get("studentId");
+		int examinationId = (int) carrier.carrierMessageMap.get("examinationId");
+		User user =  temp_session.get(User.class, studentId);		 
+		System.out.println("pre for loop");
+		for(ExaminationStudent exmnStudent: user.getExaminationList()) {
+			if (exmnStudent.getExaminationId() == examinationId) {
+        		ExaminationStudent exmnToSubmit = (ExaminationStudent)carrier.carrierMessageMap.get("exmnStudent");
+        		exmnStudent.setActualExamEndTime(exmnToSubmit.getActualExamEndTime());
+        		exmnStudent.setStudentsAnswers((ArrayList<Integer>)exmnToSubmit.getStudentsAnswers());
+        		exmnStudent.setExaminationStatus(exmnToSubmit.getExaminationStatus());
+        		exmnStudent.setForcedToFinish(exmnToSubmit.isForcedToFinish());	  
+        		exmnStudent.setGrade(exmnToSubmit.getGrade());
+        		exmnStudent.setExaminationStatus(ExaminationStatus.AUTOCHECKED);
+        	}        	
+    	}
+		System.out.println("post for loop");
+        temp_session.getTransaction().commit();
+    	temp_session.close();
+    }
+    
+    
     
 	// Function to update existing object
     public static <T> void update(T o){
@@ -213,7 +244,7 @@ public class ConnectToDB {
         
         for(ExaminationStudent exmnStudent: user.getExaminationList()) {
         	if (exmnStudent.getExamination().getExamination_id() == examinationId) {
-        		if (exmnStudent.getStatus() == ExaminationStatus.STARTED) {
+        		if (exmnStudent.getExaminationStatus() == ExaminationStatus.STARTED) {
         			return "Submit";
         		}
         		else {

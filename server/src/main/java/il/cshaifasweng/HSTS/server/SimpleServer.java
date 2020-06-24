@@ -441,8 +441,12 @@ public class SimpleServer extends AbstractServer {
 			break;		
 	
 			case "submit student examination":
+				System.out.println("server - submit student examination");
 				
 				ServerStudentExaminationController.commitToDB(carrier);	
+				
+				System.out.println("server - commit finished");
+				
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);		
 				carrier.carrierType = CarrierType.EXAMINATION;

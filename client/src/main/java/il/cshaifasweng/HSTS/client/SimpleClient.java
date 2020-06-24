@@ -11,6 +11,7 @@ import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.CarrierType;
 import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.Examination;
+import il.cshaifasweng.HSTS.entities.ExaminationStudent;
 import il.cshaifasweng.HSTS.entities.Question;
 
 
@@ -223,29 +224,40 @@ public class SimpleClient extends AbstractClient  {
 		return examCarrier;
 	}
 	
-	protected Carrier handleMessageFromClientStudentController(String message, int id, Examination examination) {
+	protected Carrier handleMessageFromClientStudentController(String message, int id, Examination examination, Carrier carrier) {
+		
 		Carrier studentCarrier =  new Carrier();
+		if (carrier != null) {	
+			studentCarrier =  carrier;
+		}
+	
 		studentCarrier.carrierType = CarrierType.EXAMINATION;	
 		
-		if (message.equals("get course examinations")) {
+		
+		switch(message) {
+				
+		case "get course examinations":
 			System.out.println("get course examinations");
 			studentCarrier.carrierMessageMap.put("message", message);
 			studentCarrier.carrierMessageMap.put("course", id);		// AMIT changed "ID" to "course"
-		}
-		else if (message.equals("submit student examination")) {	
+			break;
+			
+		case "start student examination":	
+			System.out.println("client - start student examination");	
+			studentCarrier.carrierMessageMap.put("message", message);
+			studentCarrier.carrierMessageMap.put("examinationId", examination.getExamination_id());		
+			studentCarrier.carrierMessageMap.put("studentId", id);
+			break;
+		
+		case "submit student examination":
 			System.out.println("submit student examination");
-			
 			studentCarrier.carrierMessageMap.put("message", message);
 			studentCarrier.carrierMessageMap.put("examinationId", examination.getExamination_id());		
 			studentCarrier.carrierMessageMap.put("studentId", id);
+			break;
+					
 		}
-		else if (message.equals("start student examination")) {	
-			System.out.println("client - start student examination");
-			
-			studentCarrier.carrierMessageMap.put("message", message);
-			studentCarrier.carrierMessageMap.put("examinationId", examination.getExamination_id());		
-			studentCarrier.carrierMessageMap.put("studentId", id);
-		}
+		
 		try {
 			studentCarrier = (Carrier) this.sendAndWaitForReply(studentCarrier, studentCarrier);
 		} catch (Exception e) {
