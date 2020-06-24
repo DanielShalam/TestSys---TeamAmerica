@@ -99,6 +99,17 @@ public class ConnectToDB {
 		return entity;
     }
     
+    public static Session getNewSession() {
+    	Session temp_session = sessionFactory.openSession();
+        temp_session.beginTransaction();
+        return temp_session;
+    }
+    
+    public static void closeOuterSession(Session outSession) {
+    	outSession.getTransaction().commit();
+    	outSession.close();
+    }
+    
 //    public static List<Examination> extractExaminations(int courseId){
 //    	Session temp_session = sessionFactory.openSession();
 //        temp_session.beginTransaction();

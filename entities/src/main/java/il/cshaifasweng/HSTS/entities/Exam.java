@@ -3,6 +3,7 @@ package il.cshaifasweng.HSTS.entities;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +21,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 
 @Entity
@@ -46,7 +50,6 @@ public class Exam implements Serializable {
 	           inverseJoinColumns = { @JoinColumn(name = "question_id") })
 	private Set<Question> questionList = new LinkedHashSet<>(); 
 	
-	
 	@Column(name = "scoring_list")
 	private Integer[] scoringList;
 		
@@ -61,7 +64,7 @@ public class Exam implements Serializable {
 	
 	@Column(name = "duration")
 	private Duration assignedDuration;
-	
+
 	// teacher exams relation - Unidirectional
 	@Column(name = "teacher_id")
 	private int teacherId;
@@ -170,4 +173,5 @@ public class Exam implements Serializable {
 	public void addQuestionScore(int score) {
 		
 	}
+	
 }
