@@ -172,4 +172,5 @@ public class User implements Serializable {
 	public void setExaminationInstigated(Set<Examination> examinationInstigated) {
 		this.examinationInstigated = examinationInstigated;
 	}
+
 }	

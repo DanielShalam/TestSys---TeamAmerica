@@ -26,6 +26,7 @@ import il.cshaifasweng.HSTS.client.utilities.WordHandler;
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.Examination;
+import il.cshaifasweng.HSTS.entities.ExaminationStatus;
 import il.cshaifasweng.HSTS.entities.ExaminationStudent;
 import il.cshaifasweng.HSTS.entities.Question;
 import javafx.animation.KeyFrame;
@@ -253,10 +254,12 @@ public class StudentMenuController implements Initializable{
 
     	client = LoginController.client;
 		int courseId = LoginController.userReceviedCourses.get(courseCB.getSelectionModel().getSelectedItem());
-		localCarrier = client.handleMessageFromClientStudentController("get course examinations", courseId, null);
+
+		localCarrier = client.handleMessageFromClientStudentController("get course examinations", courseId, null, null);
+
 		Set<Examination> examinationsList = (Set<Examination>) localCarrier.carrierMessageMap.get("examinations");
 		System.out.println(examinationsList);
-
+      
 		if (examinationsList.isEmpty()) {
 			studentExamsTV.getItems().clear();
 			Alert errorAlert = new Alert(AlertType.INFORMATION);
@@ -450,10 +453,10 @@ public class StudentMenuController implements Initializable{
 			animation.play();
 	    }
     
-	void forceSubmitCompExam() {
-		// TODO validate that show is visible, if not It will not close it.
-	    	submitCompExam();
-	    }
+	void forceSubmitCompExam() {   	
+		submitCompExam(true);
+	}
+
     
 	@FXML
     void startCompExam(ActionEvent event) {
@@ -474,7 +477,7 @@ public class StudentMenuController implements Initializable{
 	    		System.out.println("Id matches");
 	    		compExmnActivated = true;
 	    		localCarrier = client.handleMessageFromClientStudentController("start student examination", 
-	    				LoginController.userReceviedID,  examination);
+	    				LoginController.userReceviedID,  examination, null);
 	    		compExamStarted();
 	    	}
 	    	else {
@@ -490,7 +493,7 @@ public class StudentMenuController implements Initializable{
 	            @Override
 	            public void handle(ActionEvent event) {
 	                System.out.println("Hello World!");
-	                submitCompExam();
+	                submitCompExam(false);
 	            }
 	    	});	
 	    }
@@ -577,7 +580,6 @@ public class StudentMenuController implements Initializable{
     public void loadExaminationDataToSetInstAP(Set<Examination> examinationList) {
     	
     	for(Examination examination: examinationList) {
-    		System.out.println(examination.getExamStartTime());
     		if(LocalTime.now().isBefore(examination.getExamEndTime())) {
     	    	studentExamsTV.getItems().add(examination);
     		}
@@ -586,10 +588,7 @@ public class StudentMenuController implements Initializable{
     
     @FXML
     void startSubmitExamination(ActionEvent event) {
-    	answer1RB.setDisable(false);
-    	answer2RB.setDisable(false);
-    	answer3RB.setDisable(false);
-    	answer4RB.setDisable(false);
+    	
     	
     	TextInputDialog dialog = new TextInputDialog("id here");
     	dialog.setTitle("ID required");
@@ -602,7 +601,11 @@ public class StudentMenuController implements Initializable{
 	    	String id = Integer.toString(LoginController.userReceviedID);
 	    	if (id.equals(strInput)) {
 	    		System.out.println("Id matches");
-	    		examStarted();
+	    		answer1RB.setDisable(false);
+	        	answer2RB.setDisable(false);
+	        	answer3RB.setDisable(false);
+	        	answer4RB.setDisable(false);
+	    		compExamStarted();
 	    	}
 	    	else {
 	    		System.out.println("Id doesn't match");
@@ -610,26 +613,27 @@ public class StudentMenuController implements Initializable{
 	    }
     }
 
-    void examStarted() {
-    	// change button name to "submit"
-    	// change button functionality
-    	// enable buttons
-    	// show timer
-    	// save answers when clicking radio buttons
-    	
-    }
+  
     
     @FXML
-    void submitCompExam() {
-    	  	
-    	// casting studentAnswers to ArrayList and saving to ExaminationStudent object
+    void submitCompExam(boolean forcedToFinish) {
     	
-    	List<Integer> al = new ArrayList<Integer>();  
-        Collections.addAll(al, studentAnswers); 
-   
+    	// casting studentAnswers to ArrayList and saving to ExaminationStudent object
+    	ArrayList<Integer> answersList = new ArrayList<Integer>();  
+        Collections.addAll(answersList, studentAnswers); 
+        
+        ExaminationStudent exmnStudent = (ExaminationStudent) localCarrier.carrierMessageMap.get("exmnStudent");
+    	exmnStudent.setActualExamEndTime(LocalTime.now()); 	
+    	exmnStudent.setForcedToFinish(forcedToFinish);
+    	exmnStudent.setExaminationStatus(ExaminationStatus.FINISHED);
+    	exmnStudent.setStudentsAnswers(answersList);
+    	
+    	localCarrier.carrierMessageMap.clear();
+    	localCarrier.carrierMessageMap.put("message", "submit student examination");
+    	localCarrier.carrierMessageMap.put("exmnStudent",exmnStudent);
     	
     	client.handleMessageFromClientStudentController("submit student examination", 
-				LoginController.userReceviedID,  examination);
+				LoginController.userReceviedID,  examination, localCarrier);
     	
     	
     	Alert alert = new Alert(AlertType.INFORMATION);

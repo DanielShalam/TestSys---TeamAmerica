@@ -239,7 +239,9 @@ public class InitializeDB {
 		
 		// initialize exams
 		
+
 		Duration duration_1 = Duration.ofMinutes(100);
+
 		Duration duration_2 = Duration.ofMinutes(120);
 		
 		Integer[] scoringList = {35,15,30,20};
@@ -337,7 +339,9 @@ public class InitializeDB {
 		teacherId = exam_1.getTeacherId();
 		examType = ExamType.COMPUTERIZED;
 		examDate = LocalDate.of(2020, Month.JUNE, 24);
+
 		examStartTime = LocalTime.of(21,10);
+
 		Examination examintaion_1 = new Examination(execCode, teacherId, examType,  examDate, examStartTime, exam_1);
 		course_1.addExamination(examintaion_1);
 		exam_1.setUsedInExamination(true);
@@ -345,8 +349,8 @@ public class InitializeDB {
 		execCode = "4517";
 		teacherId = exam_2.getTeacherId();
 		examType = ExamType.MANUAL;
-		examDate = LocalDate.of(2020, Month.JUNE, 23);
-		examStartTime = LocalTime.of(21,30);
+		examDate = LocalDate.of(2020, Month.JUNE, 24);
+		examStartTime = LocalTime.now();
 		Examination examintaion_2 = new Examination(execCode, teacherId, examType, examDate, examStartTime, exam_2);
 		course_2.addExamination(examintaion_2);
 		exam_2.setUsedInExamination(true);
@@ -354,8 +358,8 @@ public class InitializeDB {
 		execCode = "AD88";
 		teacherId = teacher_3.getUserId();
 		examType = ExamType.MANUAL;
-		examDate = LocalDate.of(2020, Month.JUNE, 23);
-		examStartTime = LocalTime.of(20,30);
+		examDate = LocalDate.of(2020, Month.JUNE, 24);
+		examStartTime = LocalTime.of(21,30);
 		Examination examintaion_3 = new Examination(execCode, teacherId, examType, examDate, examStartTime, exam_2);
 		course_2.addExamination(examintaion_3);
 
@@ -369,8 +373,8 @@ public class InitializeDB {
 		session.save(examintaion_2);
 		session.save(examintaion_3);
 		
-		ExaminationStudent newex = new ExaminationStudent(student_5, examintaion_1);
-		session.save(newex);
+		//ExaminationStudent newex = new ExaminationStudent(student_5, examintaion_1);
+		//session.save(newex);
 		session.flush();
 		
 		System.out.println(examintaion_1.getExamination_id());
