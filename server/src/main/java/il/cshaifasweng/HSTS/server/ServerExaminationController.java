@@ -4,18 +4,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 
 import il.cshaifasweng.HSTS.entities.Course;
-import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.Examination;
-import il.cshaifasweng.HSTS.entities.ExaminationStatus;
-import il.cshaifasweng.HSTS.entities.ExaminationStudent;
 import il.cshaifasweng.HSTS.entities.User;
 
 public class ServerExaminationController {			
 
 	public static String commitExaminationToDB(Examination examination) {
+		ServerExamsController.updateExam(examination.getExam());
 		Session session = ConnectToDB.getNewSession();
 		session.save(examination);
 		System.out.println("Extract course");
@@ -71,16 +70,16 @@ public class ServerExaminationController {
 	public static Set<Examination> getExminationByTeacher(int teacherId) {
 		Session tempSession = ConnectToDB.getNewSession();
 		User user = tempSession.get(User.class, teacherId);
+		Hibernate.initialize(user.getExaminationList());
 		Set<Examination> examinations = user.getExaminationInstigated(); 	// Getting examination by teacher
-		System.out.println(examinations.size());
 		ConnectToDB.closeOuterSession(tempSession);
 		return examinations;
 	}
 	
-	
 	public static Set<Examination> getExaminationByCourse(int courseID){
 		Session tempSession = ConnectToDB.getNewSession();
 		Course course = tempSession.get(Course.class, courseID);
+		Hibernate.initialize(course.getExaminationList());
 		Set <Examination> examinations = course.getExaminationList();
 		ConnectToDB.closeOuterSession(tempSession);
 		return examinations;
@@ -88,7 +87,6 @@ public class ServerExaminationController {
 	
 	// Delete exam from database using its id
 	public static String deleteExamByEntity(Examination examination) {
-		//TODO Validation of usedInExamination - Client or Server?
 		ConnectToDB.deleteByInstance(Examination.class, examination);
 		return "Exam deleted successfully. ";
 	}

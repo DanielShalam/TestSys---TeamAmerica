@@ -41,6 +41,10 @@ public class ServerStudentExaminationController {
 		}	
 	}
 	
+	protected static void updateGrade(ExaminationStudent studentExam) {
+		ConnectToDB.update(studentExam);
+	}
+	
 	// Function to calculate grade of student examination
 	private static void calcGrades(ExaminationStudent studentExam) {
 		int grade = 0;

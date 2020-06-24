@@ -217,7 +217,7 @@ public class SimpleClient extends AbstractClient  {
 		}
 		
 		try {
-			examCarrier = (Carrier) this.sendAndWaitForReply(examCarrier, examCarrier);
+			this.sendToServer(examCarrier);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -229,7 +229,7 @@ public class SimpleClient extends AbstractClient  {
 	protected Carrier handleMessageStudentExaminationsFromClientExamsController(String message, int teacherId,
 			ExaminationStatus examinationStatus, int courseId, ExaminationStudent studentExamination) {
 		Carrier examCarrier = new Carrier();
-		examCarrier.carrierType = CarrierType.EXAMINATION_STUDENT;
+		examCarrier.carrierType = CarrierType.STUDENT_EXAMINATION;
 		
 		if (message.equals("get all course student examinations")) {
 			examCarrier.carrierMessageMap.put("course", courseId);

@@ -1277,7 +1277,7 @@ client = LoginController.client;
     void instigate(ActionEvent event) {    	
 		int teacherId = LoginController.userReceviedID;
 		Exam exam = instigateExamsTV.getSelectionModel().getSelectedItem();
-		LocalTime examStartTime = LocalTime.parse(startTimeTFInstExamAP.getText(), DateTimeFormatter.ofPattern("H[H]:MM"));
+		LocalTime examStartTime = LocalTime.parse(startTimeTFInstExamAP.getText(), DateTimeFormatter.ofPattern("H[H]:mm"));
 		
 		String examTypeCB = examTypeCBInstExamAP.getSelectionModel().getSelectedItem();
 		ExamType examType = null;
