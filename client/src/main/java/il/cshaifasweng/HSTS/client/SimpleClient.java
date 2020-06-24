@@ -231,7 +231,20 @@ public class SimpleClient extends AbstractClient  {
 			studentCarrier.carrierMessageMap.put("message", message);
 			studentCarrier.carrierMessageMap.put("course", id);		// AMIT changed "ID" to "course"
 		}
-		
+		else if (message.equals("submit student examination")) {	
+			System.out.println("submit student examination");
+			
+			studentCarrier.carrierMessageMap.put("message", message);
+			studentCarrier.carrierMessageMap.put("examinationId", examination.getExamination_id());		
+			studentCarrier.carrierMessageMap.put("studentId", id);
+		}
+		else if (message.equals("start student examination")) {	
+			System.out.println("client - start student examination");
+			
+			studentCarrier.carrierMessageMap.put("message", message);
+			studentCarrier.carrierMessageMap.put("examinationId", examination.getExamination_id());		
+			studentCarrier.carrierMessageMap.put("studentId", id);
+		}
 		try {
 			studentCarrier = (Carrier) this.sendAndWaitForReply(studentCarrier, studentCarrier);
 		} catch (Exception e) {

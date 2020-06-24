@@ -174,17 +174,17 @@
          </children>
       </AnchorPane>
 
-      <AnchorPane fx:id="autoExamAP" layoutY="-1.0" prefHeight="578.0" prefWidth="640.0" visible="false">
+		<AnchorPane fx:id="autoExamAP" layoutY="-1.0" prefHeight="578.0" prefWidth="640.0" visible="false">
          <children>
-            <RadioButton fx:id="answer1RB" layoutX="89.0" layoutY="353.0" mnemonicParsing="false" text="1.">
+            <RadioButton fx:id="answer1RB" layoutX="89.0" layoutY="353.0" mnemonicParsing="false" onAction="#chooseAnswerOne" text="1.">
                <toggleGroup>
                   <ToggleGroup fx:id="answerGroup" />
                </toggleGroup>
             </RadioButton>
             <TextField fx:id="question_num" editable="false" layoutX="67.0" layoutY="43.0" />
-            <RadioButton fx:id="answer2RB" layoutX="89.0" layoutY="387.0" mnemonicParsing="false" text="2." toggleGroup="$answerGroup" />
-            <RadioButton fx:id="answer3RB" layoutX="89.0" layoutY="420.0" mnemonicParsing="false" text="3." toggleGroup="$answerGroup" />
-            <RadioButton fx:id="answer4RB" layoutX="89.0" layoutY="453.0" mnemonicParsing="false" text="4." toggleGroup="$answerGroup" />
+            <RadioButton fx:id="answer2RB" layoutX="89.0" layoutY="387.0" mnemonicParsing="false" onAction="#chooseAnswerTwo" text="2." toggleGroup="$answerGroup" />
+            <RadioButton fx:id="answer3RB" layoutX="89.0" layoutY="420.0" mnemonicParsing="false" onAction="#chooseAnswerThree" text="3." toggleGroup="$answerGroup" />
+            <RadioButton fx:id="answer4RB" layoutX="89.0" layoutY="453.0" mnemonicParsing="false" onAction="#chooseAnswerFour" text="4." toggleGroup="$answerGroup" />
             <TextField fx:id="answer1TF" editable="false" layoutX="138.0" layoutY="349.0" prefHeight="26.0" prefWidth="335.0" />
             <TextField fx:id="answer2TF" editable="false" layoutX="138.0" layoutY="382.0" prefHeight="26.0" prefWidth="335.0" />
             <TextField fx:id="answer3TF" editable="false" layoutX="138.0" layoutY="415.0" prefHeight="26.0" prefWidth="335.0" />
@@ -195,7 +195,7 @@
             <TextField editable="false" layoutX="64.0" layoutY="308.0" prefHeight="26.0" prefWidth="193.0" text="Choose the correct answer:" />
             <Button fx:id="nextQuestion" layoutX="510.0" layoutY="519.0" mnemonicParsing="false" onAction="#showNextQuestion" text="Next question" />
             <Button fx:id="prevQuestion" layoutX="37.0" layoutY="519.0" mnemonicParsing="false" onAction="#showPrevQuestion" text="Previous question" />
-            <Button fx:id="startOrSubmitBtn" layoutX="279.0" layoutY="510.0" mnemonicParsing="false" onAction="#startSubmitExamination" prefHeight="44.0" prefWidth="81.0" text="Start exam" />
+            <Button fx:id="startOrSubmitBtn" layoutX="279.0" layoutY="510.0" mnemonicParsing="false" onAction="#startCompExam" prefHeight="44.0" prefWidth="81.0" text="Start exam" />
             <Label layoutX="293.0" layoutY="46.0" prefHeight="18.0" prefWidth="68.0" text="TIME LEFT:">
                <font>
                   <Font name="Calibri" size="14.0" />
@@ -206,7 +206,7 @@
                   <Font name="Calibri" size="14.0" />
                </font>
             </Label>
-            <Button fx:id="autoRtrnBtn" layoutX="510.0" layoutY="449.0" mnemonicParsing="false" onAction="#returnMainAuto" prefHeight="26.0" prefWidth="90.0" text="Return" />
+            <Button fx:id="autoRtrnBtn" layoutX="510.0" layoutY="449.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="90.0" text="Return" />
          </children></AnchorPane>
    </children>
 </AnchorPane>

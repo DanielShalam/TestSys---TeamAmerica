@@ -240,7 +240,7 @@ public class InitializeDB {
 		
 		// initialize exams
 		
-		Duration duration_1 = Duration.ofMinutes(90);
+		Duration duration_1 = Duration.ofMinutes(250);
 		Duration duration_2 = Duration.ofMinutes(120);
 		
 		Integer[] scoringList = {35,15,30,20};
@@ -338,7 +338,7 @@ public class InitializeDB {
 		teacherId = exam_1.getTeacherId();
 		examType = ExamType.COMPUTERIZED;
 		examDate = LocalDate.of(2020, Month.JUNE, 24);
-		examStartTime = LocalTime.of(15,10);
+		examStartTime = LocalTime.of(17,10);
 		Examination examintaion_1 = new Examination(execCode, teacherId, examType,  examDate, examStartTime, exam_1);
 		course_1.addExamination(examintaion_1);
 		exam_1.setUsedInExamination(true);

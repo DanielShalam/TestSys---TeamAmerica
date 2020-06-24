@@ -420,6 +420,40 @@ public class SimpleServer extends AbstractServer {
 				carrier.carrierType = CarrierType.EXAMINATION;
 				carrier.carrierMessageMap.put("status", "Approved"); 
 				sendToAllClients(msg);
+				break;
+		
+			case "start student examination":
+				System.out.println("server - start student examination");
+				ExaminationStudent exmnStdudent = ServerStudentExaminationController.commitToDB(carrier);	
+				
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);		
+				carrier.carrierMessageMap.put("exmnStudent",exmnStdudent );
+				carrier.carrierType = CarrierType.EXAMINATION;
+				
+				try {
+					
+					client.sendToClient(carrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			break;		
+	
+			case "submit student examination":
+				
+				ServerStudentExaminationController.commitToDB(carrier);	
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);		
+				carrier.carrierType = CarrierType.EXAMINATION;
+				
+				try {
+					client.sendToClient(carrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 			}
 
 		}
