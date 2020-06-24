@@ -62,7 +62,7 @@ public class StudentMenuController implements Initializable{
 	private SimpleClient client;
 	private Carrier localCarrier = null;
 	private int questionIndex = 0;
-	private Examination examination;
+	public static Examination examination;
 	List<Question> qList;
 	
 	
@@ -360,15 +360,15 @@ public class StudentMenuController implements Initializable{
     	}
     }
     
-    public void ActivateManualExam() {
+    public void ActivateManualExam()  {
     	instAP.setVisible(false);
     	manualExamAP.setVisible(true);
         manualLB.setAlignment(Pos.CENTER);
-        LocalTime endTime = examination.getExamEndTime();
+
         // Timer
 		Timeline animation = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 	              @Override public void handle(ActionEvent actionEvent) {
-	            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), endTime).toSeconds();
+	            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), examination.getExamEndTime()).toSeconds();
 	            	  
 	            	  if (elapsedTime <= 0) {	// Time is up
 		                  submitBtn.setDisable(true);
@@ -406,12 +406,11 @@ public class StudentMenuController implements Initializable{
     	answer4RB.setDisable(true);
     	showQuestion();
     	
-        LocalTime endTime = examination.getExamEndTime();
         // Timer
 		Timeline animation = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 	              @Override public void handle(ActionEvent actionEvent) {
-	            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), endTime).toSeconds();
-	            	  
+	            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), examination.getExamEndTime()).toSeconds();
+
 	            	  if (elapsedTime <= 0) {	// Time is up
 	            		  startOrSubmitBtn.setDisable(true);
 	            		  saveAutoExam();

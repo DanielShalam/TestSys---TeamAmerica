@@ -23,7 +23,6 @@ public class ServerStudentExaminationController {
 	        	grade += exam.getScoringList()[index];
 	        }
 	    }
-	    
 	    studentExam.setGrade(grade);
 	}
 	

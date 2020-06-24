@@ -32,7 +32,7 @@ public class ExaminationStudent implements Serializable {
     @ManyToOne
     @MapsId("studentId")
     @JoinColumn(name = "student_id")
-    private User student;    
+    private User student;
     
     @Column(name = "actual_exam_start_time")
 	private LocalTime actualExamStartTime;

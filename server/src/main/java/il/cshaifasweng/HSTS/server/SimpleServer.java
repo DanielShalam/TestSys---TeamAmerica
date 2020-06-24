@@ -16,7 +16,7 @@ public class SimpleServer extends AbstractServer {
 	public ConnectToDB dbConnector;	   
 	private static ArrayList<Integer> connectedUsers = new ArrayList<Integer>();
     private final Object lock = new Object();
-
+    
 	public SimpleServer(int port) {
 		super(port);
 		this.dbConnector = new ConnectToDB();
@@ -33,15 +33,22 @@ public class SimpleServer extends AbstractServer {
 		switch(msgFromClient.carrierType){
 			case USER:
 				handleUserMessage(msgFromClient, client);
-			
+				break;
+				
 			case QUESTION:
 				handleQuestionMessage(msgFromClient, client);
-				
+				break;
+
 			case EXAM:
 				handleExamMessage(msgFromClient, client);
-				
+				break;
+
 			case EXAMINATION:
 				handleExaminationMessage(msgFromClient, client);
+				break;
+
+			case TIME_REQUEST:
+				handleTimeRequestMessage(msgFromClient, client);
 		}
 	}
 	
@@ -165,6 +172,9 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+//				carrier.carrierMessageMap.put("message", "principle approval"); 
+//				carrier.carrierMessageMap.put("duration", Duration.ofMinutes(100000)); 
+//				sendToAllClients(carrier);
 				break;
 			
 			case "get all course questions":
@@ -302,6 +312,7 @@ public class SimpleServer extends AbstractServer {
 
 	//// Function to handle Message where Carrier type is EXAMINATION
 	protected void handleExaminationMessage(Carrier carrier, ConnectionToClient client) {
+
 		String msg = (String) carrier.carrierMessageMap.get("message");
 		switch(msg) {
 			case "get examination by id":
@@ -402,9 +413,37 @@ public class SimpleServer extends AbstractServer {
 					e.printStackTrace();
 				}
 				break;
+		
+			case "approve time request":
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);		
+				carrier.carrierType = CarrierType.EXAMINATION;
+				carrier.carrierMessageMap.put("status", "Approved"); 
+				sendToAllClients(msg);
 			}
 
 		}
+	
+	//// Function to handle Message where Carrier type is EXAMINATION
+	protected void handleTimeRequestMessage(Carrier carrier, ConnectionToClient client) {
+		String msg = (String) carrier.carrierMessageMap.get("message");
+		switch (msg) {
+			case "ask for time request": {
+				AddTimeRequest request = (AddTimeRequest) carrier.carrierMessageMap.get("request");
+				ServerTimeRequestController.commitRequestToDB(request);
+				break;
+			}
+			
+			case "principle answer": {
+				AddTimeRequest request = (AddTimeRequest) carrier.carrierMessageMap.get("request");
+				// Update by principle answer
+				ServerTimeRequestController.setPrincipleAnswer(request);
+				break;
+			}
+		}
+
+	}
+	
 	@Override
 	protected void clientConnected(ConnectionToClient client) {
 		super.clientConnected(client);
