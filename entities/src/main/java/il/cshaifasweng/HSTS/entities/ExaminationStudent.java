@@ -91,6 +91,7 @@ public class ExaminationStudent implements Serializable {
 		this.grade = grade;
 	}
 
+
 	public boolean isForcedToFinish() {
 		return forcedToFinish;
 	}
@@ -143,14 +144,23 @@ public class ExaminationStudent implements Serializable {
 		this.actualExamEndTime = actualExamEndTime;
 	}
 
-	public void changeStatus(ExaminationStatus newStatus) {
+	
+	
+	public void setExaminationStatus(ExaminationStatus newStatus) {
 		this.examinationStatus = newStatus;
 	}
 	
-	public ExaminationStatus getStatus() {
+	public ExaminationStatus getExaminationStatus() {
 		return examinationStatus;
 	}
 	
+	public int getUserId() {
+		return examinationStudentId.getStudentId();
+	}
+	
+	public int getExaminationId() {
+		return examinationStudentId.getExaminationId();
+	}
 	
 }
 
