@@ -20,6 +20,34 @@
 
 <AnchorPane maxHeight="620.0" maxWidth="1225.0" prefHeight="620.0" prefWidth="1225.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.HSTS.client.ClientExamsController">
    <children>
+      <AnchorPane fx:id="checkExamAP" prefHeight="666.0" prefWidth="1033.0" visible="false">
+         <children>
+            <Label layoutX="47.0" layoutY="42.0" text="Check Exam">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <Label layoutX="133.0" layoutY="122.0" text="Exam Questions and answers:" />
+            <Label layoutX="578.0" layoutY="122.0" text="Grade:" />
+            <Label layoutX="578.0" layoutY="165.0" text="Teacher Comment:" />
+            <TextArea fx:id="QuestionsAnswersTACheckExamAP" editable="false" layoutX="133.0" layoutY="156.0" prefHeight="410.0" prefWidth="378.0" />
+            <TextField fx:id="gradeTFCheckExamAP" editable="false" layoutX="628.0" layoutY="118.0" />
+            <TextArea fx:id="noteToStudentTACheckExamAP" layoutX="578.0" layoutY="189.0" prefHeight="105.0" prefWidth="417.0" />
+            <Button fx:id="approveGradeButtonCheckExamAP" layoutX="578.0" layoutY="333.0" mnemonicParsing="false" onAction="#approveGrade" prefHeight="25.0" prefWidth="100.0" text="Approve Grade" />
+            <Button fx:id="changeGradeButtonCheckExamAP" layoutX="739.0" layoutY="333.0" mnemonicParsing="false" onAction="#changeGrade" prefHeight="25.0" prefWidth="96.0" text="Change Grade" />
+            <AnchorPane fx:id="updateGradeCheckExamAP" layoutX="578.0" layoutY="387.0" prefHeight="253.0" prefWidth="417.0" visible="false">
+               <children>
+                  <Label layoutX="26.0" layoutY="35.0" text="Updated Grade:" />
+                  <TextField fx:id="newGradeTFCheckExamAP" layoutX="126.0" layoutY="31.0" />
+                  <Label layoutX="26.0" layoutY="84.0" text="Reason:" />
+                  <TextArea fx:id="changeGradeNoteTACheckExamAP" layoutX="26.0" layoutY="101.0" prefHeight="68.0" prefWidth="369.0" />
+                  <Button fx:id="submitNewGradeButtonCheckExamAP" layoutX="45.0" layoutY="201.0" mnemonicParsing="false" onAction="#submitNewGrade" prefHeight="25.0" prefWidth="130.0" text="Submit New Grade" />
+                  <Button fx:id="cancelNewGradeButtonCheckExamAP" layoutX="243.0" layoutY="201.0" mnemonicParsing="false" onAction="#cancelUpdateGrade" prefHeight="25.0" prefWidth="130.0" text="Cancel" />
+               </children>
+            </AnchorPane>
+            <Button fx:id="cancelButtonCheckExamAP" layoutX="895.0" layoutY="333.0" mnemonicParsing="false" onAction="#cancelCheckExam" prefHeight="25.0" prefWidth="100.0" text="Cancel" />
+         </children>
+      </AnchorPane>
       <AnchorPane fx:id="setQuestionMenuAP" layoutX="10.0" layoutY="10.0" maxHeight="666.0" maxWidth="1225.0" prefHeight="666.0" prefWidth="1225.0" visible="false">
          <children>
             <Label layoutX="49.0" layoutY="87.0" text="Question:" />
@@ -86,7 +114,7 @@
             </Label>
             <AnchorPane fx:id="gradeExamsAP" layoutX="420.0" layoutY="36.0" prefHeight="565.0" prefWidth="683.0" visible="false">
                <children>
-                  <Button fx:id="shoeAutoCheckedExamsButton" layoutY="87.0" mnemonicParsing="false" onAction="#getAutoCheckedExams" prefHeight="51.0" prefWidth="172.0" text="Show Automtically Checked Exams" textAlignment="CENTER" wrapText="true">
+                  <Button fx:id="shoeAutoCheckedExamsButton" layoutY="142.0" mnemonicParsing="false" onAction="#getAutoCheckedExams" prefHeight="51.0" prefWidth="150.0" text="Show Automtically Checked Exams" textAlignment="CENTER" wrapText="true">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
@@ -107,6 +135,8 @@
                       <TableColumn fx:id="checkedExamsDateTC" minWidth="0.0" prefWidth="96.0" text="Date" />
                     </columns>
                   </TableView>
+                  <ChoiceBox fx:id="courseCBGradeExamAP" layoutX="-2.0" layoutY="87.0" prefWidth="150.0" />
+                  <Label layoutX="-2.0" layoutY="51.0" prefHeight="3.0" prefWidth="60.0" text="Course:" />
                </children>
             </AnchorPane>
             <AnchorPane fx:id="gradesStatisticsAP" layoutX="420.0" layoutY="30.0" prefHeight="571.0" prefWidth="660.0" visible="false">
@@ -116,22 +146,22 @@
                         <Font name="System Bold" size="24.0" />
                      </font>
                   </Label>
-                  <TableView fx:id="performedExamsTV" layoutX="227.0" layoutY="94.0" prefHeight="410.0" prefWidth="369.0">
+                  <TableView fx:id="performedExamsTV" layoutX="227.0" layoutY="94.0" prefHeight="410.0" prefWidth="463.0">
                     <columns>
-                      <TableColumn fx:id="performedExamsTC" prefWidth="231.0" text="Exam" />
-                      <TableColumn fx:id="performedExamsDateTC" minWidth="0.0" prefWidth="141.0" text="Date" />
+                      <TableColumn fx:id="examsIDTCStatAP" prefWidth="88.0" text="Exam ID" />
+                        <TableColumn fx:id="courseIdTCStatAP" prefWidth="77.0" text="Course ID" />
+                        <TableColumn fx:id="studentIdTCStatAP" prefWidth="115.0" text="Student ID" />
+                      <TableColumn fx:id="DateTCStatAP" minWidth="0.0" prefWidth="91.0" text="Date" />
+                        <TableColumn fx:id="gradeTCStatAP" prefWidth="91.0" text="Grade" />
                     </columns>
                   </TableView>
-                  <Button fx:id="viewGradesButton" layoutX="325.0" layoutY="527.0" mnemonicParsing="false" onAction="#viewGrades" prefHeight="25.0" prefWidth="172.0" text="View Grades">
+                  <Button fx:id="showPerformedExamsButton" layoutX="21.0" layoutY="184.0" mnemonicParsing="false" onAction="#getPerformedExams" prefHeight="51.0" prefWidth="172.0" text="Show Performed Exams" textAlignment="CENTER" wrapText="true">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button fx:id="showPerformedExamsButton" layoutX="21.0" layoutY="94.0" mnemonicParsing="false" onAction="#getPerformedExams" prefHeight="51.0" prefWidth="172.0" text="Show Performed Exams" textAlignment="CENTER" wrapText="true">
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                  </Button>
+                  <ChoiceBox fx:id="courseCBStatAP" layoutX="21.0" layoutY="115.0" prefWidth="150.0" />
+                  <Label layoutX="21.0" layoutY="86.0" text="Course:" />
                </children>
             </AnchorPane>
             <AnchorPane fx:id="viewCreateEditExamsAP" layoutX="420.0" layoutY="33.0" prefHeight="565.0" prefWidth="746.0" visible="false">
