@@ -1,11 +1,11 @@
 package il.cshaifasweng.HSTS.client;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
 import il.cshaifasweng.HSTS.client.ocsf.AbstractClient;
-import il.cshaifasweng.HSTS.client.ocsf.ObservableSWRClient;
 import il.cshaifasweng.HSTS.entities.AddTimeRequest;
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.CarrierType;
@@ -14,13 +14,60 @@ import il.cshaifasweng.HSTS.entities.Examination;
 import il.cshaifasweng.HSTS.entities.Question;
 
 
-public class SimpleClient extends ObservableSWRClient {
+public class SimpleClient extends AbstractClient  {
 	
 	private static SimpleClient client = null;
+	private ArrayList<Carrier> expected = new ArrayList<Carrier>(3);
+	private Carrier received;
+	private int waitTime = 50;
 	
 	private SimpleClient(String host, int port) {
 		super(host, port);
 	}
+	
+	private synchronized void receiveCarrier(Object message){
+		  if (expected.contains(message)) {
+			  expected.clear();
+			  received = (Carrier) message;
+		  }
+	}
+	  
+	@Override
+	protected void handleMessageFromServer(Object message){
+		if (!expected.isEmpty()) {
+			receiveCarrier(message);
+		}
+		else {
+			received = (Carrier) message;
+			if (received.carrierMessageMap.get("message").equals("principle approval")) {
+				Duration newDuration = (Duration) received.carrierMessageMap.get("duration");
+				StudentMenuController.examination.setExamEndTime(newDuration);
+			}
+		}
+	}
+	  
+	public synchronized Object sendAndWaitForReply(Object message, Object expectedObject) throws Exception {
+		expected.clear();
+		expected.add((Carrier) expectedObject);	    
+		return sendAndWaitForReply(message, null);
+		}
+	
+	public synchronized Object sendAndWaitForReply(Object message, List expectedListOfObject) throws Exception {
+
+	    if (expectedListOfObject!=null) {
+	      expected.clear();
+	      expected.addAll(expectedListOfObject);
+	    }
+	
+	    this.sendToServer(message);
+	
+	    while (!expected.isEmpty())
+	    {
+	      wait(waitTime);
+	    }
+	    
+        return received;
+  }
 
 	protected void handleLogOut(int userId) {
 		Carrier logoutCarrier =  new Carrier();
@@ -35,7 +82,7 @@ public class SimpleClient extends ObservableSWRClient {
 			e.printStackTrace();
 		}
 	}
-	
+	  
 	protected Carrier handleMessageFromLogInController(String first_name, String pass) {
 		Carrier logInCarrier =  new Carrier();
 		logInCarrier.carrierType = CarrierType.USER;
@@ -49,7 +96,7 @@ public class SimpleClient extends ObservableSWRClient {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		System.out.println(logInCarrier);
 		System.out.println("Message recived from server. ");
 		return logInCarrier;
 	}

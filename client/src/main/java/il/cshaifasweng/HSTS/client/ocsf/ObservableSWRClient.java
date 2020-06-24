@@ -6,8 +6,6 @@ package il.cshaifasweng.HSTS.client.ocsf;
 
 import java.util.*;
 
-import il.cshaifasweng.HSTS.entities.Carrier;
-
 import java.io.*;
 import java.net.*;
 

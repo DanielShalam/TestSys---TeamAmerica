@@ -250,30 +250,50 @@ public class InitializeDB {
 		
 		Set<Question> questionList_1 = new LinkedHashSet<Question>();
 		questionList_1.add(question_1);
+		question_1.setUsedInTest(true);
 		questionList_1.add(question_5);
+		question_5.setUsedInTest(true);
 		questionList_1.add(question_12);
+		question_12.setUsedInTest(true);
 		questionList_1.add(question_13);
+		question_13.setUsedInTest(true);
+
 		Exam exam_1 = new Exam(teacher_3.getUserId(), 1, questionList_1, scoringList, studentInstructions, teacherInstructions, duration_1);
 		
 		Set<Question> questionList_2 = new LinkedHashSet<Question>();
 		questionList_2.add(question_2);
+		question_2.setUsedInTest(true);
 		questionList_2.add(question_6);
+		question_6.setUsedInTest(true);
 		questionList_2.add(question_8);
+		question_8.setUsedInTest(true);
 		questionList_2.add(question_9);
+		question_9.setUsedInTest(true);
+
 		Exam exam_2 = new Exam(teacher_1.getUserId(), 2, questionList_2, scoringList, studentInstructions, teacherInstructions, duration_1);
 		
 		Set<Question> questionList_3 = new LinkedHashSet<Question>();
 		questionList_3.add(question_3);
+		question_3.setUsedInTest(true);
 		questionList_3.add(question_10);
+		question_10.setUsedInTest(true);
 		questionList_3.add(question_14);
+		question_14.setUsedInTest(true);
 		questionList_3.add(question_15);
+		question_15.setUsedInTest(true);
+
 		Exam exam_3 = new Exam(teacher_3.getUserId(), 3, questionList_3, scoringList, studentInstructions, teacherInstructions, duration_1);
 		
 		Set<Question> questionList_4 = new LinkedHashSet<Question>();
 		questionList_4.add(question_4);
+		question_4.setUsedInTest(true);
 		questionList_4.add(question_7);
+		question_7.setUsedInTest(true);
 		questionList_4.add(question_11);
+		question_11.setUsedInTest(true);
 		questionList_4.add(question_16);
+		question_16.setUsedInTest(true);
+
 		Exam exam_4 = new Exam(teacher_2.getUserId(), 4, questionList_4, scoringList, studentInstructions, teacherInstructions, duration_1);
 		
 		session.save(exam_1);
@@ -284,6 +304,23 @@ public class InitializeDB {
 		exam_2.setExamId();
 		exam_3.setExamId();
 		exam_4.setExamId();
+		
+		session.save(question_1);
+		session.save(question_2);
+		session.save(question_3);
+		session.save(question_4);
+		session.save(question_5);
+		session.save(question_6);
+		session.save(question_7);
+		session.save(question_8);
+		session.save(question_9);
+		session.save(question_10);
+		session.save(question_11);
+		session.save(question_12);
+		session.save(question_13);
+		session.save(question_14);
+		session.save(question_15);
+		session.save(question_16);
 		
 		session.flush();
 		
@@ -300,8 +337,8 @@ public class InitializeDB {
 		execCode = "1234";
 		teacherId = exam_1.getTeacherId();
 		examType = ExamType.COMPUTERIZED;
-		examDate = LocalDate.of(2020, Month.JUNE, 23);
-		examStartTime = LocalTime.of(22,20);
+		examDate = LocalDate.of(2020, Month.JUNE, 24);
+		examStartTime = LocalTime.of(03,10);
 		Examination examintaion_1 = new Examination(execCode, teacherId, examType,  examDate, examStartTime, exam_1);
 		course_1.addExamination(examintaion_1);
 		

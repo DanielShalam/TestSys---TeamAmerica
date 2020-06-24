@@ -136,6 +136,11 @@ public class Examination implements Serializable {
 		this.actualDuration = duration;
 		updateExamEndTime();
 	}
+	
+	public void addDuration(Duration addeDuration) {
+		this.actualDuration.plus(addeDuration);
+		
+	}
 
 	public AddTimeRequest getAddTimeRequest() {
 		return addTimeRequest;
@@ -204,14 +209,21 @@ public class Examination implements Serializable {
 	public void setExamStartTime(LocalTime examStartTime) {
 		this.examStartTime = examStartTime;
 	}
-
+	
+	public LocalTime setEndTime() {
+		return examEndTime;
+	}
+	
 	public LocalTime getExamEndTime() {
 		return examEndTime;
 	}
 	
 	private void updateExamEndTime() {
-		examEndTime = examStartTime.plusHours(actualDuration.toHours());
-		examEndTime = examStartTime.plusMinutes(actualDuration.toMinutes());
+		examEndTime = examStartTime.plus(actualDuration);
+	}
+	
+	public void setExamEndTime(Duration actualDuration) {
+		examEndTime = examStartTime.plus(actualDuration);
 	}
 	
 }
