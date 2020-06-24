@@ -61,7 +61,7 @@ public class ServerExamsController {
 	
 	// Delete exam from database using its id
 	public static String deleteExamByID(int examID) {
-
+		
 		Exam exam = ServerExamsController.getExamById(examID);	// Getting the exam
 
 		if (exam == null) {		// Exam id not in database
@@ -75,6 +75,7 @@ public class ServerExamsController {
 	
 	// Delete exam from database using its id
 	public static String deleteExamByEntity(Exam exam) {
+		exam.getQuestionList().clear();
 		//TODO Validation of usedInExamination - Client or Server?
 		ConnectToDB.deleteByInstance(Exam.class, exam);
 		return "Exam deleted successfully. ";

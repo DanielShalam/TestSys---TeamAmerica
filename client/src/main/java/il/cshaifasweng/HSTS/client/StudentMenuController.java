@@ -218,10 +218,20 @@ public class StudentMenuController implements Initializable{
     private Label autoTimeLB;
     
     @FXML
+    private Button autoRtrnBtn;
+    
+    @FXML
     void createStudentExamPageBoundary(ActionEvent event) {
     	mainMenuAP.setVisible(false);
     	instAP.setVisible(true);
 
+    }
+    
+
+    @FXML
+    void returnMainAuto(ActionEvent event) {
+    	autoExamAP.setVisible(false);
+    	mainMenuAP.setVisible(true);
     }
 
     @FXML
@@ -416,6 +426,7 @@ public class StudentMenuController implements Initializable{
 	            		  saveAutoExam();
 	            	  }
 	            	  else {	// Every 1 second
+	            		  System.out.println("Somthing");
 	            		  int hours = (int) (elapsedTime / 3600);
 	            		  int minutes = (int) ((elapsedTime % 3600) / 60);
 	            		  int seconds = (int) (elapsedTime % 60);

@@ -149,7 +149,7 @@ public class ClientQuestionController implements Initializable {
 	    		errorAlert.showAndWait();
 			} else {
 				String message = "delete question";
-				int id = question.getQuestionId();
+				int id = question.getQuestionNum();
 
 				client.handleMessageFromClientQuestionController(message, id, question);
 
@@ -228,8 +228,8 @@ public class ClientQuestionController implements Initializable {
     	else {
     		manageQuestionAP.setVisible(false);
             
-    		if (question.getUsedInTest()) {
-            	originalQuestionId = question.getQuestionId();
+    		if (!question.getUsedInTest()) {
+            	originalQuestionId = question.getQuestionNum();
             }
     		
     		questionTA.setText(question.getQuestion());

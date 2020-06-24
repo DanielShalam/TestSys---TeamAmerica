@@ -206,6 +206,7 @@
                   <Font name="Calibri" size="14.0" />
                </font>
             </Label>
+            <Button fx:id="autoRtrnBtn" layoutX="510.0" layoutY="449.0" mnemonicParsing="false" onAction="#returnMainAuto" prefHeight="26.0" prefWidth="90.0" text="Return" />
          </children></AnchorPane>
    </children>
 </AnchorPane>

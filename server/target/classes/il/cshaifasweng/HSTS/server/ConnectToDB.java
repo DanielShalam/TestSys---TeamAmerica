@@ -1,6 +1,5 @@
 package il.cshaifasweng.HSTS.server;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,16 +10,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.LogicalExpression;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.hibernate.service.ServiceRegistry;
 
@@ -133,6 +127,7 @@ public class ConnectToDB {
     
 	// Function to update existing object
     public static <T> void update(T o){
+    	System.out.println("Updating");
         Session temp_session = ConnectToDB.sessionFactory.openSession();
         temp_session.beginTransaction();
     	temp_session.merge(o);

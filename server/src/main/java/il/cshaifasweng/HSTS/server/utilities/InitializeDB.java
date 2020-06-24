@@ -338,9 +338,10 @@ public class InitializeDB {
 		teacherId = exam_1.getTeacherId();
 		examType = ExamType.COMPUTERIZED;
 		examDate = LocalDate.of(2020, Month.JUNE, 24);
-		examStartTime = LocalTime.of(03,10);
+		examStartTime = LocalTime.of(15,10);
 		Examination examintaion_1 = new Examination(execCode, teacherId, examType,  examDate, examStartTime, exam_1);
 		course_1.addExamination(examintaion_1);
+		exam_1.setUsedInExamination(true);
 		
 		execCode = "4517";
 		teacherId = exam_2.getTeacherId();
@@ -349,6 +350,7 @@ public class InitializeDB {
 		examStartTime = LocalTime.of(21,30);
 		Examination examintaion_2 = new Examination(execCode, teacherId, examType, examDate, examStartTime, exam_2);
 		course_2.addExamination(examintaion_2);
+		exam_2.setUsedInExamination(true);
 
 		execCode = "AD88";
 		teacherId = teacher_3.getUserId();
@@ -357,14 +359,19 @@ public class InitializeDB {
 		examStartTime = LocalTime.of(20,30);
 		Examination examintaion_3 = new Examination(execCode, teacherId, examType, examDate, examStartTime, exam_2);
 		course_2.addExamination(examintaion_3);
-		
+
 		session.save(course_1);
 		session.save(course_2);
+		
+		session.save(exam_1);
+		session.save(exam_2);
 
 		session.save(examintaion_1);
 		session.save(examintaion_2);
 		session.save(examintaion_3);
-
+		
+		ExaminationStudent newex = new ExaminationStudent(student_5, examintaion_1);
+		session.save(newex);
 		session.flush();
 		
 		System.out.println(examintaion_1.getExamination_id());
