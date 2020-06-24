@@ -362,7 +362,8 @@ public class InitializeDB {
 		examStartTime = LocalTime.of(21,30);
 		Examination examintaion_3 = new Examination(execCode, teacherId, examType, examDate, examStartTime, exam_2);
 		course_2.addExamination(examintaion_3);
-
+		
+//		ExaminationStudent examinationStudent(examintaion_3, )
 		session.save(course_1);
 		session.save(course_2);
 		

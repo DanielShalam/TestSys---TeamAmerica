@@ -295,6 +295,7 @@ public class SimpleServer extends AbstractServer {
 				break;
 
 			case "delete exam":
+				System.out.println("delete exam");
 				Exam toDelete = (Exam) carrier.carrierMessageMap.get("exam");
 				String status = ServerExamsController.deleteExamByEntity(toDelete);
 				carrier.carrierMessageMap.clear();
@@ -472,7 +473,9 @@ public class SimpleServer extends AbstractServer {
 		String msg = (String) carrier.carrierMessageMap.get("message");
 		switch (msg) {
 			case "ask for time request": {
+				System.out.println("TIME REQUEST");
 				AddTimeRequest request = (AddTimeRequest) carrier.carrierMessageMap.get("request");
+				System.out.println(request);
 				ServerTimeRequestController.commitRequestToDB(request);
 				break;
 			}

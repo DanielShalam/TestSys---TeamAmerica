@@ -48,7 +48,7 @@ public class Exam implements Serializable {
 	@JoinTable(name = "exam_question", 
 	           joinColumns = { @JoinColumn(name = "exam_id") }, 
 	           inverseJoinColumns = { @JoinColumn(name = "question_id") })
-	private Set<Question> questionList = new LinkedHashSet<>(); 
+	private Set<Question> questionList = new LinkedHashSet<>();
 	
 	@Column(name = "scoring_list")
 	private Integer[] scoringList;

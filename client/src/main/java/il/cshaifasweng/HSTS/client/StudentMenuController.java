@@ -258,8 +258,6 @@ public class StudentMenuController implements Initializable{
 		localCarrier = client.handleMessageFromClientStudentController("get course examinations", courseId, null, null);
 
 		Set<Examination> examinationsList = (Set<Examination>) localCarrier.carrierMessageMap.get("examinations");
-		System.out.println(examinationsList);
-      
 		if (examinationsList.isEmpty()) {
 			studentExamsTV.getItems().clear();
 			Alert errorAlert = new Alert(AlertType.INFORMATION);
