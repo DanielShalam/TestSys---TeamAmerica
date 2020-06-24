@@ -15,12 +15,10 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.AnchorPane;
-import javafx.util.converter.LocalDateStringConverter;
 import javafx.util.converter.LocalTimeStringConverter;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ListView;
 
 import java.io.IOException;
@@ -32,7 +30,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.UnaryOperator;
@@ -44,7 +41,6 @@ import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.ExamType;
 import il.cshaifasweng.HSTS.entities.Examination;
 import il.cshaifasweng.HSTS.entities.Question;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 
@@ -65,8 +61,8 @@ public class ClientExamsController implements Initializable{
     @FXML // fx:id="saveButton"
     private Button saveButton; // Value injected by FXMLLoader
 
-    @FXML // fx:id="editQuestionsButton1"
-    private Button editQuestionsButton1; // Value injected by FXMLLoader
+    @FXML // fx:id="clearButton"
+    private Button clearButton; // Value injected by FXMLLoader
 
     @FXML // fx:id="deleteQuestionsButton1"
     private Button deleteQuestionsButton1; // Value injected by FXMLLoader
@@ -1002,9 +998,9 @@ public class ClientExamsController implements Initializable{
     	localCarrier = client.handleMessageFromClientQuestionController(message, id, question);
     	System.out.println("message from ClientQuestionController Handled");
 		
-      questionList = (List<Question>) localCarrier.carrierMessageMap.get("questions");
-
-      loadQuestionData(questionList, courseQuestionTVSetExamAP);
+		questionList = (List<Question>) localCarrier.carrierMessageMap.get("questions");
+		
+		loadQuestionData(questionList, courseQuestionTVSetExamAP);
     }
     
     Boolean isExamValid() {
@@ -1119,7 +1115,7 @@ public class ClientExamsController implements Initializable{
 		} 
 		
     	if (isIntigationValid()) {
-    		int executionCode = Integer.parseInt(execCodeTFInstExamAP.getText());
+    		String executionCode = execCodeTFInstExamAP.getText();
     		LocalDate examDate = dateDPInstExamAP.getValue();
     		Examination examination = new Examination(executionCode, teacherId, examType, 
     				examDate, examStartTime, exam);		
