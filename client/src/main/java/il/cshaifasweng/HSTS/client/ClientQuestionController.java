@@ -228,8 +228,11 @@ public class ClientQuestionController implements Initializable {
     	else {
     		manageQuestionAP.setVisible(false);
             
-    		if (question.getUsedInTest()) {
+    		if (!question.getUsedInTest()) {
             	originalQuestionId = question.getQuestionId();
+            	if (LoginController.userReceviedID == question.getTeacherId()) {
+            		originalQuestionId = -1;
+            	}
             }
     		
     		questionTA.setText(question.getQuestion());
@@ -345,6 +348,7 @@ public class ClientQuestionController implements Initializable {
 	    				answer2TA.getText() == question.getAnswers()[1] &&
 	    				answer3TA.getText() == question.getAnswers()[2] &&
 	    				answer4TA.getText() == question.getAnswers()[3] &&
+	    				LoginController.userReceviedID == question.getTeacherId() &&
 	    				LoginController.userReceviedCourses.get(courseComboBox.getSelectionModel().getSelectedItem()) == question.getCourseId() &&
 	    				((answer1RB.isSelected() && question.getCorrectAnswer() == 1) ||
 	    						(answer2RB.isSelected() && question.getCorrectAnswer() == 2) ||
