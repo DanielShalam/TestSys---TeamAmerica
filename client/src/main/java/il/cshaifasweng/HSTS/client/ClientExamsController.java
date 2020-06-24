@@ -28,7 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -40,6 +40,7 @@ import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.ExamType;
 import il.cshaifasweng.HSTS.entities.Examination;
+import il.cshaifasweng.HSTS.entities.ExaminationStatus;
 import il.cshaifasweng.HSTS.entities.ExaminationStudent;
 import il.cshaifasweng.HSTS.entities.Question;
 import javafx.beans.binding.Bindings;
@@ -53,8 +54,7 @@ public class ClientExamsController implements Initializable{
 	private SimpleClient client;
 	private Carrier localCarrier = null;
 	private List <Exam> examsList = null;
-	private List <Examination> activeExamList = null;
-	
+	private int originalUsedInExamination = -1;
 	
 	
 	@FXML // fx:id="setQuestionMenuAP"
@@ -345,6 +345,45 @@ public class ClientExamsController implements Initializable{
     @FXML // fx:id="viewExamTeacherInstructionsTC"
     private TableColumn<Exam, String> viewExamTeacherInstructionsTC; // Value injected by FXMLLoader
     
+    @FXML // fx:id="courseCBGradeExamAP"
+    private ChoiceBox<String> courseCBGradeExamAP; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="checkExamAP"
+    private AnchorPane checkExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="QuestionsAnswersTACheckExamAP"
+    private TextArea QuestionsAnswersTACheckExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="gradeTFCheckExamAP"
+    private TextField gradeTFCheckExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="noteToStudentTACheckExamAP"
+    private TextArea noteToStudentTACheckExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="approveGradeButtonCheckExamAP"
+    private Button approveGradeButtonCheckExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="changeGradeButtonCheckExamAP"
+    private Button changeGradeButtonCheckExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="updateGradeAP"
+    private AnchorPane updateGradeCheckExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="newGradeTFCheckExamAP"
+    private TextField newGradeTFCheckExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="changeGradeNoteTACheckExamAP"
+    private TextArea changeGradeNoteTACheckExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="submitNewGradeButtonCheckExamAP"
+    private Button submitNewGradeButtonCheckExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="cancelNewGradeButtonCheckExamAP"
+    private Button cancelNewGradeButtonCheckExamAP; // Value injected by FXMLLoader
+
+    @FXML // fx:id="cancelButtonCheckExamAP"
+    private Button cancelButtonCheckExamAP; // Value injected by FXMLLoader
+    
     @FXML
     void viewExam(ActionEvent event) throws IOException {
     	Exam exam = viewExamsTV.getSelectionModel().getSelectedItem();
@@ -409,7 +448,7 @@ public class ClientExamsController implements Initializable{
         	}
         	else {
         		String message = "delete exam";
-            	int id = exam.getExamId();
+        		int id = exam.getExamNum();
             	
             	localCarrier = client.handleMessageFromClientExamController(message, id, exam);
             	
@@ -435,6 +474,13 @@ public class ClientExamsController implements Initializable{
     	} else {
     		addQuestionsAPSetExamAP.setVisible(false);
     		manageExamsAP.setVisible(false);
+    		
+    		if (!exam.isUsedInExamination()) {
+    			originalUsedInExamination = exam.getExamNum();
+    			if (LoginController.userReceviedID != exam.getTeacherId()) {
+    				originalUsedInExamination = -1;
+    			}
+    		}
     		
     		loadExamDataToSetExamAP(exam);
     		
@@ -529,28 +575,49 @@ public class ClientExamsController implements Initializable{
 
 	@FXML
     void getAutoCheckedExams(ActionEvent event) {
-		//TODO
 		client = LoginController.client;
-//    	client.openConnection();
-    	
-    	String message = "get all teacher exams";
-    	Exam exam = null;
-    	int id = LoginController.userReceviedID;
-    	
-    	localCarrier = client.handleMessageFromClientExamController(message, id, exam);
-    	System.out.println("message from ClientExamsController Handled");
-		ObservableList<Exam> eItems = viewExamsTV.getItems();
 		
-		if (!eItems.isEmpty()) {
-			viewExamsTV.getItems().removeAll(examsList);
-		}
+		ExaminationStudent sExamination = null;
+		
+		if (courseCBGradeExamAP.getSelectionModel().getSelectedItem() != null) {
+			String message = "get all course student examinations";
+			int courseId = LoginController.userReceviedCourses.get(courseCBGradeExamAP.getSelectionModel().getSelectedItem());
+			
+			ExaminationStatus status = ExaminationStatus.AUTOCHECKED;
+	    	int teacherId = LoginController.userReceviedID;
+	    	
+	    	localCarrier = client.handleMessageStudentExaminationsFromClientExamsController(message,
+	    			teacherId, status, courseId, sExamination);
+	    	System.out.println("message from ClientExamsController Handled");
+			ObservableList<ExaminationStudent> eItems = checkedExamsTV.getItems();
+			
+			if (!eItems.isEmpty()) {
+				checkedExamsTV.getItems().removeAll(eItems);
+			}
 
-		examsList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
-		
-		loadData(examsList);
+			List<ExaminationStudent> autoCheckedExamList = (List<ExaminationStudent>) localCarrier.carrierMessageMap.get("studentExamination");
+			
+			if (autoCheckedExamList != null) {
+				loadCheckedExamData(autoCheckedExamList);
+			} else {
+				Alert errorAlert = new Alert(AlertType.ERROR);
+	    		errorAlert.setHeaderText("No automatically checked exams");
+	    		errorAlert.showAndWait(); 
+			}
+		} else {
+			Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Course was not selected");
+    		errorAlert.showAndWait();
+		}
     }
 
-    @FXML
+    void loadCheckedExamData(List<ExaminationStudent> checkedExamList) {
+		for (ExaminationStudent checkedExam : checkedExamList) {
+			checkedExamsTV.getItems().add(checkedExam);
+		}
+	}
+
+	@FXML
     void getCourseExams(ActionEvent event) throws IOException {    	
     	examsList = getCourseExams(viewExamsTV,courseViewExamsCB);
     	
@@ -642,10 +709,40 @@ public class ClientExamsController implements Initializable{
 
     @FXML
     void showCheckExam(ActionEvent event) {
-
+    	ExaminationStudent sExamination = checkedExamsTV.getSelectionModel().getSelectedItem();
+    	if (sExamination != null) {
+    		manageExamsAP.setVisible(false);
+    		checkExamAP.setVisible(true);
+    		loadDataToCheckExamAP(sExamination);
+    	} else {
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Exam was not selected");
+    		errorAlert.showAndWait();
+    	}
     }
 
-    @FXML
+    void loadDataToCheckExamAP(ExaminationStudent sExamination) {
+		Set<Question> questionSet = sExamination.getExamination().getExam().getQuestionList();
+		List<Question> questionList = null;
+		List<Integer> studentAnswerList = sExamination.getStudentsAnswers();
+		String questionAnswerSummary = "QUESTION: ";
+		
+		for (Question question : questionSet) {
+			questionList.add(question);
+		}
+		
+		int i = 0;
+		for (Question question : questionList) {
+			questionAnswerSummary = questionAnswerSummary + question.getQuestion() +
+					"\nCORRECT ANSWER:  " + question.getCorrectAnswer() + "\nSTUDENT ANSWER: " +
+					studentAnswerList.get(i) + "\n\nQUESTION: ";
+			i++;
+		}
+		QuestionsAnswersTACheckExamAP.setText(questionAnswerSummary);
+		gradeTFCheckExamAP.setText(String.valueOf(sExamination.getGrade()));
+	}
+
+	@FXML
     void showExamInstigation(ActionEvent event) {
     	hideCurrentAP();
     	examInstigationAP.setVisible(true);
@@ -698,7 +795,7 @@ public class ClientExamsController implements Initializable{
     		int courseId = LoginController.userReceviedCourses.get(courseCBSetExamAP.getSelectionModel().getSelectedItem());
     		
     		List<Question> qList = examQuestionsTVsetExamAP.getItems();
-			Set<Question> questionSet = new HashSet<>();;
+			Set<Question> questionSet = new LinkedHashSet<>();;
 			for (Question q : qList) {
 				questionSet.add(q);
 			}
@@ -710,15 +807,17 @@ public class ClientExamsController implements Initializable{
 			
 			Exam exam = new Exam(teacherId, courseId, questionSet, scoringList, studentInstructions,
 					teacherInstructions, assignedDuration);
+			
 			client = LoginController.client;
         	
         	String message = "create exam";   	
-        	localCarrier = client.handleMessageFromClientExamController(message, 0, exam);
+        	localCarrier = client.handleMessageFromClientExamController(message, originalUsedInExamination, exam);
         	System.out.println("message from ClientExamController Handled");
         	
 			String status = (String) localCarrier.carrierMessageMap.get("status");
 			System.out.println(status);
 			
+			originalUsedInExamination = -1;
     		clearSetExam();
     		
     		setExamsMenuAP.setVisible(false);
@@ -828,6 +927,7 @@ public class ClientExamsController implements Initializable{
     		courseCBSetExamAP.getItems().add(course);
     		courseComboBox.getItems().add(course);
     		courseExamInstigCB.getItems().add(course);
+    		courseCBGradeExamAP.getItems().add(course);
     	}
     	
     	UnaryOperator<Change> modifyChange = c -> {
@@ -1053,7 +1153,7 @@ public class ClientExamsController implements Initializable{
 		if (exam != null) {
 			//compare original questions with current questions
 			List<Question> qList = examQuestionsTVsetExamAP.getItems();
-			Set<Question> qSet = new HashSet<>();;
+			Set<Question> qSet = new LinkedHashSet<>();;
 			for (Question q : qList) {
 				qSet.add(q);
 			}
@@ -1068,7 +1168,8 @@ public class ClientExamsController implements Initializable{
     		if (examDurationTFSetExamAP.getText().equals(dtm(exam.getAssignedDuration())) &&
     				studentInstructionsTASetExamAP.getText().equals(exam.getStudentInstructions()) &&
     				teacherInstructionsTASetExamAP.getText().equals(exam.getTeacherInstructions()) && 
-    				qSetsEqual && Arrays.equals(createScoringIntArr(), exam.getScoringList())) {
+    				qSetsEqual && Arrays.equals(createScoringIntArr(), exam.getScoringList()) &&
+    				LoginController.userReceviedID.equals(exam.getTeacherId())) {
     			return true;
     		}
     		return false;
@@ -1249,5 +1350,78 @@ public class ClientExamsController implements Initializable{
     		examsList = null;
     	}
     	return examsList;
+    }
+    
+    @FXML
+    void submitNewGrade(ActionEvent event) {
+    	if (gradeTFCheckExamAP.getText().isBlank() || 
+    			changeGradeNoteTACheckExamAP.getText().isBlank()) {
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Grade could not be submitted");
+    		errorAlert.setContentText("Make sure you filled in all fields");
+    		errorAlert.showAndWait(); 	
+    	} else {
+    		gradeTFCheckExamAP.setText(newGradeTFCheckExamAP.getText());	
+        	closeAndClearUpdateGrade();
+    	}
+    }
+    
+    @FXML
+    void cancelUpdateGrade(ActionEvent event) {
+    	changeGradeNoteTACheckExamAP.setText("");
+    	closeAndClearUpdateGrade();
+    }
+    
+    void closeAndClearUpdateGrade() {
+    	newGradeTFCheckExamAP.setText("");
+    	approveGradeButtonCheckExamAP.setDisable(false);
+    	changeGradeButtonCheckExamAP.setDisable(false);
+    	cancelButtonCheckExamAP.setDisable(false);
+    	updateGradeCheckExamAP.setVisible(false);
+	}
+
+	@FXML
+    void cancelCheckExam(ActionEvent event) {
+		closeAndClearCheckExam();
+    }
+    
+    void closeAndClearCheckExam() {
+    	gradeTFCheckExamAP.setText("");
+    	QuestionsAnswersTACheckExamAP.setText("");
+    	noteToStudentTACheckExamAP.setText("");
+    	changeGradeNoteTACheckExamAP.setText("");
+    	manageExamsAP.setVisible(true);
+		checkExamAP.setVisible(false);
+	}
+
+	@FXML
+    void changeGrade(ActionEvent event) {
+    	updateGradeCheckExamAP.setVisible(true);
+    	approveGradeButtonCheckExamAP.setDisable(true);
+    	changeGradeButtonCheckExamAP.setDisable(true);
+    	cancelButtonCheckExamAP.setDisable(true);
+    }
+    
+
+    @FXML
+    void approveGrade(ActionEvent event) {
+    	ExaminationStudent studentExamination = checkedExamsTV.getSelectionModel().getSelectedItem();
+    	
+    	studentExamination.setGrade(Integer.parseInt(gradeTFCheckExamAP.getText()));
+    	studentExamination.setChangeGradeNotes(changeGradeNoteTACheckExamAP.getText());
+    	studentExamination.setNotesToStudent(noteToStudentTACheckExamAP.getText());
+    	
+    	client = LoginController.client;
+    	
+    	int teacherId = 0;
+    	int courseId = 0;
+    	ExaminationStatus examStatus = ExaminationStatus.INVALID;
+    	String message = "grade student examination";
+    	
+    	localCarrier = client.handleMessageStudentExaminationsFromClientExamsController(
+    			message, teacherId, examStatus, courseId, studentExamination);
+    	System.out.println("message from ClientExamsController Handled");
+    	
+    	closeAndClearCheckExam();    	
     }
 }

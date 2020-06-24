@@ -11,6 +11,8 @@ import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.CarrierType;
 import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.Examination;
+import il.cshaifasweng.HSTS.entities.ExaminationStatus;
+import il.cshaifasweng.HSTS.entities.ExaminationStudent;
 import il.cshaifasweng.HSTS.entities.Question;
 
 
@@ -211,6 +213,36 @@ public class SimpleClient extends AbstractClient  {
 		if (message.equals("ask for time request")) {
 			examCarrier.carrierMessageMap.put("request", timeRequest);
 			examCarrier.carrierMessageMap.put("message", "ask for time request");
+		}
+		
+		try {
+			examCarrier = (Carrier) this.sendAndWaitForReply(examCarrier, examCarrier);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return examCarrier;
+	}
+	
+	protected Carrier handleMessageStudentExaminationsFromClientExamsController(String message, int teacherId,
+			ExaminationStatus examinationStatus, int courseId, ExaminationStudent studentExamination) {
+		Carrier examCarrier = new Carrier();
+		examCarrier.carrierType = CarrierType.EXAMINATION_STUDENT;
+		
+		if (message.equals("get all course student examinations")) {
+			examCarrier.carrierMessageMap.put("course", courseId);
+			examCarrier.carrierMessageMap.put("teacher", teacherId);
+			examCarrier.carrierMessageMap.put("status", examinationStatus);
+			examCarrier.carrierMessageMap.put("message", "get all course student examinations");
+		}
+		else if (message.equals("get all teacher student examinations")) {
+			examCarrier.carrierMessageMap.put("teacher", teacherId);
+			examCarrier.carrierMessageMap.put("status", examinationStatus);
+			examCarrier.carrierMessageMap.put("message", "get all teacher student examinations");
+		} else if (message.equals("grade student examination")) {
+			examCarrier.carrierMessageMap.put("student examination", studentExamination);
+			examCarrier.carrierMessageMap.put("message", "grade student examination");
 		}
 		
 		try {
