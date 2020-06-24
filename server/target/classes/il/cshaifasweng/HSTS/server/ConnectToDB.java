@@ -1,6 +1,6 @@
 package il.cshaifasweng.HSTS.server;
 
-import java.util.ArrayList;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,17 +11,14 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Criteria;
+import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.LogicalExpression;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
+import org.hibernate.query.criteria.internal.path.CollectionAttributeJoin.TreatedCollectionAttributeJoin;
 import org.hibernate.service.ServiceRegistry;
 
 import il.cshaifasweng.HSTS.entities.*;
@@ -131,8 +128,24 @@ public class ConnectToDB {
     	return new_id;
       }
     
+    public static ExaminationStudent saveExmnStudent(int studentId, int examinationId){
+        Session temp_session = ConnectToDB.sessionFactory.openSession();
+        temp_session.beginTransaction();
+        User user =  temp_session.get(User.class, studentId);
+        Examination exmn =  temp_session.get(Examination.class, examinationId);
+		ExaminationStudent exmnStudent = new ExaminationStudent(user, exmn);
+		exmnStudent.setActualExamStartTime(LocalTime.now());
+		user.addExamination(exmnStudent);
+		exmn.addStudent(exmnStudent);
+        temp_session.save(exmnStudent);
+        temp_session.getTransaction().commit();
+    	temp_session.close();
+    	return exmnStudent;
+      }
+    
 	// Function to update existing object
     public static <T> void update(T o){
+    	System.out.println("Updating");
         Session temp_session = ConnectToDB.sessionFactory.openSession();
         temp_session.beginTransaction();
     	temp_session.merge(o);
@@ -191,6 +204,26 @@ public class ConnectToDB {
         }
         return false;
     }
+    
+	// Function check if student already submitted examination by extract its examinations
+    public static <T> String checkIfSubmitted(int studentId, int examinationId){
+    	Session temp_session = sessionFactory.openSession();
+        temp_session.beginTransaction();
+        User user =  temp_session.get(User.class, studentId);
+        
+        for(ExaminationStudent exmnStudent: user.getExaminationList()) {
+        	if (exmnStudent.getExamination().getExamination_id() == examinationId) {
+        		if (exmnStudent.getStatus() == ExaminationStatus.STARTED) {
+        			return "Submit";
+        		}
+        		else {
+        			return "Already submited";
+        		}
+        	}        	
+    	}
+    	return "New";
+    }
+    
 	
 	public static void printUsers() throws Exception {
 		

@@ -59,11 +59,8 @@ public class ExaminationStudent implements Serializable {
 	private ArrayList<Integer> studentsAnswers;
 	
 	public ExaminationStudent(User student, Examination examination) {
-		/* creating the embeddedId */ 
+		
 		this.examinationStudentId = new ExaminationStudentPK(student.getUserId(),examination.getExamination_id());
-		/* adding reference of this instance to the student and examination */
-		student.addExamination(this);
-		examination.addStudent(this);
 		/* adding reference of of student and examination */
 		this.examination = examination;
 		this.student = student;

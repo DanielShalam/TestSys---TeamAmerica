@@ -13,7 +13,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -62,8 +62,10 @@ public class StudentMenuController implements Initializable{
 	private SimpleClient client;
 	private Carrier localCarrier = null;
 	private int questionIndex = 0;
-	public static Examination examination;
-	List<Question> qList;
+	static Examination examination;
+	private List<Question> qList;
+	private Integer[] studentAnswers;	
+	private boolean compExmnActivated = false;
 	
 	
 	
@@ -218,10 +220,20 @@ public class StudentMenuController implements Initializable{
     private Label autoTimeLB;
     
     @FXML
+    private Button autoRtrnBtn;
+    
+    @FXML
     void createStudentExamPageBoundary(ActionEvent event) {
     	mainMenuAP.setVisible(false);
     	instAP.setVisible(true);
 
+    }
+    
+
+    @FXML
+    void returnMainAuto(ActionEvent event) {
+    	autoExamAP.setVisible(false);
+    	mainMenuAP.setVisible(true);
     }
 
     @FXML
@@ -393,48 +405,92 @@ public class StudentMenuController implements Initializable{
 
     }
     
-    public void activateComputerizedExamination() {
-    	
-    	instAP.setVisible(false);
-    	autoExamAP.setVisible(true);
-    	examination.getExam();
-    	qList = new ArrayList<Question>(examination.getExam().getQuestionList());
-    	prevQuestion.setDisable(true);
-    	answer1RB.setDisable(true);
-    	answer2RB.setDisable(true);
-    	answer3RB.setDisable(true);
-    	answer4RB.setDisable(true);
-    	showQuestion();
-    	
-        // Timer
-		Timeline animation = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
-	              @Override public void handle(ActionEvent actionEvent) {
-	            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), examination.getExamEndTime()).toSeconds();
+	public void activateComputerizedExamination() {
+	    	
+	    	instAP.setVisible(false);
+	    	autoExamAP.setVisible(true);
+	    	//examination.getExam();
+	    	qList = new ArrayList<Question>(examination.getExam().getQuestionList());
+	    	studentAnswers = new Integer[qList.size()];
+	    	// init studentAnswers to 0
+	    	for (int i = 0; i < qList.size(); i++) {
+	    		studentAnswers[i]= 0; 
+	    	}
+	    	prevQuestion.setDisable(true);
+	    	answer1RB.setDisable(true);
+	    	answer2RB.setDisable(true);
+	    	answer3RB.setDisable(true);
+	    	answer4RB.setDisable(true);
+	    	showQuestion();
+	    	
+	        // Timer
+			Timeline animation = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+		              @Override public void handle(ActionEvent actionEvent) {
+		            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), examination.getExamEndTime()).toSeconds();
+	
+		            	  if (elapsedTime <= 0) {	// Time is up
+		            		  startOrSubmitBtn.setDisable(true);
+		            		  forceSubmitCompExam();
+		            	  }
+		            	  else {	// Every 1 second
+		            		  int hours = (int) (elapsedTime / 3600);
+		            		  int minutes = (int) ((elapsedTime % 3600) / 60);
+		            		  int seconds = (int) (elapsedTime % 60);
+	
+		            		  autoTimeLB.setText(String.format("%02d : %02d : %02d", hours, minutes, seconds));
+		            	  }
+	
+		              }}
+		          	));
+	
+			animation.setCycleCount((int) (Timeline.INDEFINITE)); // Running times
+			animation.play();
+	    }
+    
+	void forceSubmitCompExam() {
+	    	submitCompExam();
+	    }
+    
+	@FXML
+    void startCompExam(ActionEvent event) {
+    	TextInputDialog dialog = new TextInputDialog("id here");
+    	dialog.setTitle("ID required");
+    	dialog.setContentText("Please enter your ID:");
 
-	            	  if (elapsedTime <= 0) {	// Time is up
-	            		  startOrSubmitBtn.setDisable(true);
-	            		  saveAutoExam();
-	            	  }
-	            	  else {	// Every 1 second
-	            		  int hours = (int) (elapsedTime / 3600);
-	            		  int minutes = (int) ((elapsedTime % 3600) / 60);
-	            		  int seconds = (int) (elapsedTime % 60);
-
-	            		  autoTimeLB.setText(String.format("%02d : %02d : %02d", hours, minutes, seconds));
-	            	  }
-
-	              }}
-	          	));
-
-		animation.setCycleCount((int) (Timeline.INDEFINITE)); // Running times
-		animation.play();
+    	Optional<String> input = dialog.showAndWait();
+    	if (input.isPresent()) {	// check user didn't exit the dialog window
+    		
+	    	String strInput = input.get();
+	    	String id = Integer.toString(LoginController.userReceviedID);
+	    	if (id.equals(strInput)) {
+	    		answer1RB.setDisable(false);
+	        	answer2RB.setDisable(false);
+	        	answer3RB.setDisable(false);
+	        	answer4RB.setDisable(false);
+	    		System.out.println("Id matches");
+	    		compExmnActivated = true;
+	    		localCarrier = client.handleMessageFromClientStudentController("start student examination", 
+	    				LoginController.userReceviedID,  examination);
+	    		compExamStarted();
+	    	}
+	    	else {
+	    		System.out.println("Id doesn't match");
+	    	}
+	    }
     }
-    
-    void saveAutoExam() {
-
-    }
-    
-    
+	
+	void compExamStarted() {
+	    	
+	    	startOrSubmitBtn.setText("Submit Test");
+	    	startOrSubmitBtn.setOnAction(new EventHandler<ActionEvent>() {
+	            @Override
+	            public void handle(ActionEvent event) {
+	                System.out.println("Hello World!");
+	                submitCompExam();
+	            }
+	    	});	
+	    }
+	
     void showQuestion() {
     	int qNum = questionIndex + 1;
     	Question question = qList.get(questionIndex);
@@ -454,7 +510,37 @@ public class StudentMenuController implements Initializable{
     		nextQuestion.setDisable(true);
     	}
     	prevQuestion.setDisable(false);
+    	if (compExmnActivated) {
+    		markAnswerBtn();
+    	}
     	showQuestion();
+    }
+    
+    void markAnswerBtn() {
+    	switch (studentAnswers[questionIndex]) {
+    	case 1:
+    		System.out.println("check 2");
+    		answer1RB.setSelected(true);
+    		break;
+    		
+    	case 2:
+    		answer2RB.setSelected(true);
+    		break;
+    		
+    	case 3:
+    		answer3RB.setSelected(true);
+    		break;
+    		
+    	case 4:
+    		answer4RB.setSelected(true);
+    		break;
+    		
+    	default:
+    		answer1RB.setSelected(false);
+    		answer2RB.setSelected(false);
+    		answer3RB.setSelected(false);
+    		answer4RB.setSelected(false);
+    	}
     }
     
     @FXML
@@ -464,6 +550,9 @@ public class StudentMenuController implements Initializable{
     		prevQuestion.setDisable(true);
     	}
     	nextQuestion.setDisable(false);
+    	if (compExmnActivated) {
+    		markAnswerBtn();
+    	}
     	showQuestion();
     }
     
@@ -523,5 +612,50 @@ public class StudentMenuController implements Initializable{
     	// show timer
     	// save answers when clicking radio buttons
     	
+    }
+    
+    @FXML
+    void submitCompExam() {
+    	  	
+    	// casting studentAnswers to ArrayList and saving to ExaminationStudent object
+    	
+    	List<Integer> al = new ArrayList<Integer>();  
+        Collections.addAll(al, studentAnswers); 
+   
+    	
+    	client.handleMessageFromClientStudentController("submit student examination", 
+				LoginController.userReceviedID,  examination);
+    	
+    	
+    	Alert alert = new Alert(AlertType.INFORMATION);
+    	alert.setTitle(null);
+    	alert.setHeaderText(null);
+    	alert.setContentText("Test submmited succesfully - good luck!");
+    	alert.showAndWait();
+    	
+    	// need to go back to main screen
+    	autoExamAP.setVisible(false);
+    	instAP.setVisible(true);
+    	
+    }
+    
+    @FXML
+    void chooseAnswerOne(ActionEvent event) {
+    	studentAnswers[questionIndex] = 1;	
+    }
+
+    @FXML
+    void chooseAnswerTwo(ActionEvent event) {
+    	studentAnswers[questionIndex] = 2;
+    }
+    
+    @FXML
+    void chooseAnswerThree(ActionEvent event) {
+    	studentAnswers[questionIndex] = 3;
+    }
+    
+    @FXML
+    void chooseAnswerFour(ActionEvent event) {
+    	studentAnswers[questionIndex] = 4;
     }
 }

@@ -124,6 +124,15 @@ public class User implements Serializable {
 		this.role = role;
 	}
 	
+	public Set<ExaminationStudent> getExaminationList() {
+		return examinationList;
+	}
+
+	public void setExaminationList(Set<ExaminationStudent> examinationList) {
+		this.examinationList = examinationList;
+	}
+
+	
 	/* adding a list of existing courses to student
 	   and adding the student to each course */
 	public void addCoursesToStudent(Course... courses) {
