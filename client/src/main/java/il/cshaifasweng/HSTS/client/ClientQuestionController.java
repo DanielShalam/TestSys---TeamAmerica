@@ -122,6 +122,12 @@ public class ClientQuestionController implements Initializable {
     @FXML // fx:id="manageQuestionAP"
     private AnchorPane manageQuestionAP; // Value injected by FXMLLoader
     
+    @FXML // fx:id="viewQuestionButton"
+    private Button viewQuestionButton; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="clearButton"
+    private Button clearButton; // Value injected by FXMLLoader
+    
     @FXML
     void createSetQuestionBoudary(ActionEvent event) {
     	manageQuestionAP.setVisible(false);
@@ -135,16 +141,24 @@ public class ClientQuestionController implements Initializable {
     	client.openConnection();
     	
     	Question question = questionTV.getSelectionModel().getSelectedItem();
-    	if (question.getUsedInTest()) {
-    		System.out.println("you CANNOT delete me!");
-    	}
-    	else {
-    		String message = "delete question";
-        	int id = question.getQuestionId();
-        	
-        	client.handleMessageFromClientQuestionController(message, id, question);
+    	
+    	if (question != null) {
+			if (question.getUsedInTest()) {
+				Alert errorAlert = new Alert(AlertType.ERROR);
+	    		errorAlert.setHeaderText("Question can not be deleted since it is already used in test");
+	    		errorAlert.showAndWait();
+			} else {
+				String message = "delete question";
+				int id = question.getQuestionId();
 
-    	}
+				client.handleMessageFromClientQuestionController(message, id, question);
+
+			} 
+		} else {
+			Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Question was not selected");
+    		errorAlert.showAndWait();
+		}
     }
 
     @FXML
@@ -152,23 +166,27 @@ public class ClientQuestionController implements Initializable {
     	client = LoginController.client;
     	client.openConnection();
     	
-    	String message = "get all questions";
-    	Question question = null;
-    	int id = 0;
     	if (courseCB.getSelectionModel().getSelectedItem() != null) {
-    		message = "get all course questions";
-    		id = LoginController.userReceviedCourses.get(courseCB.getSelectionModel().getSelectedItem());
+    		String message = "get all course questions";
+    		int id = LoginController.userReceviedCourses.get(courseCB.getSelectionModel().getSelectedItem());
+    		Question question = null;
+    		
+    		localCarrier = client.handleMessageFromClientQuestionController(message, id, question);
+        	System.out.println("message from ClientQuestionController Handled");
+    		ObservableList<Question> qItems = questionTV.getItems();
+    		
+    		if (!qItems.isEmpty()) {
+    			questionTV.getItems().removeAll(question_list);
+    		}
+    		question_list = (List<Question>) localCarrier.carrierMessageMap.get("questions");
+    		loadData(question_list);
+    	} else {
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Course was not selected");
+    		errorAlert.showAndWait();
     	}
     	
-    	localCarrier = client.handleMessageFromClientQuestionController(message, id, question);
-    	System.out.println("message from ClientQuestionController Handled");
-		ObservableList<Question> qItems = questionTV.getItems();
-		
-		if (!qItems.isEmpty()) {
-			questionTV.getItems().removeAll(question_list);
-		}
-		question_list = (List<Question>) localCarrier.carrierMessageMap.get("questions");
-		loadData(question_list);
+    	
     }
 
     @FXML
@@ -195,7 +213,11 @@ public class ClientQuestionController implements Initializable {
     }
 
     @FXML
-    void loadQuestionToSetQuestionBoudary(ActionEvent event) {
+    void editQuestion(ActionEvent event) {
+    	loadQuestionToSetQuestionBoudary();
+    }
+    
+    void loadQuestionToSetQuestionBoudary() {
     	Question question = questionTV.getSelectionModel().getSelectedItem();
     	if (question == null)
     	{
@@ -247,6 +269,7 @@ public class ClientQuestionController implements Initializable {
     
     @FXML
     void cancel(ActionEvent event) {
+        disableSetQuestionMenu(false);
     	clearData();
     	originalQuestionId = -1;
     	setQuestionMenuAP.setVisible(false);
@@ -293,6 +316,11 @@ public class ClientQuestionController implements Initializable {
 			originalQuestionId = -1;
         	setQuestionMenuAP.setVisible(false);
         	manageQuestionAP.setVisible(true);
+    	} else {
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Question could not be saved");
+    		errorAlert.setContentText("Make sure you filled in all fields or performed changes to the question");
+    		errorAlert.showAndWait();
     	}
     }
     
@@ -334,9 +362,7 @@ public class ClientQuestionController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     	courseIDTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("courseId"));
     	questionTC.setCellValueFactory(new PropertyValueFactory<Question,String>("question"));
-    	answersTC.setCellValueFactory(new PropertyValueFactory<Question,String[]>("answers"));
     	instructionsTC.setCellValueFactory(new PropertyValueFactory<Question,String>("instructions"));
-    	correctAnswerTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("correctAnswer"));
     	teacherIdTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("teacherId"));
     	questionIdTC.setCellValueFactory(new PropertyValueFactory<Question,Integer>("questionId"));
     	
@@ -360,12 +386,12 @@ public class ClientQuestionController implements Initializable {
     }
     
     void clearData() {
-    	questionTA.setText(null);
-    	instructionsTA.setText(null);
-    	answer1TA.setText(null);
-    	answer2TA.setText(null);
-    	answer3TA.setText(null);
-    	answer4TA.setText(null);
+    	questionTA.setText("");
+    	instructionsTA.setText("");
+    	answer1TA.setText("");
+    	answer2TA.setText("");
+    	answer3TA.setText("");
+    	answer4TA.setText("");
     	courseComboBox.getSelectionModel().clearSelection();
     	courseComboBox.setValue(null);
     	if (answer1RB.isSelected()) {
@@ -382,4 +408,25 @@ public class ClientQuestionController implements Initializable {
     	}
     }
     
+    @FXML
+    void viewQuestion(ActionEvent event) {
+    	disableSetQuestionMenu(true);
+        loadQuestionToSetQuestionBoudary();
+    }
+    
+    void disableSetQuestionMenu (Boolean disable) {
+    	saveButton.setDisable(disable);
+        clearButton.setDisable(disable);
+        questionTA.setDisable(disable);
+        instructionsTA.setDisable(disable);
+        answer1TA.setDisable(disable);
+        answer2TA.setDisable(disable);
+        answer3TA.setDisable(disable);
+        answer4TA.setDisable(disable);
+        courseComboBox.setDisable(disable);
+        answer1RB.setDisable(disable);
+        answer2RB.setDisable(disable);
+        answer3RB.setDisable(disable);
+        answer4RB.setDisable(disable);
+    }
 }
