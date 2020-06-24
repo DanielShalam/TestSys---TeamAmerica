@@ -49,6 +49,9 @@ public class SimpleServer extends AbstractServer {
 
 			case TIME_REQUEST:
 				handleTimeRequestMessage(msgFromClient, client);
+				
+			case STUDENT_EXAMINATION:
+				handleStudentExaminationMessage(msgFromClient, client);
 		}
 	}
 	
@@ -347,7 +350,7 @@ public class SimpleServer extends AbstractServer {
 
 			case "get teacher examinations":
 				int teacher_id = (int) carrier.carrierMessageMap.get("teacher");
-				List <Examination> teacher_exams = ServerExaminationController.getExamsinationsByAtrribute("teacherId", teacher_id);
+				Set <Examination> teacher_exams = ServerExaminationController.getExminationByTeacher(teacher_id);
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);
 				carrier.carrierType = CarrierType.EXAMINATION;
@@ -365,7 +368,7 @@ public class SimpleServer extends AbstractServer {
 				//int course_id = 1;
 				int course_id = (int) carrier.carrierMessageMap.get("course");
 				System.out.println("courses2");
-				List <Examination> course_exams = ServerExaminationController.getExamsinationsByAtrribute("courseId", course_id);
+				Set <Examination> course_exams = ServerExaminationController.getExaminationByCourse(course_id);
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);
 				carrier.carrierType = CarrierType.EXAMINATION;
@@ -380,7 +383,7 @@ public class SimpleServer extends AbstractServer {
 			
 			case "get examination by execution code":
 				int exec_code = (int) carrier.carrierMessageMap.get("exec_code");
-				List<Examination> examination_list = ServerExaminationController.getExamsinationsByAtrribute("executionCode", exec_code);
+				List<Examination> examination_list = ServerExaminationController.getExaminationsByAtrribute("executionCode", exec_code);
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);		
 				
@@ -468,7 +471,7 @@ public class SimpleServer extends AbstractServer {
 				break;
 			}
 			
-			case "principle answer": {
+			case "principle request": {
 				AddTimeRequest request = (AddTimeRequest) carrier.carrierMessageMap.get("request");
 				// Update by principle answer
 				ServerTimeRequestController.setPrincipleAnswer(request);
@@ -476,6 +479,69 @@ public class SimpleServer extends AbstractServer {
 			}
 		}
 
+	}
+	
+	//// Function to handle Message where Carrier type is USER
+	protected void handleStudentExaminationMessage(Carrier carrier, ConnectionToClient client) {
+		String msg = (String) carrier.carrierMessageMap.get("message");
+		switch (msg) {
+			case "get all course student examinations": {
+				int courseId = (int) carrier.carrierMessageMap.get("course");			
+				ExaminationStatus status = (ExaminationStatus) carrier.carrierMessageMap.get("status");				
+				List<ExaminationStudent> esList = ServerStudentExaminationController.getByCourse(courseId, status);
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);	
+				carrier.carrierMessageMap.put("student exams", esList);
+				carrier.carrierType = CarrierType.STUDENT_EXAMINATION;
+				
+				try {
+					client.sendToClient(carrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			}
+			
+			case "get all teacher student examinations": {
+				int tacherId = (int) carrier.carrierMessageMap.get("teacher");			
+				ExaminationStatus status = (ExaminationStatus) carrier.carrierMessageMap.get("status");				
+				List<ExaminationStudent> esList = ServerStudentExaminationController.getByCourse(tacherId, status);
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);	
+				carrier.carrierMessageMap.put("student exams", esList);
+				carrier.carrierType = CarrierType.STUDENT_EXAMINATION;
+				
+				try {
+					client.sendToClient(carrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			}
+			
+			case "get final teacher student examinations": {
+				int tacherId = (int) carrier.carrierMessageMap.get("teacher");			
+				ExaminationStatus status = (ExaminationStatus) carrier.carrierMessageMap.get("status");				
+				List<ExaminationStudent> esList = ServerStudentExaminationController.getByTeacherExams(tacherId);
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);	
+				carrier.carrierMessageMap.put("student exams", esList);
+				carrier.carrierType = CarrierType.STUDENT_EXAMINATION;
+				
+				try {
+					client.sendToClient(carrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			}
+			
+			default:
+				throw new IllegalArgumentException("Unexpected value: " + msg);
+			}
 	}
 	
 	@Override

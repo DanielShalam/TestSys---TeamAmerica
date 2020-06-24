@@ -254,7 +254,9 @@ public class StudentMenuController implements Initializable{
     	client = LoginController.client;
 		int courseId = LoginController.userReceviedCourses.get(courseCB.getSelectionModel().getSelectedItem());
 		localCarrier = client.handleMessageFromClientStudentController("get course examinations", courseId, null);
-		List<Examination> examinationsList = (List<Examination>) localCarrier.carrierMessageMap.get("examinations");
+		Set<Examination> examinationsList = (Set<Examination>) localCarrier.carrierMessageMap.get("examinations");
+		System.out.println(examinationsList);
+
 		if (examinationsList.isEmpty()) {
 			studentExamsTV.getItems().clear();
 			Alert errorAlert = new Alert(AlertType.INFORMATION);
@@ -262,6 +264,7 @@ public class StudentMenuController implements Initializable{
     		errorAlert.showAndWait();
 		}
 		else {
+			System.out.println("Loading");
 			loadExaminationDataToSetInstAP(examinationsList);			
 		}
     }
@@ -448,6 +451,7 @@ public class StudentMenuController implements Initializable{
 	    }
     
 	void forceSubmitCompExam() {
+		// TODO validate that show is visible, if not It will not close it.
 	    	submitCompExam();
 	    }
     
@@ -570,11 +574,12 @@ public class StudentMenuController implements Initializable{
     }
     
     
-    public void loadExaminationDataToSetInstAP(List<Examination> examinationList) {
+    public void loadExaminationDataToSetInstAP(Set<Examination> examinationList) {
     	
     	for(Examination examination: examinationList) {
+    		System.out.println(examination.getExamStartTime());
     		if(LocalTime.now().isBefore(examination.getExamEndTime())) {
-    	    	studentExamsTV.getItems().addAll(examination);
+    	    	studentExamsTV.getItems().add(examination);
     		}
     	}
     }

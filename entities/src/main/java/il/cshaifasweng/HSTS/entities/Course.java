@@ -2,7 +2,9 @@ package il.cshaifasweng.HSTS.entities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -56,13 +58,13 @@ public class Course implements Serializable {
 
 	// course examination relation - Unidirectional
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "courseId") // mapping owner side
-	private List<Examination> examinationList;
+	private Set<Examination> examinationList;
 	
-	public List<Examination> getExaminationList() {
+	public Set<Examination> getExaminationList() {
 		return examinationList;
 	}
 
-	public void setExaminationList(List<Examination> examinationList) {
+	public void setExaminationList(Set<Examination> examinationList) {
 		this.examinationList = examinationList;
 	}
 
@@ -72,7 +74,7 @@ public class Course implements Serializable {
 		setTeacher(teacher);
 		this.studentList = new ArrayList<User>();
 		this.questionList = new ArrayList<Question>();	
-		this.examinationList = new ArrayList<Examination>();
+		this.examinationList = new HashSet<Examination>();
 	}
 
 	public Course() {
