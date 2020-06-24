@@ -196,6 +196,7 @@ public class SimpleClient extends AbstractClient  {
 		
 		try {
 			examCarrier = (Carrier) this.sendAndWaitForReply(examCarrier, examCarrier);
+			System.out.println(examCarrier.carrierMessageMap.get("examinations"));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

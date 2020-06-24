@@ -18,12 +18,6 @@ public class ServerExaminationController {
 	public static String commitExaminationToDB(Examination examination) {
 		Session session = ConnectToDB.getNewSession();
 		session.save(examination);
-//		System.out.println("Extract Exam");
-//		Exam exam = session.get(Exam.class, examination.getExam().getExamId());	// Add to course
-//		System.out.println("Add Exami");
-//		exam.addExamination(examination);	// Add to exam
-//		System.out.println("Update exam");
-//		ServerExamsController.updateExam(exam);	// Update the exam if needed
 		System.out.println("Extract course");
 		Course course = session.get(Course.class, examination.getCourseId());	// Add to course
 		System.out.println("Update course");
@@ -78,6 +72,7 @@ public class ServerExaminationController {
 		Session tempSession = ConnectToDB.getNewSession();
 		User user = tempSession.get(User.class, teacherId);
 		Set<Examination> examinations = user.getExaminationInstigated(); 	// Getting examination by teacher
+		System.out.println(examinations.size());
 		ConnectToDB.closeOuterSession(tempSession);
 		return examinations;
 	}
@@ -87,7 +82,6 @@ public class ServerExaminationController {
 		Session tempSession = ConnectToDB.getNewSession();
 		Course course = tempSession.get(Course.class, courseID);
 		Set <Examination> examinations = course.getExaminationList();
-		System.out.println(examinations);
 		ConnectToDB.closeOuterSession(tempSession);
 		return examinations;
 	}
