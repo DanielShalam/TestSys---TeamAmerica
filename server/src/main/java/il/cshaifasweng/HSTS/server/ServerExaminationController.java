@@ -1,31 +1,36 @@
 package il.cshaifasweng.HSTS.server;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.Duration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import org.hibernate.Session;
 
 import il.cshaifasweng.HSTS.entities.Course;
 import il.cshaifasweng.HSTS.entities.Exam;
-import il.cshaifasweng.HSTS.entities.ExamType;
 import il.cshaifasweng.HSTS.entities.Examination;
+import il.cshaifasweng.HSTS.entities.ExaminationStatus;
+import il.cshaifasweng.HSTS.entities.ExaminationStudent;
+import il.cshaifasweng.HSTS.entities.User;
 
-public class ServerExaminationController {
-	
-	static File desktopDir = new File(System.getProperty("user.home"), "Desktop"+".doc");
-			
+public class ServerExaminationController {			
 
 	public static String commitExaminationToDB(Examination examination) {
-		ServerExamsController.updateExam(examination.getExam());	// Update the exam if needed
-
-		int new_id = ConnectToDB.save(examination);
-		// Failure
-//		if (new_id == examination.getExamination_id()) {
-//			System.out.println("new_id: " + new_id + " examination id: " + examination.getExamination_id());
-//			return "Error - Please try again. ";
-//		}
-		// Success			
-		return "Exam commited successfully. ";		
+		Session session = ConnectToDB.getNewSession();
+		session.save(examination);
+		System.out.println("Extract course");
+		Course course = session.get(Course.class, examination.getCourseId());	// Add to course
+		System.out.println("Update course");
+		course.addExamination(examination);
+		System.out.println("Extract user");
+		User user = session.get(User.class, examination.getTeacherId());	// Add to course
+		System.out.println("Update user");
+		user.addInstigateExamination(examination);
+		session.update(user);
+		session.update(course);
+		session.save(examination);
+		ConnectToDB.closeOuterSession(session);
+		return "Exam commited successfully. ";
 	}
 	
 	public static Examination getExaminationById(int id) {	
@@ -42,34 +47,44 @@ public class ServerExaminationController {
 	public void calcExaminationStatistics(int exec_code) {
 	}	
 	
-//	public static WordHandler createManualExam(Examination examination) throws IOException {
-//	}
-	
 	public static Examination getByExecutionCode(int exec_code) {
 		try {
 			Examination exemination = (Examination) ConnectToDB.getByAttribute(Examination.class, "executionCode", exec_code);
 			return exemination;
 			
-		} catch (Exception illegalArgumentException) {	// No examination match this attrubute
+		} catch (Exception illegalArgumentException) {	// No examination match this attribute
 			return null;
 		}
 	}	
 	
-	public static List<Examination> getExamsinationsByAtrribute(String attribute, int value) {
+	public static List<Examination> getExaminationsByAtrribute(String attribute, int value) {
 		try {
 			List<Examination> eList = ConnectToDB.getByAttribute(Examination.class, attribute, value);	// Getting by Teacher id
 			return eList;
 	    	
-		} catch (Exception illegalArgumentException) {	// No examination match this attrubute
+		} catch (Exception illegalArgumentException) {	// No examination match this attribute
 			return null;
 		}
 	}
 	
-//	public static List<Examination> getExaminationsByCourse(int value) {
-//		List <Examination> examinationsList = ConnectToDB.extractExaminations(value);
-//		System.out.println(examinationsList);
-//		return examinationsList;
-//	}
+	// ExaminationStudent to grade by teacher
+	public static Set<Examination> getExminationByTeacher(int teacherId) {
+		Session tempSession = ConnectToDB.getNewSession();
+		User user = tempSession.get(User.class, teacherId);
+		Set<Examination> examinations = user.getExaminationInstigated(); 	// Getting examination by teacher
+		System.out.println(examinations.size());
+		ConnectToDB.closeOuterSession(tempSession);
+		return examinations;
+	}
+	
+	
+	public static Set<Examination> getExaminationByCourse(int courseID){
+		Session tempSession = ConnectToDB.getNewSession();
+		Course course = tempSession.get(Course.class, courseID);
+		Set <Examination> examinations = course.getExaminationList();
+		ConnectToDB.closeOuterSession(tempSession);
+		return examinations;
+	}
 	
 	// Delete exam from database using its id
 	public static String deleteExamByEntity(Examination examination) {

@@ -74,7 +74,7 @@ public class Examination implements Serializable {
 
 	@OneToMany(mappedBy = "examination")
     private Set<ExaminationStudent> examineesList = new HashSet<ExaminationStudent>();
-	
+
 	public Examination(String execuationCode, int teacherId,ExamType examType,	LocalDate examDate, 
 						LocalTime examStartTime, Exam exam) {
 		this.executionCode = execuationCode;
@@ -224,6 +224,14 @@ public class Examination implements Serializable {
 	
 	public void setExamEndTime(Duration actualDuration) {
 		examEndTime = examStartTime.plus(actualDuration);
+	}
+	
+	public Set<ExaminationStudent> getExamineesList() {
+		return examineesList;
+	}
+
+	public void setExamineesList(Set<ExaminationStudent> examineesList) {
+		this.examineesList = examineesList;
 	}
 	
 }

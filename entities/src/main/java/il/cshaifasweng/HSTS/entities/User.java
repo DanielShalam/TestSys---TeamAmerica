@@ -61,8 +61,8 @@ public class User implements Serializable {
 	
 	// teacher examination relation - Unidirectional (owning side)
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy="teacherId")	// mapping owner side
-	private List<Examination> examinationInstigated;
-	
+	private Set<Examination> examinationInstigated;
+
 	// student examinationStudent relation - Bidirectional
 	@OneToMany(mappedBy = "student")		// mapping owner side
     private Set<ExaminationStudent> examinationList = new HashSet<ExaminationStudent>();
@@ -82,7 +82,7 @@ public class User implements Serializable {
 		this.examsWritten = new ArrayList<Exam>();
 		this.coursesTeaching = new ArrayList<Course>();
 		this.coursesStudying = new ArrayList<Course>();
-		this.examinationInstigated = new ArrayList<Examination>();
+		this.examinationInstigated = new HashSet<Examination>();
 	}
 	
 	public User() {
@@ -158,7 +158,18 @@ public class User implements Serializable {
 		return questionsWritten;
 	}
 	
+	public void addInstigateExamination(Examination examination) {
+		this.examinationInstigated.add(examination);
+	}
 	public void addExamination(ExaminationStudent examinationStudent) {
 		examinationList.add(examinationStudent);
+	}
+	
+	public Set<Examination> getExaminationInstigated() {
+		return examinationInstigated;
+	}
+
+	public void setExaminationInstigated(Set<Examination> examinationInstigated) {
+		this.examinationInstigated = examinationInstigated;
 	}
 }	
