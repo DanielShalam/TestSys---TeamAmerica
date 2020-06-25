@@ -377,7 +377,9 @@ public class StudentMenuController implements Initializable{
     public void loadExaminationDataToSetInstAP(Set<Examination> examinationList) {
     	
     	for(Examination examination: examinationList) {
-    		if(LocalTime.now().isBefore(examination.getExamEndTime())) {
+    		if(LocalTime.now().isBefore(examination.getExamEndTime()) && 
+    		   LocalTime.now().isAfter(examination.getExamStartTime()) &&
+    		   LocalDate.now().equals(examination.getExamDate())	 ) {
     	    	studentExamsTV.getItems().add(examination);
     		}
     	}
@@ -660,7 +662,7 @@ public class StudentMenuController implements Initializable{
 	    		
 	    	}
 	    	else {
-	    		System.out.println("Id doesn't match");
+	    		informationDialog("Attention",null,"wrong ID number");
 	    	}
 	    }
     }

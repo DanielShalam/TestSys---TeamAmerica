@@ -52,7 +52,7 @@ public class InitializeDB {
 		User student_8 = new User("Abigail", "Lawnmower", Hashing.hashing("GrassIsGreen"),Role.STUDENT);
 		User student_9 = new User("Sonny", "Mythroast", Hashing.hashing("chickenPie"),Role.STUDENT);
 		
-		if (isTableEmpty("User") == true) {
+		//if (isTableEmpty("User") == true) {
 			session.save(teacher_1);
 			session.save(teacher_2);
 			session.save(teacher_3);
@@ -68,7 +68,7 @@ public class InitializeDB {
 			session.save(student_9);
 			
 			session.flush();
-		}	
+		//}	
 		
 		// initialize courses data
 		
@@ -156,51 +156,52 @@ public class InitializeDB {
 		correct_answer = 2;
 		Question question_7 = new Question(course_4.getCourseId(), "Who founded Github", answers_7, 
 											"google it", correct_answer,teacher_2.getUserId());
+		// CHANGE QUESTIONS
+		String[] answers_8 = {"Atoms","Quarks","Neutron","Electron"};
+		correct_answer = 2;
+		Question question_8 = new Question(course_2.getCourseId(), "What is the smallest particle known to man", answers_8, 
+											"Think small", correct_answer,teacher_1.getUserId());
 		
-		String[] answers_8 = {"T-999","N-97","C-137","D-142"};
-		correct_answer = 3;
-		Question question_8 = new Question(course_2.getCourseId(), "What is Rick's \"universe number\"?", answers_8, 
-											"Watch rick and mortey", correct_answer,teacher_1.getUserId());
+		String[] answers_9 = {"Bill gates","Linus Torvalds","Professor Mac","Tom Hanks"};
+		correct_answer = 2;
+		Question question_9 = new Question(course_2.getCourseId(), "who invented Linux OS?", answers_9, 
+											"Work with Linux and Github", correct_answer,teacher_1.getUserId());
 		
-		String[] answers_9 = {"T-999","N-97","C-137","D-142"};
+		String[] answers_10 = {"Murphy's","Amdahl's","Moore's","Birch's"};
 		correct_answer = 3;
-		Question question_9 = new Question(course_2.getCourseId(), "What is Rick's \"universe number\"?", answers_9, 
-											"Watch rick and mortey", correct_answer,teacher_1.getUserId());
+		Question question_10 = new Question(course_3.getCourseId(), "Which law predicts the density of micro-transistors ", answers_10, 
+											"Read about micro-transistors", correct_answer,teacher_3.getUserId());
 		
-		String[] answers_10 = {"T-999","N-97","C-137","D-142"};
+		String[] answers_11 = {"Arduino","Quantum","Dell","Desktop"};
+		correct_answer = 2;
+		Question question_11 = new Question(course_4.getCourseId(), "Which computer uses SuprPosition principles", answers_11, 
+											"learn about computers", correct_answer,teacher_2.getUserId());
+		
+		String[] answers_12 = {"Will Smith","Tom Cruz","William Po","Tom Hanks"};
+		correct_answer = 1;
+		Question question_12 = new Question(course_1.getCourseId(), "Who played Will in the Fresh Prince", answers_12, 
+											"Watch some good TV", correct_answer,teacher_2.getUserId());
+		
+		String[] answers_13 = {"due to it's good quality","to cover R&D costs",
+								"because apple fans will pay any amount","No reason"};
+		correct_answer = 4;
+		Question question_13 = new Question(course_1.getCourseId(), "Why is the new MacPro so expensive", answers_13, 
+											"Watch the new MacPro reviews", correct_answer,teacher_3.getUserId());
+		
+		String[] answers_14 = {"Eclipse","Visual Studio","Norton Commander","Code Blocks"};
 		correct_answer = 3;
-		Question question_10 = new Question(course_3.getCourseId(), "What is Rick's \"universe number\"?", answers_10, 
+		Question question_14 = new Question(course_3.getCourseId(), "Which of the following is not an IDE", answers_14, 
 											"Watch rick and mortey", correct_answer,teacher_3.getUserId());
 		
-		String[] answers_11 = {"T-999","N-97","C-137","D-142"};
-		correct_answer = 3;
-		Question question_11 = new Question(course_4.getCourseId(), "What is Rick's \"universe number\"?", answers_11, 
-											"Watch rick and mortey", correct_answer,teacher_2.getUserId());
-		
-		String[] answers_12 = {"T-999","N-97","C-137","D-142"};
-		correct_answer = 3;
-		Question question_12 = new Question(course_1.getCourseId(), "What is Rick's \"universe number\"?", answers_12, 
-											"Watch rick and mortey", correct_answer,teacher_2.getUserId());
-		
-		String[] answers_13 = {"T-999","N-97","C-137","D-142"};
-		correct_answer = 3;
-		Question question_13 = new Question(course_1.getCourseId(), "What is Rick's \"universe number\"?", answers_13, 
-											"Watch rick and mortey", correct_answer,teacher_3.getUserId());
-		
-		String[] answers_14 = {"T-999","N-97","C-137","D-142"};
-		correct_answer = 3;
-		Question question_14 = new Question(course_3.getCourseId(), "What is Rick's \"universe number\"?", answers_14, 
-											"Watch rick and mortey", correct_answer,teacher_3.getUserId());
-		
-		String[] answers_15 = {"T-999","N-97","C-137","D-142"};
-		correct_answer = 3;
-		Question question_15 = new Question(course_3.getCourseId(), "What is Rick's \"universe number\"?", answers_15, 
-											"Watch rick and mortey", correct_answer,teacher_3.getUserId());
+		String[] answers_15 = {"Floppy","Cache","RAM","boot loader"};
+		correct_answer = 4;
+		Question question_15 = new Question(course_3.getCourseId(), "what loads the OS on startup", answers_15, 
+											"Learn some OS", correct_answer,teacher_3.getUserId());
 
-		String[] answers_16 = {"T-999","N-97","C-137","D-142"};
-		correct_answer = 3;
-		Question question_16 = new Question(course_4.getCourseId(), "What is Rick's \"universe number\"?", answers_16, 
-											"Watch rick and mortey", correct_answer,teacher_2.getUserId());
+		String[] answers_16 = {"3.5 Inch","USB","cd-rom","8 Inch"};
+		correct_answer = 4;
+		Question question_16 = new Question(course_4.getCourseId(), "which disk came first", answers_16, 
+											"read some cs history", correct_answer,teacher_2.getUserId());
 		
 		session.save(question_1);
 		session.save(question_2);
@@ -327,8 +328,6 @@ public class InitializeDB {
 		session.flush();
 		
 		// initialize examination
-//		public Examination(int execuationCode, int teacherId,ExamType examType, Duration duration, 
-//		LocalDate examDate, LocalTime examStartTime, Exam exam)
 		
 		String execCode;
 		int teacherId;
@@ -341,18 +340,16 @@ public class InitializeDB {
 		examType = ExamType.COMPUTERIZED;
 		examDate = LocalDate.of(2020, Month.JUNE, 25);
 		examStartTime = LocalTime.now().minusMinutes(10);
-
-
-//		examStartTime = LocalTime.of(21,10);
-		examStartTime = LocalTime.now().minusMinutes(10);
 		Examination examintaion_1 = new Examination(execCode, teacherId, examType,  examDate, examStartTime, exam_1);
 		course_1.addExamination(examintaion_1);
 		exam_1.setUsedInExamination(true);
 		
+		
+		
 		execCode = "1234";
 		teacherId = exam_2.getTeacherId();
 		examType = ExamType.MANUAL;
-		examDate = LocalDate.of(2020, Month.JUNE, 25);
+		examDate = LocalDate.of(2020, Month.JUNE, 26);
 		examStartTime = LocalTime.now().minusMinutes(10);
 		Examination examintaion_2 = new Examination(execCode, teacherId, examType, examDate, examStartTime, exam_2);
 		course_2.addExamination(examintaion_2);
@@ -362,12 +359,12 @@ public class InitializeDB {
 		teacherId = teacher_3.getUserId();
 		examType = ExamType.MANUAL;
 		examDate = LocalDate.of(2020, Month.JUNE, 25);
-//		examStartTime = LocalTime.of(21,30);
+
 		examStartTime = LocalTime.now().minusMinutes(10);
 		Examination examintaion_3 = new Examination(execCode, teacherId, examType, examDate, examStartTime, exam_2);
 		course_2.addExamination(examintaion_3);
 		
-//		ExaminationStudent examinationStudent(examintaion_3, )
+
 		session.save(course_1);
 		session.save(course_2);
 		
@@ -378,11 +375,9 @@ public class InitializeDB {
 		session.save(examintaion_2);
 		session.save(examintaion_3);
 		
-		//ExaminationStudent newex = new ExaminationStudent(student_5, examintaion_1);
-		//session.save(newex);
 		session.flush();
 		
-		System.out.println(examintaion_1.getExamination_id());
+		System.out.println("finished initialization");
 	}
 	
 	
