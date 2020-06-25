@@ -112,22 +112,12 @@ public class ServerStudentExaminationController {
 	
 	// ExaminationStudent to grade by teacher
 	public static List<ExaminationStudent> getByUser(int userId, ExaminationStatus status) {
-		Session session = ConnectToDB.getNewSession();
-
-		User user = session.get(User.class, userId);
+		Session tempSession = ConnectToDB.getNewSession();
+		User user = tempSession.get(User.class, userId);
 		Set<ExaminationStudent> examinations = user.getExaminationList(); 	// Getting examination by teacher
-//		List<ExaminationStudent> examinationStudents = new ArrayList<ExaminationStudent>();
-//		for (Examination examination: examinations) {
-//			for(ExaminationStudent examinationStudent: examination.getExamineesList()) {
-//				if(examinationStudent.getExaminationStatus() == status) {
-//					examinationStudents.add(examinationStudent);
-//				}
-//			}
-//		}
 		List<ExaminationStudent> eList = new ArrayList<ExaminationStudent>();
 		eList.addAll(examinations);
-
-		ConnectToDB.closeOuterSession(session);
+		ConnectToDB.closeOuterSession(tempSession);
 		return eList;
 	}
 	

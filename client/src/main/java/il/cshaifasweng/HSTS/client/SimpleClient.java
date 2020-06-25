@@ -1,6 +1,8 @@
 package il.cshaifasweng.HSTS.client;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;

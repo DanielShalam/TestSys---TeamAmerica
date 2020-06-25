@@ -5,10 +5,6 @@ import il.cshaifasweng.HSTS.entities.*;
 import il.cshaifasweng.HSTS.server.ocsf.ConnectionToClient;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.Month;
 import java.util.*;
 
 public class SimpleServer extends AbstractServer {
@@ -18,7 +14,7 @@ public class SimpleServer extends AbstractServer {
     private final Object lock = new Object();
     
 	public SimpleServer(int port) {
-		super(port);
+		super(3002);
 		this.dbConnector = new ConnectToDB();
 		ConnectToDB.connectToDB();
 	}
@@ -472,14 +468,27 @@ public class SimpleServer extends AbstractServer {
 		String msg = (String) carrier.carrierMessageMap.get("message");
 		switch (msg) {
 			case "ask for time request": {
-				System.out.println("TIME REQUEST");
 				AddTimeRequest request = (AddTimeRequest) carrier.carrierMessageMap.get("request");
-				System.out.println(request);
 				ServerTimeRequestController.commitRequestToDB(request);
 				break;
 			}
 			
-			case "principle request": {
+			case "principle ask for requests": {
+				List<AddTimeRequest> requests = ServerTimeRequestController.getAllTimeRequests();
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);		
+				carrier.carrierMessageMap.put("requests", requests);		
+				carrier.carrierType = CarrierType.TIME_REQUEST;		
+				try {
+					client.sendToClient(carrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			}
+			
+			case "principle answer for request": {
 				AddTimeRequest request = (AddTimeRequest) carrier.carrierMessageMap.get("request");
 				// Update by principle answer
 				ServerTimeRequestController.setPrincipleAnswer(request);
@@ -524,7 +533,6 @@ public class SimpleServer extends AbstractServer {
 				int tacherId = (int) carrier.carrierMessageMap.get("teacher");			
 				ExaminationStatus status = (ExaminationStatus) carrier.carrierMessageMap.get("status");				
 				List<ExaminationStudent> esList = ServerStudentExaminationController.getByUser(tacherId, status);
-				System.out.println(esList);
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);	
 				carrier.carrierMessageMap.put("studentExamination", esList);
