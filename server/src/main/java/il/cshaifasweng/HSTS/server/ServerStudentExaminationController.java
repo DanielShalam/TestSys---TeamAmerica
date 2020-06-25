@@ -56,7 +56,7 @@ public class ServerStudentExaminationController {
 	private static ExaminationStudent calcGrades(ExaminationStudent studentExam) {
 		int grade = 0;
 		Exam exam = studentExam.getExamination().getExam();
-		Set<Question> examQuestions = exam.getQuestionList();
+		List<Question> examQuestions = exam.getQuestionList();
 		ArrayList<Question> questionList = new ArrayList<Question>(examQuestions);
 		List<Integer> studentAnswers = studentExam.getStudentsAnswers();
 
