@@ -339,9 +339,9 @@ public class InitializeDB {
 		execCode = "1234";
 		teacherId = exam_1.getTeacherId();
 		examType = ExamType.COMPUTERIZED;
-		examDate = LocalDate.of(2020, Month.JUNE, 24);
+		examDate = LocalDate.of(2020, Month.JUNE, 25);
 
-		examStartTime = LocalTime.of(21,10);
+		examStartTime = LocalTime.now().minusMinutes(10);
 
 		Examination examintaion_1 = new Examination(execCode, teacherId, examType,  examDate, examStartTime, exam_1);
 		course_1.addExamination(examintaion_1);

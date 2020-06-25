@@ -40,36 +40,20 @@
                   </Button>
                </children>
             </AnchorPane>
-            <AnchorPane GridPane.columnIndex="1" GridPane.rowIndex="2">
-               <children>
-                  <Label alignment="TOP_CENTER" layoutX="21.0" opacity="0.57" prefHeight="87.0" prefWidth="172.0" text="View grades of your formerly performed exam" textAlignment="CENTER" wrapText="true">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-               </children>
-            </AnchorPane>
+            <AnchorPane GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <AnchorPane prefHeight="203.0" prefWidth="248.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                <children>
-                  <Label alignment="TOP_CENTER" layoutX="21.0" opacity="0.57" prefHeight="87.0" prefWidth="172.0" text="View exam forms of your formerly performed exams" textAlignment="CENTER" wrapText="true">
+                  <Label alignment="TOP_CENTER" opacity="0.57" prefHeight="87.0" prefWidth="172.0" text="View grades of your formerly performed exam" textAlignment="CENTER" wrapText="true">
                      <font>
                         <Font size="16.0" />
                      </font>
                   </Label>
                </children>
             </AnchorPane>
-            <AnchorPane GridPane.columnIndex="1" GridPane.rowIndex="1">
-               <children>
-                  <Button fx:id="viewGradesButton" layoutX="21.0" layoutY="50.0" mnemonicParsing="false" onAction="#getGrades" prefHeight="30.0" prefWidth="172.0" text="View Grades">
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                  </Button>
-               </children>
-            </AnchorPane>
+            <AnchorPane GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <AnchorPane GridPane.columnIndex="2" GridPane.rowIndex="1">
                <children>
-                  <Button fx:id="viewPerformedExamsButton" layoutX="21.0" layoutY="50.0" mnemonicParsing="false" onAction="#viewExams" prefHeight="30.0" prefWidth="172.0" text="View Performed Exams">
+                  <Button fx:id="viewGradesButton" layoutX="-6.0" layoutY="55.0" mnemonicParsing="false" onAction="#getGrades" prefHeight="30.0" prefWidth="172.0" text="View Grades">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
@@ -207,6 +191,18 @@
                </font>
             </Label>
             <Button fx:id="autoRtrnBtn" layoutX="510.0" layoutY="449.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="90.0" text="Return" />
+         </children></AnchorPane>
+      <AnchorPane fx:id="gradesAP" prefHeight="578.0" prefWidth="640.0" visible="false">
+         <children>
+            <TableView fx:id="gradesTV" layoutX="145.0" layoutY="62.0" prefHeight="370.0" prefWidth="350.0">
+              <columns>
+                <TableColumn fx:id="examCL" prefWidth="104.79998779296875" text="Exam" />
+                <TableColumn fx:id="courseCl" prefWidth="113.60003662109375" text="Course" />
+                  <TableColumn fx:id="gradeCL" prefWidth="134.4000244140625" text="Grade" />
+              </columns>
+            </TableView>
+            <Button fx:id="viewExamBtn" layoutX="257.0" layoutY="448.0" mnemonicParsing="false" onAction="#viewExam" prefHeight="26.0" prefWidth="126.0" text="View Exam" />
+            <Button fx:id="gradeReturnBtn" layoutX="294.0" layoutY="500.0" mnemonicParsing="false" onAction="#gradesReturn" text="Return" />
          </children></AnchorPane>
    </children>
 </AnchorPane>

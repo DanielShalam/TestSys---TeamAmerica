@@ -31,6 +31,7 @@ import il.cshaifasweng.HSTS.entities.ExaminationStudent;
 import il.cshaifasweng.HSTS.entities.Question;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -55,6 +56,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+import net.bytebuddy.description.annotation.AnnotationDescription.Loadable;
 import javafx.scene.control.TextArea;
 
 
@@ -223,6 +225,58 @@ public class StudentMenuController implements Initializable{
     @FXML
     private Button autoRtrnBtn;
     
+
+    @FXML
+    private AnchorPane gradesAP;
+
+    @FXML
+    private TableView<ExaminationStudent> gradesTV;
+
+    @FXML
+    private TableColumn<ExaminationStudent, Integer> examCL;
+
+    @FXML
+    private TableColumn<ExaminationStudent, Integer> courseCl;
+
+    @FXML
+    private TableColumn<ExaminationStudent, Integer> gradeCL;
+
+    @FXML
+    private Button viewExamBtn;
+
+    @FXML
+    private Button gradeReturnBtn;
+    
+    @FXML
+    void getGrades(ActionEvent event) {
+    	mainMenuAP.setVisible(false);
+    	gradesAP.setVisible(true);
+    	client = LoginController.client;
+    	int studentId = LoginController.userReceviedID;
+    	String msg = "get all teacher student examinations";
+    	ExaminationStatus status = ExaminationStatus.FINALIZED;
+    	Carrier localCarrier = client.handleMessageStudentExaminationsFromClientExamsController(msg, studentId, status, -1, null);
+    	List<ExaminationStudent> studentList = (List<ExaminationStudent>) localCarrier.carrierMessageMap.get("studentExamination");
+    	loadGradesTable(studentList);
+    	System.out.println(studentList);
+    }
+    
+    @FXML
+    void gradesReturn(ActionEvent event) {
+    	mainMenuAP.setVisible(false);
+    	gradesAP.setVisible(true);
+    }
+    
+    @FXML
+    void viewExam(ActionEvent event) {
+
+    }
+    
+    
+    private void loadGradesTable(List<ExaminationStudent> studentList) {
+    	gradesTV.getItems().addAll(studentList);
+    }
+    
     @FXML
     void createStudentExamPageBoundary(ActionEvent event) {
     	mainMenuAP.setVisible(false);
@@ -235,11 +289,6 @@ public class StudentMenuController implements Initializable{
     void returnMainAuto(ActionEvent event) {
     	autoExamAP.setVisible(false);
     	mainMenuAP.setVisible(true);
-    }
-
-    @FXML
-    void getGrades(ActionEvent event) {
-    	
     }
     
     @FXML
@@ -567,6 +616,9 @@ public class StudentMenuController implements Initializable{
     	instCourseTC.setCellValueFactory(new PropertyValueFactory<Examination,Integer>("courseId"));       
         instTeacherTC.setCellValueFactory(new PropertyValueFactory<Examination,Integer>("teacherId"));     
         instDateTC.setCellValueFactory(new PropertyValueFactory<Examination,LocalDate>("examDate")); 	
+        courseCl.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination().getCourseId()));
+        gradeCL.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getGrade()));
+        examCL.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination().getExamination_id()));
         
     	for(String course: (LoginController.userReceviedCourses).keySet()) {
     		courseCB.getItems().add(course);

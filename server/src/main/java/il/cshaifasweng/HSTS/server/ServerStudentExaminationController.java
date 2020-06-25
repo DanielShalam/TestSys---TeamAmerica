@@ -104,17 +104,19 @@ public class ServerStudentExaminationController {
 	public static List<ExaminationStudent> getByUser(int userId, ExaminationStatus status) {
 		Session session = ConnectToDB.getNewSession();
 		User user = session.get(User.class, userId);
-		Set<Examination> examinations = user.getExaminationInstigated(); 	// Getting examination by teacher
-		List<ExaminationStudent> examinationStudents = new ArrayList<ExaminationStudent>();
-		for (Examination examination: examinations) {
-			for(ExaminationStudent examinationStudent: examination.getExamineesList()) {
-				if(examinationStudent.getExaminationStatus() == status) {
-					examinationStudents.add(examinationStudent);
-				}
-			}
-		}
+		Set<ExaminationStudent> examinations = user.getExaminationList(); 	// Getting examination by teacher
+//		List<ExaminationStudent> examinationStudents = new ArrayList<ExaminationStudent>();
+//		for (Examination examination: examinations) {
+//			for(ExaminationStudent examinationStudent: examination.getExamineesList()) {
+//				if(examinationStudent.getExaminationStatus() == status) {
+//					examinationStudents.add(examinationStudent);
+//				}
+//			}
+//		}
+		List<ExaminationStudent> eList = new ArrayList<ExaminationStudent>();
+		eList.addAll(examinations);
 		ConnectToDB.closeOuterSession(session);
-		return examinationStudents;
+		return eList;
 	}
 	
 	// ExaminationStudent to grade by teacher
