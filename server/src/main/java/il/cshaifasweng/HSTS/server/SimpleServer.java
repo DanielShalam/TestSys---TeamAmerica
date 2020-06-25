@@ -496,11 +496,13 @@ public class SimpleServer extends AbstractServer {
 		switch (msg) {
 			case "get all course student examinations": {
 				int courseId = (int) carrier.carrierMessageMap.get("course");			
+				int teacherId = (int) carrier.carrierMessageMap.get("teacher");			
 				ExaminationStatus status = (ExaminationStatus) carrier.carrierMessageMap.get("status");				
-				List<ExaminationStudent> esList = ServerStudentExaminationController.getByCourse(courseId, status);
+				List<ExaminationStudent> esList = ServerStudentExaminationController.getByCourse(teacherId, courseId, status);
 				carrier.carrierMessageMap.clear();
+				System.out.println(esList);
 				carrier.carrierMessageMap.put("message", msg);	
-				carrier.carrierMessageMap.put("student exams", esList);
+				carrier.carrierMessageMap.put("studentExamination", esList);
 				carrier.carrierType = CarrierType.STUDENT_EXAMINATION;
 				
 				try {
@@ -515,10 +517,11 @@ public class SimpleServer extends AbstractServer {
 			case "get all teacher student examinations": {
 				int tacherId = (int) carrier.carrierMessageMap.get("teacher");			
 				ExaminationStatus status = (ExaminationStatus) carrier.carrierMessageMap.get("status");				
-				List<ExaminationStudent> esList = ServerStudentExaminationController.getByCourse(tacherId, status);
+				List<ExaminationStudent> esList = ServerStudentExaminationController.getByTeacher(tacherId, status);
+				System.out.println(esList);
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);	
-				carrier.carrierMessageMap.put("student exams", esList);
+				carrier.carrierMessageMap.put("studentExamination", esList);
 				carrier.carrierType = CarrierType.STUDENT_EXAMINATION;
 				
 				try {
@@ -530,13 +533,30 @@ public class SimpleServer extends AbstractServer {
 				break;
 			}
 			
-			case "get final teacher student examinations": {
-				int tacherId = (int) carrier.carrierMessageMap.get("teacher");			
-				ExaminationStatus status = (ExaminationStatus) carrier.carrierMessageMap.get("status");				
-				List<ExaminationStudent> esList = ServerStudentExaminationController.getByTeacherExams(tacherId);
+			case "get final course student examinations": {
+				int teacherId = (int) carrier.carrierMessageMap.get("teacherId");		
+				int courseId = (int) carrier.carrierMessageMap.get("courseId");		 
+				List<ExaminationStudent> esList = ServerStudentExaminationController.getByTeacherExams(teacherId, courseId);
+				carrier.carrierMessageMap.clear();
+				System.out.println(esList);
+				carrier.carrierMessageMap.put("message", msg);	
+				carrier.carrierMessageMap.put("studentExamination", esList);
+				carrier.carrierType = CarrierType.STUDENT_EXAMINATION;
+				
+				try {
+					client.sendToClient(carrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			}
+			
+			case "grade student examination": {
+				ExaminationStudent exmn = (ExaminationStudent) carrier.carrierMessageMap.get("student examination");			
+				ServerStudentExaminationController.updateGrade(exmn);
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);	
-				carrier.carrierMessageMap.put("student exams", esList);
 				carrier.carrierType = CarrierType.STUDENT_EXAMINATION;
 				
 				try {

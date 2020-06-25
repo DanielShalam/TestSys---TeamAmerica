@@ -609,8 +609,8 @@ public class ClientExamsController implements Initializable{
 			}
 
 			List<ExaminationStudent> autoCheckedExamList = (List<ExaminationStudent>) localCarrier.carrierMessageMap.get("studentExamination");
-			
-			if (autoCheckedExamList != null) {
+
+			if (!autoCheckedExamList.isEmpty()) {
 				loadCheckedExamData(autoCheckedExamList);
 			} else {
 				Alert errorAlert = new Alert(AlertType.ERROR);
@@ -623,6 +623,12 @@ public class ClientExamsController implements Initializable{
     		errorAlert.showAndWait();
 		}
     }
+	
+    void loadPerformedExamData(List<ExaminationStudent> checkedExamList) {
+		for (ExaminationStudent checkedExam : checkedExamList) {
+			performedExamsTV.getItems().add(checkedExam);
+		}
+	}
 
     void loadCheckedExamData(List<ExaminationStudent> checkedExamList) {
 		for (ExaminationStudent checkedExam : checkedExamList) {
@@ -700,9 +706,9 @@ client = LoginController.client;
 			}
 
 			List<ExaminationStudent> examList = (List<ExaminationStudent>) localCarrier.carrierMessageMap.get("studentExamination");
-			
-			if (examList != null) {
-				loadCheckedExamData(examList);
+			System.out.println(examList);
+			if (!examList.isEmpty()) {
+				loadPerformedExamData(examList);
 			} else {
 				Alert errorAlert = new Alert(AlertType.ERROR);
 	    		errorAlert.setHeaderText("No performed exams");
@@ -968,8 +974,8 @@ client = LoginController.client;
     	courseIdTCStatAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination().getCourseId()));
     	studentIdTCStatAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getStudent().getUserId()));
     	DateTCStatAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination().getExamDate()));
-    	gradeTCStatAP.setCellValueFactory(new PropertyValueFactory<ExaminationStudent, Integer>("getGrade"));
-    	
+    	gradeTCStatAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getGrade()));
+
     	scoreSetExamAP.setCellFactory(TextFieldListCell.forListView());
     	
     	for(String course: (LoginController.userReceviedCourses).keySet()) {
@@ -1008,7 +1014,8 @@ client = LoginController.client;
     	execCodeTFInstExamAP.setTextFormatter(new TextFormatter<Change>(modifyChange));
     	requestedExamDurationTF.setTextFormatter(new TextFormatter<Change>(modifyDurationChange));
     	examDurationTFSetExamAP.setTextFormatter(new TextFormatter<Change>(modifyDurationChange));
-    	
+    	gradeTFCheckExamAP.setTextFormatter(new TextFormatter<Change>(modifyDurationChange));
+    	newGradeTFCheckExamAP.setTextFormatter(new TextFormatter<Change>(modifyDurationChange));
     	TextFormatter<LocalTime> timeFieldFormatter =
     	        new TextFormatter<>(new LocalTimeStringConverter());
     	startTimeTFInstExamAP.setTextFormatter(timeFieldFormatter);

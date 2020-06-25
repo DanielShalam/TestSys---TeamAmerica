@@ -166,7 +166,9 @@ public class User implements Serializable {
 	}
 	
 	public Set<Examination> getExaminationInstigated() {
-		return examinationInstigated;
+		Set<Examination> examinations = new HashSet<Examination>();
+		examinations.addAll(examinationInstigated);
+		return examinations;
 	}
 
 	public void setExaminationInstigated(Set<Examination> examinationInstigated) {

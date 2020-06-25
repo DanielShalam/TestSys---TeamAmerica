@@ -68,10 +68,12 @@ public class ServerExaminationController {
 	
 	// ExaminationStudent to grade by teacher
 	public static Set<Examination> getExminationByTeacher(int teacherId) {
+		System.out.println("Somthing");
 		Session tempSession = ConnectToDB.getNewSession();
 		User user = tempSession.get(User.class, teacherId);
-		Hibernate.initialize(user.getExaminationList());
+//		Hibernate.initialize(user.getExaminationList());
 		Set<Examination> examinations = user.getExaminationInstigated(); 	// Getting examination by teacher
+//		System.out.println(examinations);
 		ConnectToDB.closeOuterSession(tempSession);
 		return examinations;
 	}

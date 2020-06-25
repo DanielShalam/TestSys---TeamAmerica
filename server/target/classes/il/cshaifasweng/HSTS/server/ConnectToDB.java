@@ -361,7 +361,7 @@ public class ConnectToDB {
 
 			Carrier carry = new Carrier();
 			
-			InitializeDB initializeDataDb = new InitializeDB(session);
+//			InitializeDB initializeDataDb = new InitializeDB(session);
 			session.getTransaction().commit();
 			
 //			printUsers();	
