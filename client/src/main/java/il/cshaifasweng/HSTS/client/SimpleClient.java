@@ -215,22 +215,44 @@ public class SimpleClient extends AbstractClient  {
 	}
 	
 	protected Carrier handleMessageFromClientTimeRequestController(String message, AddTimeRequest timeRequest) {
-		Carrier examCarrier =  new Carrier();
-		examCarrier.carrierType = CarrierType.TIME_REQUEST;	
+		Carrier timeRequestCarrier =  new Carrier();
+		timeRequestCarrier.carrierType = CarrierType.TIME_REQUEST;	
 		
-		if (message.equals("ask for time request")) {
-			examCarrier.carrierMessageMap.put("request", timeRequest);
-			examCarrier.carrierMessageMap.put("message", "ask for time request");
+		switch (message) {
+		case "ask for time request":
+			timeRequestCarrier.carrierMessageMap.put("request", timeRequest);
+			timeRequestCarrier.carrierMessageMap.put("message", "ask for time request");
+			try {
+				this.sendToServer(timeRequestCarrier);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return timeRequestCarrier;
+			
+		case "principle ask for requests":
+			//timeRequestCarrier.carrierMessageMap.put("request", timeRequest);
+			timeRequestCarrier.carrierMessageMap.put("message", "principle ask for requests");
+			try {
+				this.sendAndWaitForReply(timeRequestCarrier, timeRequestCarrier);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return timeRequestCarrier;
+
+		case "principle answer for requests":
+			timeRequestCarrier.carrierMessageMap.put("request", timeRequest);
+			timeRequestCarrier.carrierMessageMap.put("message", "principle answer for requests");
+			try {
+				this.sendToServer(timeRequestCarrier);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return timeRequestCarrier;
 		}
-		
-		try {
-			this.sendToServer(examCarrier);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return examCarrier;
+		return timeRequestCarrier;
 	}
 	
 	protected Carrier handleMessageStudentExaminationsFromClientExamsController(String message, int teacherId,
