@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.Course;
 import il.cshaifasweng.HSTS.entities.Exam;
+import il.cshaifasweng.HSTS.entities.ExamType;
 import il.cshaifasweng.HSTS.entities.Examination;
 import il.cshaifasweng.HSTS.entities.ExaminationStatus;
 import il.cshaifasweng.HSTS.entities.ExaminationStudent;
@@ -26,33 +27,33 @@ public class ServerStudentExaminationController {
 		
 		switch (ConnectToDB.checkIfSubmitted(studentId, examinationId)) {
 
-			case "New": 	// New StudentExamination
+			case "New": 	// saving to DB
+				System.out.println("SWITCH CASE - creating new Examination Student record");
 				ExaminationStudent exmnStudent = ConnectToDB.saveExmnStudent(studentId, examinationId);
 				return exmnStudent;
 				
 				
-			case "Submit": 	
-				System.out.println("SWITCH CASE - start submit");
+			case "Submit": 	// updating existing object
+				System.out.println("SWITCH CASE - updating Examination Student existing record");
 				ExaminationStudent exmnToSubmit = (ExaminationStudent)carrier.carrierMessageMap.get("exmnStudent");
-				exmnToSubmit = calcGrades(exmnToSubmit);
+				
+				// calc grades only if examination is computerized
+				if (exmnToSubmit.getExamination().getExamType() == ExamType.COMPUTERIZED) {
+					exmnToSubmit = calcGrades(exmnToSubmit);
+				}
 				carrier.carrierMessageMap.replace("exmnStudent",exmnToSubmit);
 				ConnectToDB.updateExmnStudent(carrier);
-				// TODO add method to calculate grade and submit examination  
-				return null;
+				return null;	//???? why null?
 							
 			case "Already submited": 	// Student already submitted exam
+				System.out.println("SWITCH CASE - examination already submitted");
 				return null;
 								
 			default:
 				return null;
 
 		}
-		case "Already submited": {	// Student already submitted exam
-			return null;
-		}
-		default:
-			return null;
-		}	
+		
 	}
 	
 	// Function to calculate grade of student examination
@@ -93,7 +94,7 @@ public class ServerStudentExaminationController {
 			for (Examination examination: examinations) {
 				if(examination.getExam().getTeacherId() == teacherId) {
 					for(ExaminationStudent examinationStudent: examination.getExamineesList()) {
-						if(examinationStudent.getStatus() == ExaminationStatus.FINALIZED) {
+						if(examinationStudent.getExaminationStatus() == ExaminationStatus.FINALIZED) {
 							examinationStudents.add(examinationStudent);
 						}
 					}
@@ -113,7 +114,7 @@ public class ServerStudentExaminationController {
 		List<ExaminationStudent> examinationStudents = new ArrayList<ExaminationStudent>();
 		for (Examination examination: examinations) {
 			for(ExaminationStudent examinationStudent: examination.getExamineesList()) {
-				if(examinationStudent.getStatus() == status) {
+				if(examinationStudent.getExaminationStatus() == status) {
 					examinationStudents.add(examinationStudent);
 				}
 			}
@@ -130,7 +131,7 @@ public class ServerStudentExaminationController {
 		List<ExaminationStudent> examinationStudents = new ArrayList<ExaminationStudent>();
 		for (Examination examination: examinations) {
 			for(ExaminationStudent examinationStudent: examination.getExamineesList()) {
-				if(examinationStudent.getStatus() == status) {
+				if(examinationStudent.getExaminationStatus() == status) {
 					examinationStudents.add(examinationStudent);
 				}
 			}

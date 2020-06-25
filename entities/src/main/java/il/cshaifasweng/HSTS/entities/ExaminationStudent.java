@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
@@ -57,6 +58,10 @@ public class ExaminationStudent implements Serializable {
 	@Column(name = "students_answers")
 	private ArrayList<Integer> studentsAnswers;
 	
+	@Lob
+	@Column(name = "saved_exam")//, columnDefinition="CLOB")
+	private byte[] savedExamination;
+	
 	public ExaminationStudent(User student, Examination examination) {
 		
 		this.examinationStudentId = new ExaminationStudentPK(student.getUserId(),examination.getExamination_id());
@@ -69,10 +74,18 @@ public class ExaminationStudent implements Serializable {
 		this.changeGradeNotes = null;
 		this.studentsAnswers = new ArrayList<Integer>();
 		this.examinationStatus = ExaminationStatus.STARTED;	
+		this.savedExamination = null;
 	}
 	
 	public ExaminationStudent() {
 		
+	}
+	
+	public byte[] getSavedExamination() {
+	    return savedExamination;
+	}
+	public void setSavedExamination(byte[] savedExamination) {
+	    this.savedExamination = savedExamination;
 	}
 	
 	public List<Integer> getStudentsAnswers() {

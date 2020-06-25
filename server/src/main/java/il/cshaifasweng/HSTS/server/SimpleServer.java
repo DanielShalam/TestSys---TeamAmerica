@@ -367,7 +367,6 @@ public class SimpleServer extends AbstractServer {
 			
 			case "get course examinations":
 				System.out.println("Courses hello");
-				//int course_id = 1;
 				int course_id = (int) carrier.carrierMessageMap.get("course");
 				System.out.println("courses2");
 				Set <Examination> course_exams = ServerExaminationController.getExaminationByCourse(course_id);

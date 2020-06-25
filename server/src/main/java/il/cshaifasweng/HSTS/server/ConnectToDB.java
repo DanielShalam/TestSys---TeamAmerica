@@ -44,7 +44,6 @@ public class ConnectToDB {
 		configuration.addAnnotatedClass(AddTimeRequest.class);
 		configuration.addAnnotatedClass(ExaminationStudent.class);
 		configuration.addAnnotatedClass(Subject.class);
-		//configuration.addAnnotatedClass(AddTimeRequest.class);
 		/* TODO - add Entities here: "configuration.addAnnotatedClass..." */
 		
 		serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
@@ -161,8 +160,7 @@ public class ConnectToDB {
     	Session temp_session = ConnectToDB.sessionFactory.openSession();
         temp_session.beginTransaction();
         
-//        ExaminationStudent exmnToSubmit = (ExaminationStudent)carrier.carrierMessageMap.get("exmnStudent");
-//        System.out.println("status:   --  "+exmnToSubmit.getExaminationStatus());
+
         int studentId = (int) carrier.carrierMessageMap.get("studentId");
 		int examinationId = (int) carrier.carrierMessageMap.get("examinationId");
 		User user =  temp_session.get(User.class, studentId);		 
@@ -171,14 +169,21 @@ public class ConnectToDB {
 			if (exmnStudent.getExaminationId() == examinationId) {
         		ExaminationStudent exmnToSubmit = (ExaminationStudent)carrier.carrierMessageMap.get("exmnStudent");
         		exmnStudent.setActualExamEndTime(exmnToSubmit.getActualExamEndTime());
-        		exmnStudent.setStudentsAnswers((ArrayList<Integer>)exmnToSubmit.getStudentsAnswers());
         		exmnStudent.setExaminationStatus(exmnToSubmit.getExaminationStatus());
         		exmnStudent.setForcedToFinish(exmnToSubmit.isForcedToFinish());	  
-        		exmnStudent.setGrade(exmnToSubmit.getGrade());
-        		exmnStudent.setExaminationStatus(ExaminationStatus.AUTOCHECKED);
+        		
+        		// only for computerized examinations
+        		if (exmnStudent.getExamination().getExamType() == ExamType.COMPUTERIZED) {
+        			exmnStudent.setStudentsAnswers((ArrayList<Integer>)exmnToSubmit.getStudentsAnswers());
+        			exmnStudent.setGrade(exmnToSubmit.getGrade());
+        			exmnStudent.setExaminationStatus(ExaminationStatus.AUTOCHECKED);
+        		} else {
+        		// only for manual examinations
+        			exmnStudent.setExaminationStatus(ExaminationStatus.FINISHED);	
+        			exmnStudent.setSavedExamination(exmnToSubmit.getSavedExamination());
+        		}
         	}        	
     	}
-		System.out.println("post for loop");
         temp_session.getTransaction().commit();
     	temp_session.close();
     }
@@ -247,7 +252,7 @@ public class ConnectToDB {
         return false;
     }
     
-	// Function check if student already submitted examination by extract its examinations
+	// check if student already submitted the examination
     public static <T> String checkIfSubmitted(int studentId, int examinationId){
     	Session temp_session = sessionFactory.openSession();
         temp_session.beginTransaction();
