@@ -52,8 +52,6 @@ public class LoginController {
     	
     	localCarrier = client.handleMessageFromLogInController(usernameTF.getText(), passwordPF.getText());
     	System.out.println("message from LogInController Handled");
-    	
-		System.out.println("running for ever");
 		userReceviedfullName = (String) localCarrier.carrierMessageMap.get("fullName");
 		userReceviedRole = (Role) localCarrier.carrierMessageMap.get("Role");
 		userReceviedID = (Integer) localCarrier.carrierMessageMap.get("ID");

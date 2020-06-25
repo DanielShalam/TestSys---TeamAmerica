@@ -71,8 +71,6 @@ public class StudentMenuController implements Initializable{
 	private Integer[] studentAnswers;	
 	private boolean compExmnActivated = false;
 	private boolean forcedToFinish = false;
-	
-
     
     @FXML
     private AnchorPane instAP;
@@ -244,11 +242,71 @@ public class StudentMenuController implements Initializable{
 
     @FXML
     private Button gradeReturnBtn;
+
+    @FXML
+    private Label tStartLB;
+
+    @FXML
+    private Label tEndLB;
+
+    @FXML
+    private Label notesLB;
+
+    @FXML
+    private Button fullDeBtn;
+
+    @FXML
+    private TextArea notesTA;
+
+    @FXML
+    private Label tEndLB1;
+    
+    @FXML
+    private Label courseLB1;
+
+    @FXML
+    void getFullDetails(ActionEvent event) {
+    	ExaminationStudent eStudent = gradesTV.getSelectionModel().getSelectedItem();
+    	if (eStudent == null) {
+    		return;
+    	}
+    	else {
+        	String course = extractCourseName(eStudent.getExamination().getCourseId());
+        	courseLB1.setText("Course: " + course);
+        	tStartLB.setText("Time Started: " + eStudent.getActualExamStartTime());
+        	tEndLB.setText("Time Ended: " + eStudent.getActualExamEndTime());
+        	notesLB.setText("Teacher notes: ");
+        	notesTA.setVisible(true);
+        	if(eStudent.getNotesToStudent().isBlank()) {
+            	notesTA.setText("Teacher did not left any notes. ");
+        	}
+        	else {
+            	notesTA.setText(eStudent.getNotesToStudent());
+        	}
+        	tEndLB.setText("Time Ended: " + eStudent.getActualExamEndTime());	
+    	}
+    }
+    
+    private String extractCourseName(int courseId) {
+	    for (Entry<String, Integer> entry : LoginController.userReceviedCourses.entrySet()) {
+	        if (courseId == entry.getValue()) {
+	        	String courseName = entry.getKey();
+	        	return courseName;
+	        }
+	    }
+	    return null;
+    }
     
     @FXML
     void getGrades(ActionEvent event) {
     	mainMenuAP.setVisible(false);
     	gradesAP.setVisible(true);
+    	courseLB1.setText("");
+    	tStartLB.setText("");
+    	tEndLB.setText("");
+    	notesLB.setText("");
+    	notesTA.setVisible(false);
+    	notesTA.setText("");
     	client = LoginController.client;
     	int studentId = LoginController.userReceviedID;
     	String msg = "get all teacher student examinations";
@@ -256,7 +314,6 @@ public class StudentMenuController implements Initializable{
     	Carrier localCarrier = client.handleMessageStudentExaminationsFromClientExamsController(msg, studentId, status, -1, null);
     	List<ExaminationStudent> studentList = (List<ExaminationStudent>) localCarrier.carrierMessageMap.get("studentExamination");
     	loadGradesTable(studentList);
-    	System.out.println(studentList);
     }
     
     @FXML
@@ -320,7 +377,9 @@ public class StudentMenuController implements Initializable{
     public void loadExaminationDataToSetInstAP(Set<Examination> examinationList) {
     	
     	for(Examination examination: examinationList) {
-    		if(LocalTime.now().isBefore(examination.getExamEndTime())) {
+    		if(LocalTime.now().isBefore(examination.getExamEndTime()) && 
+    		   LocalTime.now().isAfter(examination.getExamStartTime()) &&
+    		   LocalDate.now().equals(examination.getExamDate())	 ) {
     	    	studentExamsTV.getItems().add(examination);
     		}
     	}
@@ -448,7 +507,6 @@ public class StudentMenuController implements Initializable{
 
 	            		  autoTimeLB.setText(String.format("%02d : %02d : %02d", hours, minutes, seconds));
 	            	  }
-
 	              }}
 	          	));
 
@@ -456,8 +514,7 @@ public class StudentMenuController implements Initializable{
 		animation.play();
     }
     
-    
-    void forceSubmitCompExam() {   	
+    void forceSubmitCompExam() {
 		forcedToFinish = true;
 		submitCompExam();
 	}
@@ -605,7 +662,7 @@ public class StudentMenuController implements Initializable{
 	    		
 	    	}
 	    	else {
-	    		System.out.println("Id doesn't match");
+	    		informationDialog("Attention",null,"wrong ID number");
 	    	}
 	    }
     }
@@ -759,6 +816,5 @@ public class StudentMenuController implements Initializable{
 	// after we press submit 
 	// startBtn  -> startCompExam
 	// submitBtn -> submitCompExam
-      
    
 }
