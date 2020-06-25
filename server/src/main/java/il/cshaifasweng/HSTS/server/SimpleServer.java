@@ -484,6 +484,13 @@ public class SimpleServer extends AbstractServer {
 				AddTimeRequest request = (AddTimeRequest) carrier.carrierMessageMap.get("request");
 				// Update by principle answer
 				ServerTimeRequestController.setPrincipleAnswer(request);
+				if (request.isApproved()) {
+					carrier.carrierMessageMap.clear();
+					carrier.carrierMessageMap.put("message", msg);
+					carrier.carrierMessageMap.put("duration", request.getRequestedDuration());
+					carrier.carrierMessageMap.put("exam", request.getExamination_id());
+					sendToAllClients(request.getRequestedDuration());
+				}
 				break;
 			}
 		}
@@ -517,7 +524,7 @@ public class SimpleServer extends AbstractServer {
 			case "get all teacher student examinations": {
 				int tacherId = (int) carrier.carrierMessageMap.get("teacher");			
 				ExaminationStatus status = (ExaminationStatus) carrier.carrierMessageMap.get("status");				
-				List<ExaminationStudent> esList = ServerStudentExaminationController.getByTeacher(tacherId, status);
+				List<ExaminationStudent> esList = ServerStudentExaminationController.getByUser(tacherId, status);
 				System.out.println(esList);
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);	
@@ -542,7 +549,6 @@ public class SimpleServer extends AbstractServer {
 				carrier.carrierMessageMap.put("message", msg);	
 				carrier.carrierMessageMap.put("studentExamination", esList);
 				carrier.carrierType = CarrierType.STUDENT_EXAMINATION;
-				
 				try {
 					client.sendToClient(carrier);
 				} catch (IOException e) {

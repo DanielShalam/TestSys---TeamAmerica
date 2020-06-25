@@ -706,7 +706,7 @@ client = LoginController.client;
 			}
 
 			List<ExaminationStudent> examList = (List<ExaminationStudent>) localCarrier.carrierMessageMap.get("studentExamination");
-			System.out.println(examList);
+
 			if (!examList.isEmpty()) {
 				loadPerformedExamData(examList);
 			} else {

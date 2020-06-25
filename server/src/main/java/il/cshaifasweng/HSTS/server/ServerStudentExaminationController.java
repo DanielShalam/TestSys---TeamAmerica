@@ -101,9 +101,9 @@ public class ServerStudentExaminationController {
 	}
 	
 	// ExaminationStudent to grade by teacher
-	public static List<ExaminationStudent> getByTeacher(int teacherId, ExaminationStatus status) {
+	public static List<ExaminationStudent> getByUser(int userId, ExaminationStatus status) {
 		Session session = ConnectToDB.getNewSession();
-		User user = session.get(User.class, teacherId);
+		User user = session.get(User.class, userId);
 		Set<Examination> examinations = user.getExaminationInstigated(); 	// Getting examination by teacher
 		List<ExaminationStudent> examinationStudents = new ArrayList<ExaminationStudent>();
 		for (Examination examination: examinations) {

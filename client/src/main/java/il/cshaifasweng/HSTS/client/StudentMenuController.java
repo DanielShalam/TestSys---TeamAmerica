@@ -63,7 +63,7 @@ public class StudentMenuController implements Initializable{
 	private SimpleClient client;
 	private Carrier localCarrier = null;
 	private int questionIndex = 0;
-	static Examination examination;
+	static Examination examination = null;
 	private List<Question> qList;
 	private Integer[] studentAnswers;	
 	private boolean compExmnActivated = false;
