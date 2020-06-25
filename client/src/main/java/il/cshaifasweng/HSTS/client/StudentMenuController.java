@@ -759,19 +759,6 @@ public class StudentMenuController implements Initializable{
 	// after we press submit 
 	// startBtn  -> startCompExam
 	// submitBtn -> submitCompExam
-	
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {   	
-    	nameLB.setText("Hello " + LoginController.userReceviedfullName + ".");
-    	instCourseTC.setCellValueFactory(new PropertyValueFactory<Examination,Integer>("courseId"));       
-        instTeacherTC.setCellValueFactory(new PropertyValueFactory<Examination,Integer>("teacherId"));     
-        instDateTC.setCellValueFactory(new PropertyValueFactory<Examination,LocalDate>("examDate")); 	
-        
-    	for(String course: (LoginController.userReceviedCourses).keySet()) {
-    		courseCB.getItems().add(course);
-    	}
-    	courseCB.getSelectionModel().selectFirst();
-    }
       
    
 }

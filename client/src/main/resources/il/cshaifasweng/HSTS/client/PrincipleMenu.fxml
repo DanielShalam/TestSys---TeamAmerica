@@ -38,7 +38,7 @@
             </Label>
          </children>
       </AnchorPane>
-      <GridPane layoutY="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="720.0">
+      <GridPane fx:id="mainAP" layoutY="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="720.0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -176,12 +176,12 @@
             </Button>
          </children>
       </AnchorPane>
-      <Button fx:id="goBackButton" layoutX="290.0" layoutY="507.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="142.0" text="Go Back" visible="false">
+      <Button fx:id="goBackButton" layoutX="290.0" layoutY="507.0" mnemonicParsing="false" onAction="#goToMainAP" prefHeight="30.0" prefWidth="142.0" text="Go Back" visible="false">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
       </Button>
-      <AnchorPane prefHeight="577.0" prefWidth="720.0" visible="false">
+      <AnchorPane fx:id="timeAdditionRequestsAP" prefHeight="577.0" prefWidth="720.0" visible="false">
          <children>
             <Label layoutX="158.0" layoutY="48.0" text="Time Addition Requests">
                <font>
@@ -195,12 +195,12 @@
                   <TableColumn fx:id="reasonTCtrAP" prefWidth="373.0" text="Request Reason" />
               </columns>
             </TableView>
-            <Button fx:id="approveRequestButton" layoutX="158.0" layoutY="368.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="108.0" text="Approve">
+            <Button fx:id="approveRequestButton" layoutX="158.0" layoutY="368.0" mnemonicParsing="false" onAction="#approveTimeRequest" prefHeight="30.0" prefWidth="108.0" text="Approve">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
             </Button>
-            <Button fx:id="declineRequestButton" layoutX="417.0" layoutY="368.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="108.0" text="Decline">
+            <Button fx:id="declineRequestButton" layoutX="417.0" layoutY="368.0" mnemonicParsing="false" onAction="#declineTimeRequest" prefHeight="30.0" prefWidth="108.0" text="Decline">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -226,14 +226,21 @@
             <Label layoutX="360.0" layoutY="120.0" text="Exam ID:" />
             <TextField fx:id="teacherIDSetExamAP" disable="true" editable="false" layoutX="723.0" layoutY="116.0" />
             <Label layoutX="51.0" layoutY="183.0" text="Exam Duration: [Min]" />
-            <TableView fx:id="examQuestionsTVsetExamAP" layoutX="441.0" layoutY="215.0" prefHeight="320.0" prefWidth="313.0">
+            <TableView fx:id="examQuestionsTVsetExamAP" layoutX="441.0" layoutY="215.0" prefHeight="320.0" prefWidth="660.0">
                <columns>
-                  <TableColumn fx:id="examQuestionIdTCSetExamAP" editable="false" prefWidth="75.0" sortable="false" text="Question ID" />
-                  <TableColumn fx:id="examQuestionTCSetExamAP" editable="false" prefWidth="236.0" sortable="false" text="Question" />
+                  <TableColumn fx:id="examQuestionIdTCViewExamAP" editable="false" prefWidth="75.0" sortable="false" text="Course ID" />
+                  <TableColumn fx:id="questionTCViewExamAP" editable="false" prefWidth="236.0" sortable="false" text="Question" />
+                  <TableColumn fx:id="answer1TCViewExamAP" prefWidth="75.0" text="Answer 1" />
+                  <TableColumn fx:id="answer2TCViewExamAP" prefWidth="75.0" text="Answer 2" />
+                  <TableColumn fx:id="answer3TCViewExamAP" prefWidth="75.0" text="Answer 3" />
+                  <TableColumn fx:id="answer4TCViewExamAP" prefWidth="75.0" text="Answer 4" />
+                  <TableColumn fx:id="correctAnswerTCViewExamAP" prefWidth="75.0" text="Correct Answer" />
+                  <TableColumn fx:id="instructionsTCViewExamAP" prefWidth="75.0" text="Instructions" />
+                  <TableColumn fx:id="teacherIdTCViewExamAP" prefWidth="75.0" text="Teacher ID" />
                </columns>
             </TableView>
             <Label layoutX="441.0" layoutY="183.0" text="Exam Questions:" />
-            <Button fx:id="cancelButtonSetExamAP" layoutX="907.0" layoutY="625.0" mnemonicParsing="false" onAction="#cancelSetExam" prefHeight="30.0" prefWidth="172.0" text="Cancel">
+            <Button fx:id="cancelButtonViewExamAP" layoutX="536.0" layoutY="605.0" mnemonicParsing="false" onAction="#cancelViewExam" prefHeight="30.0" prefWidth="172.0" text="Cancel">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
