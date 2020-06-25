@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.Course;
 import il.cshaifasweng.HSTS.entities.Exam;
+import il.cshaifasweng.HSTS.entities.ExamType;
 import il.cshaifasweng.HSTS.entities.Examination;
 import il.cshaifasweng.HSTS.entities.ExaminationStatus;
 import il.cshaifasweng.HSTS.entities.ExaminationStudent;
@@ -25,31 +26,38 @@ public class ServerStudentExaminationController {
 		
 		switch (ConnectToDB.checkIfSubmitted(studentId, examinationId)) {
 
-			case "New": 	// New StudentExamination
+			case "New": 	// saving to DB
+				System.out.println("SWITCH CASE - creating new Examination Student record");
 				ExaminationStudent exmnStudent = ConnectToDB.saveExmnStudent(studentId, examinationId);
 				return exmnStudent;
 				
 				
-			case "Submit": 	
-				System.out.println("SWITCH CASE - start submit");
+			case "Submit": 	// updating existing object
+				System.out.println("SWITCH CASE - updating Examination Student existing record");
 				ExaminationStudent exmnToSubmit = (ExaminationStudent)carrier.carrierMessageMap.get("exmnStudent");
-				exmnToSubmit = calcGrades(exmnToSubmit);
+				
+				// calc grades only if examination is computerized
+				if (exmnToSubmit.getExamination().getExamType() == ExamType.COMPUTERIZED) {
+					exmnToSubmit = calcGrades(exmnToSubmit);
+				}
 				carrier.carrierMessageMap.replace("exmnStudent",exmnToSubmit);
 				ConnectToDB.updateExmnStudent(carrier);
-				// TODO add method to calculate grade and submit examination  
-				return null;
+				return null;	//???? why null?
 							
 			case "Already submited": 	// Student already submitted exam
+				System.out.println("SWITCH CASE - examination already submitted");
 				return null;
 								
 			default:
 				return null;
 		}
+
 	}
 	
 	protected static void updateGrade(ExaminationStudent studentExam) {
 		studentExam.setExaminationStatus(ExaminationStatus.FINALIZED);
 		ConnectToDB.update(studentExam);
+
 	}
 	
 	// Function to calculate grade of student examination
@@ -85,12 +93,14 @@ public class ServerStudentExaminationController {
 		User user = session.get(User.class, teacherId);
 		Course course = session.get(Course.class, courseId);
 		List<ExaminationStudent> examinationStudents = new ArrayList<ExaminationStudent>();
+
 		Set<Examination> examinations = course.getExaminationList(); 	// Getting examination by teacher
 		for (Examination examination: examinations) {
 			if(examination.getExam().getTeacherId() == teacherId) {
 				for(ExaminationStudent examinationStudent: examination.getExamineesList()) {
 					if(examinationStudent.getExaminationStatus() == ExaminationStatus.FINALIZED) {
 						examinationStudents.add(examinationStudent);
+
 					}
 				}
 			}
@@ -103,6 +113,7 @@ public class ServerStudentExaminationController {
 	// ExaminationStudent to grade by teacher
 	public static List<ExaminationStudent> getByUser(int userId, ExaminationStatus status) {
 		Session session = ConnectToDB.getNewSession();
+
 		User user = session.get(User.class, userId);
 		Set<ExaminationStudent> examinations = user.getExaminationList(); 	// Getting examination by teacher
 //		List<ExaminationStudent> examinationStudents = new ArrayList<ExaminationStudent>();
@@ -115,6 +126,7 @@ public class ServerStudentExaminationController {
 //		}
 		List<ExaminationStudent> eList = new ArrayList<ExaminationStudent>();
 		eList.addAll(examinations);
+
 		ConnectToDB.closeOuterSession(session);
 		return eList;
 	}
@@ -126,11 +138,13 @@ public class ServerStudentExaminationController {
 		Set<Examination> examinations = course.getExaminationList(); 	// Getting examination by teacher
 		List<ExaminationStudent> examinationStudents = new ArrayList<ExaminationStudent>();
 		for (Examination examination: examinations) {
+
 			if(examination.getTeacherId() == teacherId) {
 				for(ExaminationStudent examinationStudent: examination.getExamineesList()) {
 					if(examinationStudent.getExaminationStatus() == status) {
 						examinationStudents.add(examinationStudent);
 					}
+
 				}
 			}
 		}

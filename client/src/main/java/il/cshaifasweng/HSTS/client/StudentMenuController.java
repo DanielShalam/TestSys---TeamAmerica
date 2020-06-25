@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -24,7 +25,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
 import il.cshaifasweng.HSTS.client.utilities.WordHandler;
 import il.cshaifasweng.HSTS.entities.Carrier;
-import il.cshaifasweng.HSTS.entities.Exam;
+import il.cshaifasweng.HSTS.entities.*;
 import il.cshaifasweng.HSTS.entities.Examination;
 import il.cshaifasweng.HSTS.entities.ExaminationStatus;
 import il.cshaifasweng.HSTS.entities.ExaminationStudent;
@@ -69,11 +70,9 @@ public class StudentMenuController implements Initializable{
 	private List<Question> qList;
 	private Integer[] studentAnswers;	
 	private boolean compExmnActivated = false;
+	private boolean forcedToFinish = false;
 	
-	
-	
-//    @FXML // fx:id="execAP"
-//    private AnchorPane execAP; // Value injected by FXMLLoader
+
     
     @FXML
     private AnchorPane instAP;
@@ -224,7 +223,6 @@ public class StudentMenuController implements Initializable{
     
     @FXML
     private Button autoRtrnBtn;
-    
 
     @FXML
     private AnchorPane gradesAP;
@@ -276,26 +274,24 @@ public class StudentMenuController implements Initializable{
     private void loadGradesTable(List<ExaminationStudent> studentList) {
     	gradesTV.getItems().addAll(studentList);
     }
+
     
+  /************  mainMenuAP *******************/
     @FXML
     void createStudentExamPageBoundary(ActionEvent event) {
     	mainMenuAP.setVisible(false);
     	instAP.setVisible(true);
-
     }
-    
-
-    @FXML
-    void returnMainAuto(ActionEvent event) {
-    	autoExamAP.setVisible(false);
-    	mainMenuAP.setVisible(true);
-    }
+        
     
     @FXML
-    void cancel(ActionEvent event) {
-    	instAP.setVisible(false);
-    	mainMenuAP.setVisible(true);
+    void viewExams(ActionEvent event) {
+    	
     }
+  
+   
+    
+    /************  instAP	***************/
     
     @FXML
     void viewCourseExaminations(ActionEvent event) {
@@ -307,6 +303,7 @@ public class StudentMenuController implements Initializable{
 		localCarrier = client.handleMessageFromClientStudentController("get course examinations", courseId, null, null);
 
 		Set<Examination> examinationsList = (Set<Examination>) localCarrier.carrierMessageMap.get("examinations");
+
 		if (examinationsList.isEmpty()) {
 			studentExamsTV.getItems().clear();
 			Alert errorAlert = new Alert(AlertType.INFORMATION);
@@ -318,30 +315,166 @@ public class StudentMenuController implements Initializable{
 			loadExaminationDataToSetInstAP(examinationsList);			
 		}
     }
-
-    @FXML
-    void viewExams(ActionEvent event) {
+    
+   
+    public void loadExaminationDataToSetInstAP(Set<Examination> examinationList) {
     	
+    	for(Examination examination: examinationList) {
+    		if(LocalTime.now().isBefore(examination.getExamEndTime())) {
+    	    	studentExamsTV.getItems().add(examination);
+    		}
+    	}
     }
     
-
+    
     @FXML
-    void submitExam(ActionEvent event) {
-    	// TODO need to handle cases where user uploaded number of exams.
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Word doc(*.docx)", "*.docx"));
-		File chosenfile = fileChooser.showOpenDialog(null);
-        // create a Label 
-        if (chosenfile != null) { 
-        	manualLB.setText("Exam submitted succesfully. Good luck! "); 
-        } 
-        
-        else {
-        	manualLB.setText("No directory was chosen. ");
-        }
+    void cancel(ActionEvent event) {
+    	instAP.setVisible(false);
+    	mainMenuAP.setVisible(true);
     }
     
+    
+    @FXML
+    void activateExam(ActionEvent event) {
+    	String execCode = execCodeTF.getText();
+    	examination = studentExamsTV.getSelectionModel().getSelectedItem();
+    	
+    	if (examination == null){	// Examination selected validation
+			Alert fileIsOpenAlert = new Alert(AlertType.ERROR);
+			fileIsOpenAlert.setHeaderText("Exam not selected.");
+			fileIsOpenAlert.showAndWait();
+			return;
+    	}
+    	
+    	if (LocalTime.now().isBefore(examination.getExamStartTime())) {
+			Alert fileIsOpenAlert = new Alert(AlertType.ERROR);
+			fileIsOpenAlert.setHeaderText("Exam starting at " + examination.getExamStartTime());
+			fileIsOpenAlert.showAndWait();
+			return;
+    	}
 
+    	if (execCode.equals(examination.getExecutionCode())) {
+			
+	    	switch (examination.getExamType()) {
+	    	case MANUAL:
+	    		ActivateManualExam();
+	    		break;
+	    		
+	    	case COMPUTERIZED:
+	    		activateCompExmn();
+	    		break;
+	    			
+	    	default:
+	    		System.out.println("ERROR: exam type not defined - please contact the assigning teacher");
+	    	}
+    	}
+    	else
+    	{
+	    	Alert errorAlert = new Alert(AlertType.WARNING);
+			errorAlert.setHeaderText("Wrong execution code. Please try again. ");
+			errorAlert.showAndWait();
+			execCodeTF.clear();
+			return;
+    	}
+    }
+    
+    
+    public void ActivateManualExam()  {
+    	instAP.setVisible(false);
+    	manualExamAP.setVisible(true);
+        manualLB.setAlignment(Pos.CENTER);
+        startManualExam();
+        // Timer
+		Timeline animation = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+	              @Override public void handle(ActionEvent actionEvent) {
+	            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), examination.getExamEndTime()).toSeconds();
+	            	  
+	            	  if (elapsedTime <= 0) {	// Time is up
+		                  submitBtn.setDisable(true);
+		                  downloadExamBtn.setDisable(true);
+		                  manualLB.setText("Exam time is over. "); 
+	            	  }
+	            	  else {	// Every 1 second
+	            		  int hours = (int) (elapsedTime / 3600);
+	            		  int minutes = (int) ((elapsedTime % 3600) / 60);
+	            		  int seconds = (int) (elapsedTime % 60);
+
+	            		  hourLb.setText(String.format("%02d", hours));
+	            		  mintLB.setText(String.format("%02d", minutes));
+	            		  scndLB.setText(String.format("%02d", seconds));
+	            	  }
+
+	              }}
+	          	));
+
+		animation.setCycleCount((int) (Timeline.INDEFINITE)); // Running times
+		animation.play();
+
+    }
+    
+    
+    public void activateCompExmn() {
+    	
+    	instAP.setVisible(false);
+    	autoExamAP.setVisible(true);
+    	submitBtn.setDisable(true);
+    	startBtn.setDisable(false);
+    	qList = new ArrayList<Question>(examination.getExam().getQuestionList());
+    	studentAnswers = new Integer[qList.size()];
+    	// init studentAnswers to 0
+    	for (int i = 0; i < qList.size(); i++) {
+    		studentAnswers[i]= 0; 
+    	}
+    	prevQuestion.setDisable(true);
+    	answer1RB.setDisable(true);
+    	answer2RB.setDisable(true);
+    	answer3RB.setDisable(true);
+    	answer4RB.setDisable(true);
+    	showQuestion();
+    	
+        // Timer
+		Timeline animation = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+	              @Override public void handle(ActionEvent actionEvent) {
+	            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), examination.getExamEndTime()).toSeconds();
+
+	            	  if (elapsedTime <= 0) {	// Time is up
+	            		  startOrSubmitBtn.setDisable(true);
+	            		  forceSubmitCompExam();
+	            	  }
+	            	  else {	// Every 1 second
+	            		  int hours = (int) (elapsedTime / 3600);
+	            		  int minutes = (int) ((elapsedTime % 3600) / 60);
+	            		  int seconds = (int) (elapsedTime % 60);
+
+	            		  autoTimeLB.setText(String.format("%02d : %02d : %02d", hours, minutes, seconds));
+	            	  }
+
+	              }}
+	          	));
+
+		animation.setCycleCount((int) (Timeline.INDEFINITE)); // Running times
+		animation.play();
+    }
+    
+    
+    void forceSubmitCompExam() {   	
+		forcedToFinish = true;
+		submitCompExam();
+	}
+    
+    
+    /*************  manualExamAP	****************/
+    
+    void startManualExam() {
+    	// check if test already submitted
+    	localCarrier = client.handleMessageFromClientStudentController("start student examination", 
+				LoginController.userReceviedID,  examination, null);
+		if (localCarrier.carrierMessageMap.get("exmnStudent") == null) {
+			informationDialog("Attention",null,"Test already submitted");
+			returnFromManualExam();
+		}
+    }
+    
     @FXML
     void downloadExam(ActionEvent event) {
     	examination = studentExamsTV.getSelectionModel().getSelectedItem();
@@ -381,235 +514,46 @@ public class StudentMenuController implements Initializable{
 		}
     }
     
+    
     @FXML
-    void activateExam(ActionEvent event) {
-    	String execCode = execCodeTF.getText();
-    	examination = studentExamsTV.getSelectionModel().getSelectedItem();
+    void submitManualExam(ActionEvent event) throws IOException {	
     	
-    	if (examination == null){	// Examination selected validation
-			Alert fileIsOpenAlert = new Alert(AlertType.ERROR);
-			fileIsOpenAlert.setHeaderText("Exam not selected.");
-			fileIsOpenAlert.showAndWait();
-			return;
-    	}
-    	
-    	if (LocalTime.now().isBefore(examination.getExamStartTime())) {
-			Alert fileIsOpenAlert = new Alert(AlertType.ERROR);
-			fileIsOpenAlert.setHeaderText("Exam starting at " + examination.getExamStartTime());
-			fileIsOpenAlert.showAndWait();
-			return;
-    	}
-
-    	if (execCode.equals(examination.getExecutionCode())) {
-			
-	    	switch (examination.getExamType()) {
-	    	case MANUAL:
-	    		ActivateManualExam();
-	    		break;
-	    		
-	    	case COMPUTERIZED:
-	    		activateComputerizedExamination();
-	    		break;
-	    			
-	    	default:
-	    		System.out.println("ERROR: exam type not defined - please contact the assigning teacher");
-	    	}
-    	}
-    	else
-    	{
-	    	Alert errorAlert = new Alert(AlertType.WARNING);
-			errorAlert.setHeaderText("Wrong execution code. Please try again. ");
-			errorAlert.showAndWait();
-			execCodeTF.clear();
-			return;
-    	}
+    	FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Word doc(*.docx)", "*.docx"));
+		File chosenfile = fileChooser.showOpenDialog(null);
+        // create a Label 
+        if (chosenfile != null) { 
+        	
+        	manualLB.setText("Exam submitted succesfully. Good luck! "); 
+        	byte[] fileContent = Files.readAllBytes(chosenfile.toPath());
+        	ExaminationStudent exmnStudent = (ExaminationStudent) localCarrier.carrierMessageMap.get("exmnStudent");
+         	exmnStudent.setActualExamEndTime(LocalTime.now()); 	
+         	exmnStudent.setExaminationStatus(ExaminationStatus.FINISHED);
+         	exmnStudent.setSavedExamination(fileContent);
+         	
+         	localCarrier.carrierMessageMap.clear();
+         	localCarrier.carrierMessageMap.put("message", "submit student examination");
+         	localCarrier.carrierMessageMap.put("exmnStudent",exmnStudent);
+         	
+         	client.handleMessageFromClientStudentController("submit student examination", 
+     				LoginController.userReceviedID,  examination, localCarrier);
+         	
+         	informationDialog(null,null,"Test submmited succesfully - good luck!");
+         	returnFromManualExam(); 	
+        
+        } 
+        
+        else {
+        	manualLB.setText("No directory was chosen. ");
+        }
     }
     
-    public void ActivateManualExam()  {
-    	instAP.setVisible(false);
-    	manualExamAP.setVisible(true);
-        manualLB.setAlignment(Pos.CENTER);
 
-        // Timer
-		Timeline animation = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
-	              @Override public void handle(ActionEvent actionEvent) {
-	            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), examination.getExamEndTime()).toSeconds();
-	            	  
-	            	  if (elapsedTime <= 0) {	// Time is up
-		                  submitBtn.setDisable(true);
-		                  downloadExamBtn.setDisable(true);
-		                  manualLB.setText("Exam time is over. "); 
-	            	  }
-	            	  else {	// Every 1 second
-	            		  int hours = (int) (elapsedTime / 3600);
-	            		  int minutes = (int) ((elapsedTime % 3600) / 60);
-	            		  int seconds = (int) (elapsedTime % 60);
-
-	            		  hourLb.setText(String.format("%02d", hours));
-	            		  mintLB.setText(String.format("%02d", minutes));
-	            		  scndLB.setText(String.format("%02d", seconds));
-	            	  }
-
-	              }}
-	          	));
-
-		animation.setCycleCount((int) (Timeline.INDEFINITE)); // Running times
-		animation.play();
-
+    void returnFromManualExam() {
+    	manualExamAP.setVisible(false);
+	  	instAP.setVisible(true);
     }
-    
-	public void activateComputerizedExamination() {
-	    	
-	    	instAP.setVisible(false);
-	    	autoExamAP.setVisible(true);
-	    	//examination.getExam();
-	    	qList = new ArrayList<Question>(examination.getExam().getQuestionList());
-	    	studentAnswers = new Integer[qList.size()];
-	    	// init studentAnswers to 0
-	    	for (int i = 0; i < qList.size(); i++) {
-	    		studentAnswers[i]= 0; 
-	    	}
-	    	prevQuestion.setDisable(true);
-	    	answer1RB.setDisable(true);
-	    	answer2RB.setDisable(true);
-	    	answer3RB.setDisable(true);
-	    	answer4RB.setDisable(true);
-	    	showQuestion();
-	    	
-	        // Timer
-			Timeline animation = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
-		              @Override public void handle(ActionEvent actionEvent) {
-		            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), examination.getExamEndTime()).toSeconds();
-	
-		            	  if (elapsedTime <= 0) {	// Time is up
-		            		  startOrSubmitBtn.setDisable(true);
-		            		  forceSubmitCompExam();
-		            	  }
-		            	  else {	// Every 1 second
-		            		  int hours = (int) (elapsedTime / 3600);
-		            		  int minutes = (int) ((elapsedTime % 3600) / 60);
-		            		  int seconds = (int) (elapsedTime % 60);
-	
-		            		  autoTimeLB.setText(String.format("%02d : %02d : %02d", hours, minutes, seconds));
-		            	  }
-	
-		              }}
-		          	));
-	
-			animation.setCycleCount((int) (Timeline.INDEFINITE)); // Running times
-			animation.play();
-	    }
-    
-	void forceSubmitCompExam() {   	
-		submitCompExam(true);
-	}
-
-    
-	@FXML
-    void startCompExam(ActionEvent event) {
-    	TextInputDialog dialog = new TextInputDialog("id here");
-    	dialog.setTitle("ID required");
-    	dialog.setContentText("Please enter your ID:");
-
-    	Optional<String> input = dialog.showAndWait();
-    	if (input.isPresent()) {	// check user didn't exit the dialog window
-    		
-	    	String strInput = input.get();
-	    	String id = Integer.toString(LoginController.userReceviedID);
-	    	if (id.equals(strInput)) {
-	    		answer1RB.setDisable(false);
-	        	answer2RB.setDisable(false);
-	        	answer3RB.setDisable(false);
-	        	answer4RB.setDisable(false);
-	    		System.out.println("Id matches");
-	    		compExmnActivated = true;
-	    		localCarrier = client.handleMessageFromClientStudentController("start student examination", 
-	    				LoginController.userReceviedID,  examination, null);
-	    		compExamStarted();
-	    	}
-	    	else {
-	    		System.out.println("Id doesn't match");
-	    	}
-	    }
-    }
-	
-	void compExamStarted() {
-	    	
-	    	startOrSubmitBtn.setText("Submit Test");
-	    	startOrSubmitBtn.setOnAction(new EventHandler<ActionEvent>() {
-	            @Override
-	            public void handle(ActionEvent event) {
-	                System.out.println("Hello World!");
-	                submitCompExam(false);
-	            }
-	    	});	
-	    }
-	
-    void showQuestion() {
-    	int qNum = questionIndex + 1;
-    	Question question = qList.get(questionIndex);
-    	question_num.setText("Question "+qNum);
-    	questionTA.setText(question.getQuestion());
-    	instructionTA.setText(question.getInstructions());
-    	answer1TF.setText(question.getAnswers()[0]);
-    	answer2TF.setText(question.getAnswers()[1]);
-    	answer3TF.setText(question.getAnswers()[2]);
-    	answer4TF.setText(question.getAnswers()[3]);
-    }
-    
-    @FXML
-    void showNextQuestion(ActionEvent event) {
-    	questionIndex++;
-    	if (questionIndex == qList.size()-1) {
-    		nextQuestion.setDisable(true);
-    	}
-    	prevQuestion.setDisable(false);
-    	if (compExmnActivated) {
-    		markAnswerBtn();
-    	}
-    	showQuestion();
-    }
-    
-    void markAnswerBtn() {
-    	switch (studentAnswers[questionIndex]) {
-    	case 1:
-    		System.out.println("check 2");
-    		answer1RB.setSelected(true);
-    		break;
-    		
-    	case 2:
-    		answer2RB.setSelected(true);
-    		break;
-    		
-    	case 3:
-    		answer3RB.setSelected(true);
-    		break;
-    		
-    	case 4:
-    		answer4RB.setSelected(true);
-    		break;
-    		
-    	default:
-    		answer1RB.setSelected(false);
-    		answer2RB.setSelected(false);
-    		answer3RB.setSelected(false);
-    		answer4RB.setSelected(false);
-    	}
-    }
-    
-    @FXML
-    void showPrevQuestion(ActionEvent event) {
-    	questionIndex--;
-    	if (questionIndex == 0) {
-    		prevQuestion.setDisable(true);
-    	}
-    	nextQuestion.setDisable(false);
-    	if (compExmnActivated) {
-    		markAnswerBtn();
-    	}
-    	showQuestion();
-    }
-    
+  
     @Override
     public void initialize(URL url, ResourceBundle rb) {   	
     	nameLB.setText("Hello " + LoginController.userReceviedfullName + ".");
@@ -624,49 +568,59 @@ public class StudentMenuController implements Initializable{
     		courseCB.getItems().add(course);
     	}
     	courseCB.getSelectionModel().selectFirst();
+
     }
     
+    /*************  autoExamAP	*****************/
     
-    public void loadExaminationDataToSetInstAP(Set<Examination> examinationList) {
-    	
-    	for(Examination examination: examinationList) {
-    		if(LocalTime.now().isBefore(examination.getExamEndTime())) {
-    	    	studentExamsTV.getItems().add(examination);
-    		}
-    	}
-    }
+
     
-    @FXML
-    void startSubmitExamination(ActionEvent event) {
-    	
-    	
+    @FXML		// press "start exam" button
+    void startCompExam(ActionEvent event) {
     	TextInputDialog dialog = new TextInputDialog("id here");
     	dialog.setTitle("ID required");
     	dialog.setContentText("Please enter your ID:");
-
     	Optional<String> input = dialog.showAndWait();
+    	
     	if (input.isPresent()) {	// check user didn't exit the dialog window
     		
 	    	String strInput = input.get();
 	    	String id = Integer.toString(LoginController.userReceviedID);
 	    	if (id.equals(strInput)) {
-	    		System.out.println("Id matches");
+	    	    
+	    		localCarrier = client.handleMessageFromClientStudentController("start student examination", 
+	    				LoginController.userReceviedID,  examination, null);
+	    		if (localCarrier.carrierMessageMap.get("exmnStudent") == null) {
+	    			informationDialog("Attention",null,"Test already submitted");
+	    			returnToInstAP();
+	    		}
+	    		startBtn.setDisable(true);
+	    		submitBtn.setDisable(false);
 	    		answer1RB.setDisable(false);
 	        	answer2RB.setDisable(false);
 	        	answer3RB.setDisable(false);
 	        	answer4RB.setDisable(false);
-	    		compExamStarted();
+	    		System.out.println("Id matches");
+	    		compExmnActivated = true;
+	    		
 	    	}
 	    	else {
 	    		System.out.println("Id doesn't match");
 	    	}
 	    }
     }
-
-  
     
-    @FXML
-    void submitCompExam(boolean forcedToFinish) {
+    void informationDialog(String title, String header, String content) {
+    	Alert alert = new Alert(AlertType.INFORMATION);
+    	alert.setTitle(title);
+    	alert.setHeaderText(header);
+    	alert.setContentText(content);
+
+    	alert.showAndWait();
+    }
+    
+    @FXML	// press "submit exam" button
+    void submitCompExam() {
     	
     	// casting studentAnswers to ArrayList and saving to ExaminationStudent object
     	ArrayList<Integer> answersList = new ArrayList<Integer>();  
@@ -693,12 +647,86 @@ public class StudentMenuController implements Initializable{
     	alert.showAndWait();
     	
     	// need to go back to main screen
-    	autoExamAP.setVisible(false);
-    	instAP.setVisible(true);
+    	returnToInstAP();
     	
     }
-    
-    @FXML
+   
+	
+	void returnToInstAP() {
+		
+		autoExamAP.setVisible(false);
+		instAP.setVisible(true);
+	}
+
+
+	@FXML
+    void showPrevQuestion(ActionEvent event) {
+    	questionIndex--;
+    	if (questionIndex == 0) {
+    		prevQuestion.setDisable(true);
+    	}
+    	nextQuestion.setDisable(false);
+    	if (compExmnActivated) {
+    		markAnswerBtn();
+    	}
+    	showQuestion();
+    }
+	
+	
+	 @FXML
+    void showNextQuestion(ActionEvent event) {
+    	questionIndex++;
+    	if (questionIndex == qList.size()-1) {
+    		nextQuestion.setDisable(true);
+    	}
+    	prevQuestion.setDisable(false);
+    	if (compExmnActivated) {
+    		markAnswerBtn();
+    	}
+    	showQuestion();
+    }
+	 
+	 
+	 void markAnswerBtn() {
+    	switch (studentAnswers[questionIndex]) {
+    	case 1:
+    		System.out.println("check 2");
+    		answer1RB.setSelected(true);
+    		break;
+    		
+    	case 2:
+    		answer2RB.setSelected(true);
+    		break;
+    		
+    	case 3:
+    		answer3RB.setSelected(true);
+    		break;
+    		
+    	case 4:
+    		answer4RB.setSelected(true);
+    		break;
+    		
+    	default:
+    		answer1RB.setSelected(false);
+    		answer2RB.setSelected(false);
+    		answer3RB.setSelected(false);
+    		answer4RB.setSelected(false);
+    	}
+    } 
+	 
+	void showQuestion() {
+    	int qNum = questionIndex + 1;
+    	Question question = qList.get(questionIndex);
+    	question_num.setText("Question "+qNum);
+    	questionTA.setText(question.getQuestion());
+    	instructionTA.setText(question.getInstructions());
+    	answer1TF.setText(question.getAnswers()[0]);
+    	answer2TF.setText(question.getAnswers()[1]);
+    	answer3TF.setText(question.getAnswers()[2]);
+    	answer4TF.setText(question.getAnswers()[3]);
+    }
+   
+	@FXML
     void chooseAnswerOne(ActionEvent event) {
     	studentAnswers[questionIndex] = 1;	
     }
@@ -717,4 +745,33 @@ public class StudentMenuController implements Initializable{
     void chooseAnswerFour(ActionEvent event) {
     	studentAnswers[questionIndex] = 4;
     }
+	
+   
+    /*********   OTHERS    ***************/ 
+   
+    // ????
+    @FXML
+    void returnMainAuto(ActionEvent event) {
+    	autoExamAP.setVisible(false);
+    	mainMenuAP.setVisible(true);
+    }
+
+	// after we press submit 
+	// startBtn  -> startCompExam
+	// submitBtn -> submitCompExam
+	
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {   	
+    	nameLB.setText("Hello " + LoginController.userReceviedfullName + ".");
+    	instCourseTC.setCellValueFactory(new PropertyValueFactory<Examination,Integer>("courseId"));       
+        instTeacherTC.setCellValueFactory(new PropertyValueFactory<Examination,Integer>("teacherId"));     
+        instDateTC.setCellValueFactory(new PropertyValueFactory<Examination,LocalDate>("examDate")); 	
+        
+    	for(String course: (LoginController.userReceviedCourses).keySet()) {
+    		courseCB.getItems().add(course);
+    	}
+    	courseCB.getSelectionModel().selectFirst();
+    }
+      
+   
 }

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 
@@ -84,6 +85,7 @@ public class ServerExaminationController {
 		Course course = tempSession.get(Course.class, courseID);
 		Hibernate.initialize(course.getExaminationList());
 		Set <Examination> examinations = course.getExaminationList();
+		
 		ConnectToDB.closeOuterSession(tempSession);
 		return examinations;
 	}
