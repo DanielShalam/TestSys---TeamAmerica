@@ -382,7 +382,7 @@ public class StudentMenuController implements Initializable{
     
     private void loadGradesTable(List<ExaminationStudent> studentList) {
     	for (ExaminationStudent eStudent: studentList) {
-    		if(eStudent.getGrade()>=0) {
+    		if(eStudent.getExaminationStatus() == ExaminationStatus.FINALIZED) {
     	    	gradesTV.getItems().add(eStudent);
     		}
     	}
@@ -434,7 +434,7 @@ public class StudentMenuController implements Initializable{
     	for(Examination examination: examinationList) {
     		if(LocalTime.now().isBefore(examination.getExamEndTime()) && 
     		   LocalTime.now().isAfter(examination.getExamStartTime()) &&
-    		   LocalDate.now().equals(examination.getExamDate())	 ) {
+    		   LocalDate.now().equals(examination.getExamDate())) {
     	    	studentExamsTV.getItems().add(examination);
     		}
     	}

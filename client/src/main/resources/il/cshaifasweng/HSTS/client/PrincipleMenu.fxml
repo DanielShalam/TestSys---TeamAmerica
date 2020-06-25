@@ -180,7 +180,7 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Button>
-      <AnchorPane fx:id="timeAdditionRequestsAP" layoutX="289.0" layoutY="81.0" prefHeight="577.0" prefWidth="720.0" visible="false">
+      <AnchorPane fx:id="timeAdditionRequestsAP" layoutX="289.0" layoutY="81.0" prefHeight="418.0" prefWidth="720.0" visible="false">
          <children>
             <Label layoutX="158.0" layoutY="48.0" text="Time Addition Requests">
                <font>

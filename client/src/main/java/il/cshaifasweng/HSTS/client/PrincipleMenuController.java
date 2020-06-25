@@ -343,6 +343,7 @@ public class PrincipleMenuController implements Initializable {
     void getTimeRequests(ActionEvent event) {
     	mainAP.setVisible(false);
     	timeAdditionRequestsAP.setVisible(true);
+    	goBackButton.setDisable(false);
     	goBackButton.setVisible(true);
     	
     	client = LoginController.client;
