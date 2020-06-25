@@ -778,14 +778,14 @@ client = LoginController.client;
 		questionSet.addAll(sExamination.getExamination().getExam().getQuestionList());
 		List<Question> questionList = new ArrayList<>();
 		List<Integer> studentAnswerList = sExamination.getStudentsAnswers();
-		String questionAnswerSummary = "QUESTION: ";
+		String questionAnswerSummary = "";
 		questionList.addAll(questionSet);
 		
 		int i = 0;
 		for (Question question : questionList) {
-			questionAnswerSummary = questionAnswerSummary + question.getQuestion() +
+			questionAnswerSummary = questionAnswerSummary + "QUESTION: " + question.getQuestion() +
 					"\nCORRECT ANSWER:  " + question.getCorrectAnswer() + "\nSTUDENT ANSWER: " +
-					studentAnswerList.get(i) + "\n\nQUESTION: ";
+					studentAnswerList.get(i) + "\n\n";
 			i++;
 		}
 		QuestionsAnswersTACheckExamAP.setText(questionAnswerSummary);
