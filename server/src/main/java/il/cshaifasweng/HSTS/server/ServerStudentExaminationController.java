@@ -34,15 +34,27 @@ public class ServerStudentExaminationController {
 				
 			case "Submit": 	// updating existing object
 				System.out.println("SWITCH CASE - updating Examination Student existing record");
-				ExaminationStudent exmnToSubmit = (ExaminationStudent)carrier.carrierMessageMap.get("exmnStudent");
+				ExaminationStudent exmnToSubmit = (ExaminationStudent)carrier.carrierMessageMap.get("exmnStudent");		
+				
+				// update # of students in Examination
+				Examination exmn =  ConnectToDB.getById(Examination.class, examinationId);				
+				exmn.addStudentsStarted();
+				if (exmnToSubmit.isForcedToFinish()) {
+					exmn.addStudentsNotFinished();
+				}
+				else {
+					exmn.addStudentsFinished();
+				}
+				ConnectToDB.update(exmn);
 				
 				// calc grades only if examination is computerized
-				if (exmnToSubmit.getExamination().getExamType() == ExamType.COMPUTERIZED) {
+				if (exmn.getExamType() == ExamType.COMPUTERIZED) {
 					exmnToSubmit = calcGrades(exmnToSubmit);
 				}
+				
 				carrier.carrierMessageMap.replace("exmnStudent",exmnToSubmit);
 				ConnectToDB.updateExmnStudent(carrier);
-				return null;	//???? why null?
+				return null;	
 							
 			case "Already submited": 	// Student already submitted exam
 				System.out.println("SWITCH CASE - examination already submitted");

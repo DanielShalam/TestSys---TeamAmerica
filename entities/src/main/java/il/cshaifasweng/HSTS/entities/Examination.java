@@ -57,7 +57,7 @@ public class Examination implements Serializable {
 	private int studentsFinished;
 	
 	@Column
-	private int studentsNotFinsished;
+	private int studentsNotFinished;
 	
 	// exam examination relation - Unidirectional
 	@ManyToOne
@@ -80,14 +80,14 @@ public class Examination implements Serializable {
 		this.executionCode = execuationCode;
 		this.studentsStarted = 0;
 		this.studentsFinished = 0;
-		this.studentsNotFinsished = 0;
+		this.studentsNotFinished = 0;
 		this.examineesList = new HashSet<ExaminationStudent>(); 
 		this.teacherId = teacherId;
 		this.examType = examType;
 		this.addTimeRequest = null; 
 		this.exam = exam;
 		this.actualDuration = exam.getAssignedDuration();
-		this.examDate = examDate;
+		setExamDate(examDate);
 		this.examStartTime = examStartTime;
 		updateExamEndTime();
 		this.courseId = exam.getCourseId();
@@ -174,12 +174,12 @@ public class Examination implements Serializable {
 		this.studentsFinished = studentsFinished;
 	}
 
-	public int getStudentsNotFinsished() {
-		return studentsNotFinsished;
+	public int getStudentsNotFinished() {
+		return studentsNotFinished;
 	}
 
-	public void setStudentsNotFinsished(int studentsNotFinsished) {
-		this.studentsNotFinsished = studentsNotFinsished;
+	public void setStudentsNotFinished(int studentsNotFinished) {
+		this.studentsNotFinished = studentsNotFinished;
 	}
 
 	public int getTeacherId() {
@@ -199,7 +199,7 @@ public class Examination implements Serializable {
 	}
 
 	public void setExamDate(LocalDate examDate) {
-		this.examDate = examDate;
+		this.examDate = examDate.plusDays(1);
 	}
 
 	public LocalTime getExamStartTime() {
@@ -233,6 +233,19 @@ public class Examination implements Serializable {
 	public void setExamineesList(Set<ExaminationStudent> examineesList) {
 		this.examineesList = examineesList;
 	}
+	
+	public void addStudentsStarted() {
+		this.studentsStarted++;
+	}
+
+	public void addStudentsFinished() {
+		this.studentsFinished++;
+	}
+	
+	public void addStudentsNotFinished() {
+		this.studentsNotFinished++;
+	}
+	
 	
 }
 
