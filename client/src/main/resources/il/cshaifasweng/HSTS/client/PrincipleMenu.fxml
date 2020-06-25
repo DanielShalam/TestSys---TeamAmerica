@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
@@ -14,9 +13,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="579.0" maxWidth="721.0" prefHeight="577.0" prefWidth="721.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.HSTS.client.PrincipleMenuController">
+<AnchorPane fx:id="principalAP" maxHeight="739.0" maxWidth="1360.0" prefHeight="739.0" prefWidth="1360.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.HSTS.client.PrincipleMenuController">
    <children>
-      <AnchorPane fx:id="viewQuestionsAP" prefHeight="577.0" prefWidth="721.0" visible="false">
+      <AnchorPane fx:id="viewQuestionsAP" layoutX="340.0" layoutY="81.0" prefHeight="577.0" prefWidth="721.0" visible="false">
          <children>
             <TableView fx:id="viewQuestionsTV" layoutX="26.0" layoutY="152.0" prefHeight="317.0" prefWidth="677.0">
               <columns>
@@ -38,7 +37,7 @@
             </Label>
          </children>
       </AnchorPane>
-      <GridPane fx:id="mainAP" layoutY="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="720.0">
+      <GridPane fx:id="mainAP" layoutY="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="720.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="100.0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -134,7 +133,7 @@
             </AnchorPane>
          </children>
       </GridPane>
-      <AnchorPane fx:id="viewExamResultsAP" prefHeight="577.0" prefWidth="720.0" visible="false">
+      <AnchorPane fx:id="viewExamResultsAP" layoutX="341.0" layoutY="124.0" prefHeight="577.0" prefWidth="720.0" visible="false">
          <children>
             <TableView fx:id="viewExamResultsTV" layoutX="31.0" layoutY="118.0" prefHeight="336.0" prefWidth="660.0">
               <columns>
@@ -153,7 +152,7 @@
             </Label>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="viewExamsAP" prefHeight="577.0" prefWidth="720.0" visible="false">
+      <AnchorPane fx:id="viewExamsAP" layoutX="320.0" layoutY="81.0" prefHeight="577.0" prefWidth="720.0" visible="false">
          <children>
             <TableView fx:id="viewExamsTVeAP" layoutX="30.0" layoutY="136.0" prefHeight="233.0" prefWidth="660.0">
                <columns>
@@ -169,19 +168,19 @@
                   <Font name="System Bold" size="36.0" />
                </font>
             </Label>
-            <Button fx:id="viewExamButton" layoutX="314.0" layoutY="392.0" mnemonicParsing="false" text="View Exam">
+            <Button fx:id="viewExamButton" layoutX="314.0" layoutY="392.0" mnemonicParsing="false" onAction="#viewExam" text="View Exam">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
             </Button>
          </children>
       </AnchorPane>
-      <Button fx:id="goBackButton" layoutX="290.0" layoutY="507.0" mnemonicParsing="false" onAction="#goToMainAP" prefHeight="30.0" prefWidth="142.0" text="Go Back" visible="false">
+      <Button fx:id="goBackButton" layoutX="629.0" layoutY="628.0" mnemonicParsing="false" onAction="#goToMainAP" prefHeight="30.0" prefWidth="142.0" text="Go Back" visible="false">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
       </Button>
-      <AnchorPane fx:id="timeAdditionRequestsAP" prefHeight="577.0" prefWidth="720.0" visible="false">
+      <AnchorPane fx:id="timeAdditionRequestsAP" layoutX="289.0" layoutY="81.0" prefHeight="577.0" prefWidth="720.0" visible="false">
          <children>
             <Label layoutX="158.0" layoutY="48.0" text="Time Addition Requests">
                <font>
@@ -207,7 +206,7 @@
             </Button>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="viewExamsAP" prefHeight="677.0" prefWidth="1239.0" visible="false">
+      <AnchorPane fx:id="viewExamAP" prefHeight="677.0" prefWidth="1239.0" visible="false">
          <children>
             <Label layoutX="51.0" layoutY="120.0" text="Course:" />
             <Label layoutX="51.0" layoutY="37.0" text="Exam">
@@ -218,25 +217,24 @@
             <Label layoutX="648.0" layoutY="120.0" text="Created By:" />
             <Label layoutX="51.0" layoutY="265.0" text="Student Instructions:" />
             <Label layoutX="51.0" layoutY="367.0" text="Teacher Instructions:" />
-            <ChoiceBox fx:id="courseCBSetExamAP" layoutX="126.0" layoutY="116.0" prefWidth="150.0" />
-            <TextArea fx:id="studentInstructionsTASetExamAP" layoutX="51.0" layoutY="298.0" prefHeight="51.0" prefWidth="355.0" />
-            <TextArea fx:id="teacherInstructionsTASetExamAP" layoutX="51.0" layoutY="399.0" prefHeight="51.0" prefWidth="355.0" />
+            <TextArea fx:id="studentInstructionsTASetExamAP" disable="true" layoutX="51.0" layoutY="298.0" prefHeight="51.0" prefWidth="355.0" />
+            <TextArea fx:id="teacherInstructionsTASetExamAP" disable="true" layoutX="51.0" layoutY="399.0" prefHeight="51.0" prefWidth="355.0" />
             <TextField fx:id="examIDSetExamAP" disable="true" layoutX="418.0" layoutY="116.0" />
-            <TextField fx:id="examDurationTFSetExamAP" layoutX="52.0" layoutY="217.0" />
+            <TextField fx:id="examDurationTFSetExamAP" disable="true" layoutX="52.0" layoutY="217.0" />
             <Label layoutX="360.0" layoutY="120.0" text="Exam ID:" />
             <TextField fx:id="teacherIDSetExamAP" disable="true" editable="false" layoutX="723.0" layoutY="116.0" />
             <Label layoutX="51.0" layoutY="183.0" text="Exam Duration: [Min]" />
-            <TableView fx:id="examQuestionsTVsetExamAP" layoutX="441.0" layoutY="215.0" prefHeight="320.0" prefWidth="660.0">
+            <TableView fx:id="examQuestionsTVsetExamAP" layoutX="441.0" layoutY="215.0" prefHeight="320.0" prefWidth="837.0">
                <columns>
                   <TableColumn fx:id="examQuestionIdTCViewExamAP" editable="false" prefWidth="75.0" sortable="false" text="Course ID" />
                   <TableColumn fx:id="questionTCViewExamAP" editable="false" prefWidth="236.0" sortable="false" text="Question" />
-                  <TableColumn fx:id="answer1TCViewExamAP" prefWidth="75.0" text="Answer 1" />
-                  <TableColumn fx:id="answer2TCViewExamAP" prefWidth="75.0" text="Answer 2" />
-                  <TableColumn fx:id="answer3TCViewExamAP" prefWidth="75.0" text="Answer 3" />
-                  <TableColumn fx:id="answer4TCViewExamAP" prefWidth="75.0" text="Answer 4" />
-                  <TableColumn fx:id="correctAnswerTCViewExamAP" prefWidth="75.0" text="Correct Answer" />
-                  <TableColumn fx:id="instructionsTCViewExamAP" prefWidth="75.0" text="Instructions" />
-                  <TableColumn fx:id="teacherIdTCViewExamAP" prefWidth="75.0" text="Teacher ID" />
+                  <TableColumn fx:id="answer1TCViewExamAP" prefWidth="59.0" text="Answer 1" />
+                  <TableColumn fx:id="answer2TCViewExamAP" prefWidth="63.0" text="Answer 2" />
+                  <TableColumn fx:id="answer3TCViewExamAP" prefWidth="67.0" text="Answer 3" />
+                  <TableColumn fx:id="answer4TCViewExamAP" prefWidth="65.0" text="Answer 4" />
+                  <TableColumn fx:id="correctAnswerTCViewExamAP" prefWidth="95.0" text="Correct Answer" />
+                  <TableColumn fx:id="instructionsTCViewExamAP" prefWidth="108.0" text="Instructions" />
+                  <TableColumn fx:id="teacherIdTCViewExamAP" prefWidth="68.0" text="Teacher ID" />
                </columns>
             </TableView>
             <Label layoutX="441.0" layoutY="183.0" text="Exam Questions:" />
@@ -246,6 +244,7 @@
                </font>
             </Button>
             <Separator layoutX="30.0" layoutY="160.0" prefHeight="3.0" prefWidth="1183.0" />
+            <TextField fx:id="courseTFSetExamAP" disable="true" layoutX="112.0" layoutY="116.0" />
          </children>
       </AnchorPane>
    </children>

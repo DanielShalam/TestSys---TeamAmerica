@@ -14,6 +14,7 @@ import il.cshaifasweng.HSTS.entities.AddTimeRequest;
 import il.cshaifasweng.HSTS.entities.Carrier;
 import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.Examination;
+import il.cshaifasweng.HSTS.entities.ExaminationStatus;
 import il.cshaifasweng.HSTS.entities.ExaminationStudent;
 import il.cshaifasweng.HSTS.entities.Question;
 import javafx.beans.binding.Bindings;
@@ -31,6 +32,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 
 public class PrincipleMenuController implements Initializable {
 	
@@ -47,7 +50,7 @@ public class PrincipleMenuController implements Initializable {
     private TableColumn<Question, Integer> courseIdTCqTV; // Value injected by FXMLLoader
 
     @FXML // fx:id="questionTCqTV"
-    private TableColumn<Question, Integer> questionTCqTV; // Value injected by FXMLLoader
+    private TableColumn<Question, String> questionTCqTV; // Value injected by FXMLLoader
 
     @FXML // fx:id="answer1TCqTV"
     private TableColumn<Question, String> answer1TCqTV; // Value injected by FXMLLoader
@@ -122,7 +125,7 @@ public class PrincipleMenuController implements Initializable {
     private TableColumn<Exam, String> teacherInstructionsTCeAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="durationTCeAP"
-    private TableColumn<Exam, Duration> durationTCeAP; // Value injected by FXMLLoader
+    private TableColumn<Exam, Long> durationTCeAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="teacherIdTCeAP"
     private TableColumn<Exam, Integer> teacherIdTCeAP; // Value injected by FXMLLoader
@@ -140,7 +143,7 @@ public class PrincipleMenuController implements Initializable {
     private TableColumn<AddTimeRequest, Integer> examIdTCtrAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="durationTCtrAP"
-    private TableColumn<AddTimeRequest, Duration> durationTCtrAP; // Value injected by FXMLLoader
+    private TableColumn<AddTimeRequest, Long> durationTCtrAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="reasonTCtrAP"
     private TableColumn<AddTimeRequest, String> reasonTCtrAP; // Value injected by FXMLLoader
@@ -151,8 +154,8 @@ public class PrincipleMenuController implements Initializable {
     @FXML // fx:id="declineRequestButton"
     private Button declineRequestButton; // Value injected by FXMLLoader
 
-    @FXML // fx:id="courseCBSetExamAP"
-    private ChoiceBox<String> courseCBSetExamAP; // Value injected by FXMLLoader
+    @FXML // fx:id="courseTFSetExamAP"
+    private TextField courseTFSetExamAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="studentInstructionsTASetExamAP"
     private TextArea studentInstructionsTASetExamAP; // Value injected by FXMLLoader
@@ -179,16 +182,16 @@ public class PrincipleMenuController implements Initializable {
     private TableColumn<Question, String> questionTCViewExamAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="answer1TCViewExamAP"
-    private TableColumn<Question, Integer> answer1TCViewExamAP; // Value injected by FXMLLoader
+    private TableColumn<Question, String> answer1TCViewExamAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="answer2TCViewExamAP"
-    private TableColumn<Question, Integer> answer2TCViewExamAP; // Value injected by FXMLLoader
+    private TableColumn<Question, String> answer2TCViewExamAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="answer3TCViewExamAP"
-    private TableColumn<Question, Integer> answer3TCViewExamAP; // Value injected by FXMLLoader
+    private TableColumn<Question, String> answer3TCViewExamAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="answer4TCViewExamAP"
-    private TableColumn<Question, Integer> answer4TCViewExamAP; // Value injected by FXMLLoader
+    private TableColumn<Question, String> answer4TCViewExamAP; // Value injected by FXMLLoader
 
     @FXML // fx:id="correctAnswerTCViewExamAP"
     private TableColumn<Question, Integer> correctAnswerTCViewExamAP; // Value injected by FXMLLoader
@@ -207,28 +210,136 @@ public class PrincipleMenuController implements Initializable {
    
     @FXML // fx:id="mainAP"
     private GridPane mainAP; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="principalAP"
+    private AnchorPane principalAP; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="viewExamAP"
+    private AnchorPane viewExamAP; // Value injected by FXMLLoader
 
     @FXML
     void cancelViewExam(ActionEvent event) {
-
+    	viewExamAP.setVisible(false);
+    	viewExamsAP.setVisible(true);
+    	goBackButton.setVisible(true);
     }
 
     @FXML
     void getAllExamResults(ActionEvent event) {
+    	mainAP.setVisible(false);
+    	viewExamResultsAP.setVisible(true);
+    	goBackButton.setVisible(true);
+    	
+    	client = LoginController.client;
+    	
+    	String message = "get all student examinations";    	
+    	int teahcerId = 0;
+    	int courseId = 0;
+    	ExaminationStatus examinationStatus = ExaminationStatus.FINALIZED;
+    	ExaminationStudent studentExamination = null;
+    	
+    	localCarrier = client.handleMessageStudentExaminationsFromClientExamsController(message, teahcerId,
+    			examinationStatus, courseId, studentExamination);
+    	System.out.println("message from ClientStudentExaminationsController Handled");
+    	
+    	ObservableList<ExaminationStudent> eItems = viewExamResultsTV.getItems();
+		if (!eItems.isEmpty()) {
+			viewExamResultsTV.getItems().removeAll(eItems);
+		}
 
+		List <ExaminationStudent> examList = (List<ExaminationStudent>) localCarrier.carrierMessageMap.get("examinations");
+		
+		if (!examList.isEmpty()) {
+			loadStudentExaminationData(examList);
+		} else {
+			Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("No exams results in the data base");
+    		errorAlert.showAndWait();
+		}
     }
 
-    @FXML
+    void loadStudentExaminationData(List<ExaminationStudent> examList) {
+		for (ExaminationStudent studentExamination : examList) {
+			viewExamResultsTV.getItems().add(studentExamination);
+		}
+	}
+
+	@FXML
     void getAllExams(ActionEvent event) {
+    	mainAP.setVisible(false);
+    	viewExamsAP.setVisible(true);
+    	goBackButton.setVisible(true);
+    	
+    	client = LoginController.client;
+    	
+    	String message = "get all exams";    	
+    	int id = 0;
+    	Exam exam = null;
+    	
+    	localCarrier = client.handleMessageFromClientExamController(message, id, exam);
+    	System.out.println("message from ClientExamController Handled");
+    	
+    	ObservableList<Exam> eItems = viewExamsTVeAP.getItems();
+		if (!eItems.isEmpty()) {
+			viewExamsTVeAP.getItems().removeAll(eItems);
+		}
 
+		List <Exam> examList = (List<Exam>) localCarrier.carrierMessageMap.get("exams");
+		
+		if (!examList.isEmpty()) {
+			loadExamData(examList);
+		} else {
+			Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("No exams in the data base");
+    		errorAlert.showAndWait();
+		}
     }
 
-    @FXML
+    void loadExamData(List<Exam> examList) {
+		for (Exam exam : examList) {
+			viewExamsTVeAP.getItems().add(exam);
+		}
+	}
+
+	@FXML
     void getAllQuestions(ActionEvent event) {
+    	mainAP.setVisible(false);
+    	viewQuestionsAP.setVisible(true);
+    	goBackButton.setVisible(true);
+    	
+    	client = LoginController.client;
+    	
+    	String message = "get all questions";    	
+    	int id = 0;
+    	Question question = null;
+    	
+    	localCarrier = client.handleMessageFromClientQuestionController(message, id, question);
+    	System.out.println("message from ClientQuestionController Handled");
+    	
+    	ObservableList<Question> aItems = viewQuestionsTV.getItems();
+		if (!aItems.isEmpty()) {
+			viewQuestionsTV.getItems().removeAll(aItems);
+		}
+
+		List <Question> questionList = (List<Question>) localCarrier.carrierMessageMap.get("questions");
+		
+		if (!questionList.isEmpty()) {
+			loadQuestionData(questionList);
+		} else {
+			Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("No questions in the data base");
+    		errorAlert.showAndWait();
+		}
     	
     }
 
-    @FXML
+    private void loadQuestionData(List<Question> questionList) {
+		for (Question question : questionList) {
+			viewQuestionsTV.getItems().add(question);
+		}
+	}
+
+	@FXML
     void getTimeRequests(ActionEvent event) {
     	mainAP.setVisible(false);
     	timeAdditionRequestsAP.setVisible(true);
@@ -269,7 +380,7 @@ public class PrincipleMenuController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         //view Questions Table
         courseIdTCqTV.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getCourseId()));
-        questionTCqTV.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getQuestionId()));
+        questionTCqTV.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getQuestion()));
         answer1TCqTV.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getAnswers()[0]));
         answer2TCqTV.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getAnswers()[1]));
         answer3TCqTV.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getAnswers()[2]));
@@ -280,9 +391,35 @@ public class PrincipleMenuController implements Initializable {
         
         //time requests table
         examIdTCtrAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination_id()));
-        durationTCtrAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getRequestedDuration()));
+        durationTCtrAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getRequestedDuration().abs().toMinutes()));
         reasonTCtrAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getRequestReason()));
-            
+        
+        //view exam results
+        courseIdTCresAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination().getCourseId()));
+        examinationIdTCresAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination().getExamination_id()));
+        gradeTCresAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getGrade()));
+        dateTCresAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination().getExamDate()));
+        studentIdTCresAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getStudent().getUserId()));
+        teacherIdTCresAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamination().getTeacherId()));
+        
+        //view exams
+        examIdTCeAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getExamId()));
+        courseIdTCeAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getCourseId()));
+        teacherInstructionsTCeAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getTeacherInstructions()));
+        durationTCeAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getAssignedDuration().abs().toMinutes()));
+        teacherIdTCeAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getTeacherId()));
+
+        //question table in view exam
+        
+        examQuestionIdTCViewExamAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getQuestionId()));
+        questionTCViewExamAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getQuestion()));
+        answer1TCViewExamAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getAnswers()[0]));
+        answer2TCViewExamAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getAnswers()[1]));
+        answer3TCViewExamAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getAnswers()[2]));
+        answer4TCViewExamAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getAnswers()[3]));
+        correctAnswerTCViewExamAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getCorrectAnswer()));
+        instructionsTCViewExamAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getInstructions()));
+        teacherIdTCViewExamAP.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getTeacherId()));
     }
 	
     @FXML
@@ -336,6 +473,33 @@ public class PrincipleMenuController implements Initializable {
     		errorAlert.showAndWait();
     	}
     }
-    
-    
+	
+    @FXML
+    void viewExam(ActionEvent event) {
+    	
+    	Exam exam = viewExamsTVeAP.getSelectionModel().getSelectedItem();
+    	if (exam != null) {
+    		viewExamAP.setVisible(true);
+        	viewExamsAP.setVisible(false);
+        	goBackButton.setVisible(false);
+        	
+        	courseTFSetExamAP.setText(String.valueOf(exam.getCourseId()));
+        	examDurationTFSetExamAP.setText(String.valueOf(exam.getAssignedDuration().abs().toMinutes()));
+        	examIDSetExamAP.setText(String.valueOf(exam.getExamId()));
+        	studentInstructionsTASetExamAP.setText(exam.getStudentInstructions());
+        	teacherInstructionsTASetExamAP.setText(exam.getTeacherInstructions());
+        	
+        	
+        	ObservableList<Question> qItems = examQuestionsTVsetExamAP.getItems();
+    		if (!qItems.isEmpty()) {
+    			examQuestionsTVsetExamAP.getItems().removeAll(qItems);
+    		}
+        	
+        	examQuestionsTVsetExamAP.getItems().addAll(exam.getQuestionList());
+    	} else {
+    		Alert errorAlert = new Alert(AlertType.ERROR);
+    		errorAlert.setHeaderText("Exam was not selected");
+    		errorAlert.showAndWait();
+    	}
+    }
 }

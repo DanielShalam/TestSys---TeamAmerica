@@ -18,14 +18,16 @@ import java.io.IOException;
 public class App extends Application {
 
 	private static Scene scene;
+	private static Stage myStage;
 
     @Override
     public void start(Stage stage) throws IOException {
+    	myStage = stage;
     	stage.setTitle("TestSys");
         scene = new Scene(loadFXML("LoginMenu"));
         stage.setScene(scene);
         stage.show();
-        
+        //stage.setMaximized(true);
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent t) {
@@ -39,6 +41,12 @@ public class App extends Application {
     static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
         scene.getWindow().sizeToScene();
+        
+        if (fxml == "PrincipleMenu") {
+        	myStage.setMaximized(true);
+        } else {
+        	myStage.setMaximized(false);
+        }
     }
 
     private static Parent loadFXML(String fxml) throws IOException {
