@@ -51,22 +51,6 @@ public class ConnectToDB {
 		return configuration.buildSessionFactory(serviceRegistry);
 	}
 	
-	// Function to get all instances of given class
-	public static <T> List<T> getAll(Class<T> object) {
-		Session temp_session = sessionFactory.openSession();
-        temp_session.beginTransaction();
-
-		CriteriaBuilder builder = temp_session.getCriteriaBuilder();
-		CriteriaQuery<T> criteriaQuery = builder.createQuery(object);
-		Root<T> rootEntry = criteriaQuery.from(object);
-		CriteriaQuery<T> allCriteriaQuery = criteriaQuery.select(rootEntry);
-		TypedQuery<T> allQuery = temp_session.createQuery(allCriteriaQuery);
-//		
-//    	temp_session.getTransaction().commit();
-//    	temp_session.close();
-		return allQuery.getResultList();
-	}
-	
 	// Function to delete object from database using its id
     public static <T> void deleteById(final Class<T> type,int entityId) {
     	// Get object
@@ -189,7 +173,17 @@ public class ConnectToDB {
     	temp_session.close();
     }
     
-    
+	// Function to get all instances of given class
+	public static <T> List<T> getAll(Class<T> object) {
+		Session temp_session = sessionFactory.openSession();
+        temp_session.beginTransaction();
+		CriteriaBuilder builder = temp_session.getCriteriaBuilder();
+		CriteriaQuery<T> criteriaQuery = builder.createQuery(object);
+		Root<T> rootEntry = criteriaQuery.from(object);
+		CriteriaQuery<T> allCriteriaQuery = criteriaQuery.select(rootEntry);
+		TypedQuery<T> allQuery = temp_session.createQuery(allCriteriaQuery);
+		return allQuery.getResultList();
+	}
     
 	// Function to update existing object
     public static <T> void update(T o){
