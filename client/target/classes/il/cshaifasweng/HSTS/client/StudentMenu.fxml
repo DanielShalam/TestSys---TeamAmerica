@@ -194,7 +194,12 @@
          </children></AnchorPane>
       <AnchorPane fx:id="gradesAP" prefHeight="578.0" prefWidth="640.0" visible="false">
          <children>
-            <TableView fx:id="gradesTV" layoutX="145.0" layoutY="62.0" prefHeight="370.0" prefWidth="350.0">
+            <Label fx:id="courseLB1" layoutX="9.0" layoutY="60.0" prefHeight="30.0" prefWidth="232.0">
+               <font>
+                  <Font name="Calibri" size="18.0" />
+               </font>
+            </Label>
+            <TableView fx:id="gradesTV" layoutX="257.0" layoutY="60.0" prefHeight="370.0" prefWidth="350.0">
               <columns>
                 <TableColumn fx:id="examCL" prefWidth="104.79998779296875" text="Exam" />
                 <TableColumn fx:id="courseCl" prefWidth="113.60003662109375" text="Course" />
@@ -203,6 +208,29 @@
             </TableView>
             <Button fx:id="viewExamBtn" layoutX="257.0" layoutY="448.0" mnemonicParsing="false" onAction="#viewExam" prefHeight="26.0" prefWidth="126.0" text="View Exam" />
             <Button fx:id="gradeReturnBtn" layoutX="294.0" layoutY="500.0" mnemonicParsing="false" onAction="#gradesReturn" text="Return" />
+            <Label fx:id="tStartLB" layoutX="9.0" layoutY="90.0" prefHeight="30.0" prefWidth="232.0">
+               <font>
+                  <Font name="Calibri" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="tEndLB" layoutX="9.0" layoutY="120.0" prefHeight="30.0" prefWidth="232.0">
+               <font>
+                  <Font name="Calibri" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="notesLB" alignment="TOP_LEFT" layoutX="9.0" layoutY="190.0" prefHeight="26.0" prefWidth="232.0">
+               <font>
+                  <Font name="Calibri" size="18.0" />
+               </font>
+            </Label>
+            <Button fx:id="fullDeBtn" layoutX="406.0" layoutY="448.0" mnemonicParsing="false" onAction="#getFullDetails" prefHeight="26.0" prefWidth="200.0" text="Get full details" />
+            <TextArea fx:id="notesTA" editable="false" layoutX="9.0" layoutY="216.0" prefHeight="213.0" prefWidth="224.0" visible="false" />
+            <Label fx:id="tEndLB1" layoutX="9.0" layoutY="150.0" prefHeight="30.0" prefWidth="241.0">
+               <font>
+                  <Font name="Calibri" size="18.0" />
+               </font>
+            </Label>
          </children></AnchorPane>
+      <AnchorPane prefHeight="578.0" prefWidth="640.0" visible="false" />
    </children>
 </AnchorPane>

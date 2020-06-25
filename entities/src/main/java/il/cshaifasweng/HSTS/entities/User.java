@@ -167,6 +167,7 @@ public class User implements Serializable {
 	
 	public Set<Examination> getExaminationInstigated() {
 		Set<Examination> examinations = new HashSet<Examination>();
+		System.out.println(examinationInstigated);
 		examinations.addAll(examinationInstigated);
 		return examinations;
 	}
