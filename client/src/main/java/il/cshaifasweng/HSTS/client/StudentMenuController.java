@@ -43,6 +43,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.effect.Effect;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -71,6 +72,9 @@ public class StudentMenuController implements Initializable{
 	private Integer[] studentAnswers;	
 	private boolean compExmnActivated = false;
 	private boolean forcedToFinish = false;
+	private boolean isCopy = false;
+	List<Integer> studentAnswersCopy;
+
     
     @FXML
     private AnchorPane instAP;
@@ -265,6 +269,24 @@ public class StudentMenuController implements Initializable{
     private Label courseLB1;
     
     @FXML
+    private Label rtrnCopyBtn;
+    
+    @FXML
+    private Button copyRtrnBtn;
+    
+    @FXML
+    void returnFromCopy(ActionEvent event) {
+    	isCopy = false;
+    	answer1RB.setSelected(false);
+    	answer2RB.setDisable(false);
+    	answer3RB.setDisable(false);
+    	answer4RB.setDisable(false);
+    	copyRtrnBtn.setVisible(false);
+    	autoExamAP.setVisible(false);
+    	mainMenuAP.setVisible(true);
+    }
+    
+    @FXML
     void getFullDetails(ActionEvent event) {
     	ExaminationStudent eStudent = gradesTV.getSelectionModel().getSelectedItem();
     	if (eStudent == null) {
@@ -300,6 +322,7 @@ public class StudentMenuController implements Initializable{
     @FXML
     void getGrades(ActionEvent event) {
     	mainMenuAP.setVisible(false);
+    	copyRtrnBtn.setVisible(false);
     	gradesTV.getItems().clear();
     	gradesAP.setVisible(true);
     	courseLB1.setText("");
@@ -331,7 +354,29 @@ public class StudentMenuController implements Initializable{
     
     @FXML
     void viewExam(ActionEvent event) {
+    	ExaminationStudent examinationStudent = gradesTV.getSelectionModel().getSelectedItem();
+    	if(examinationStudent == null) {
+    		return;
+    	}
+    	gradesAP.setVisible(false);
+    	startBtn.setVisible(false);
+    	submitBtn.setVisible(false);
+    	copyRtrnBtn.setVisible(true);
+    	autoExamAP.setVisible(true);
+    	isCopy = true;
+    	qList = new ArrayList<Question>(examinationStudent.getExamination().getExam().getQuestionList());
+    	studentAnswersCopy = examinationStudent.getStudentsAnswers();
 
+    	prevQuestion.setDisable(true);
+    	answer1RB.setSelected(false);
+    	answer2RB.setSelected(false);
+    	answer3RB.setSelected(false);
+    	answer4RB.setSelected(false);
+    	answer1RB.setDisable(true);
+    	answer2RB.setDisable(true);
+    	answer3RB.setDisable(true);
+    	answer4RB.setDisable(true);
+    	showQuestion();
     }
     
     
@@ -386,7 +431,6 @@ public class StudentMenuController implements Initializable{
     
    
     public void loadExaminationDataToSetInstAP(Set<Examination> examinationList) {
-    	
     	for(Examination examination: examinationList) {
     		if(LocalTime.now().isBefore(examination.getExamEndTime())) {
     	    	studentExamsTV.getItems().add(examination);
@@ -485,6 +529,8 @@ public class StudentMenuController implements Initializable{
     	
     	instAP.setVisible(false);
     	autoExamAP.setVisible(true);
+    	submitBtn.setVisible(true);
+    	startBtn.setVisible(true);
     	submitBtn.setDisable(true);
     	startBtn.setDisable(false);
     	qList = new ArrayList<Question>(examination.getExam().getQuestionList());
@@ -544,7 +590,7 @@ public class StudentMenuController implements Initializable{
     @FXML
     void downloadExam(ActionEvent event) {
     	examination = studentExamsTV.getSelectionModel().getSelectedItem();
-    	manualLB.setText(""); 
+    	manualLB.setText("");
 
     	try {
     		XWPFDocument manualExam = WordHandler.CreateWordFile(examination);
@@ -790,6 +836,38 @@ public class StudentMenuController implements Initializable{
     	answer2TF.setText(question.getAnswers()[1]);
     	answer3TF.setText(question.getAnswers()[2]);
     	answer4TF.setText(question.getAnswers()[3]);
+    	if (isCopy) {
+        	switch (studentAnswersCopy.get(questionIndex)) {
+    		case 1: {
+    			answer1RB.setSelected(true);
+    			answer2RB.setSelected(false);
+    			answer3RB.setSelected(false);
+    			answer4RB.setSelected(false);
+    			break;
+    		}
+    		case 2: {
+    			answer1RB.setSelected(false);
+    			answer2RB.setSelected(true);
+    			answer3RB.setSelected(false);
+    			answer4RB.setSelected(false);
+    			break;
+    		}
+    		case 3: {
+    			answer1RB.setSelected(false);
+    			answer2RB.setSelected(false);
+    			answer3RB.setSelected(true);
+    			answer4RB.setSelected(false);
+    			break;
+    		}
+    		case 4: {
+    			answer1RB.setSelected(false);
+    			answer2RB.setSelected(false);
+    			answer3RB.setSelected(false);
+    			answer4RB.setSelected(true);
+    			break;
+    		}
+    		}
+    	}
     }
    
 	@FXML
