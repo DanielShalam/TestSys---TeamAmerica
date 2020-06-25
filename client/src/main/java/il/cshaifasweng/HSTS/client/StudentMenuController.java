@@ -814,6 +814,5 @@ public class StudentMenuController implements Initializable{
 	// after we press submit 
 	// startBtn  -> startCompExam
 	// submitBtn -> submitCompExam
-	  
    
 }
