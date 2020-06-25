@@ -171,9 +171,6 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-//				carrier.carrierMessageMap.put("message", "principle approval"); 
-//				carrier.carrierMessageMap.put("duration", Duration.ofMinutes(100000)); 
-//				sendToAllClients(carrier);
 				break;
 			
 			case "get all course questions":
@@ -477,7 +474,7 @@ public class SimpleServer extends AbstractServer {
 				List<AddTimeRequest> requests = ServerTimeRequestController.getAllTimeRequests();
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);		
-				carrier.carrierMessageMap.put("requests", requests);		
+				carrier.carrierMessageMap.put("requests", requests);
 				carrier.carrierType = CarrierType.TIME_REQUEST;		
 				try {
 					client.sendToClient(carrier);
@@ -488,16 +485,17 @@ public class SimpleServer extends AbstractServer {
 				break;
 			}
 			
-			case "principle answer for request": {
+			case "principle answer for requests": {
 				AddTimeRequest request = (AddTimeRequest) carrier.carrierMessageMap.get("request");
 				// Update by principle answer
 				ServerTimeRequestController.setPrincipleAnswer(request);
+
 				if (request.isApproved()) {
 					carrier.carrierMessageMap.clear();
 					carrier.carrierMessageMap.put("message", msg);
 					carrier.carrierMessageMap.put("duration", request.getRequestedDuration());
 					carrier.carrierMessageMap.put("exam", request.getExamination_id());
-					sendToAllClients(request.getRequestedDuration());
+					sendToAllClients(carrier);
 				}
 				break;
 			}
@@ -509,6 +507,21 @@ public class SimpleServer extends AbstractServer {
 	protected void handleStudentExaminationMessage(Carrier carrier, ConnectionToClient client) {
 		String msg = (String) carrier.carrierMessageMap.get("message");
 		switch (msg) {
+			case "get all student examinations": {		
+				List<ExaminationStudent> esList = ServerStudentExaminationController.getAll();
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);	
+				carrier.carrierMessageMap.put("examinations", esList);
+				carrier.carrierType = CarrierType.STUDENT_EXAMINATION;
+				
+				try {
+					client.sendToClient(carrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			}
 			case "get all course student examinations": {
 				int courseId = (int) carrier.carrierMessageMap.get("course");			
 				int teacherId = (int) carrier.carrierMessageMap.get("teacher");			

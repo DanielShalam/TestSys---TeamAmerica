@@ -76,7 +76,11 @@ public class AddTimeRequest implements Serializable{
 	public void setReviewed(boolean reviewed) {
 		this.reviewed = reviewed;
 	}
-
+	
+	public boolean getReviewed() {
+		return this.reviewed;
+	}
+	
 	public boolean isApproved() {
 		return approved;
 	}
@@ -85,6 +89,10 @@ public class AddTimeRequest implements Serializable{
 		this.approved = approved;
 	}
 	
+	public boolean getApproved() {
+		return this.approved;
+	}
+
 	public int getExamination_id() {
 		return examination_id;
 	}

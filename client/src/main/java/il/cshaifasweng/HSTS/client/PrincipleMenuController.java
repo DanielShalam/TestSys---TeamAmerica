@@ -352,6 +352,7 @@ public class PrincipleMenuController implements Initializable {
     	
     	localCarrier = client.handleMessageFromClientTimeRequestController(message, timeRequest);
     	System.out.println("message from ClientTimeRequestController Handled");
+    	System.out.println(localCarrier.carrierMessageMap.get("requests"));
     	
     	ObservableList<AddTimeRequest> aItems = timeRequestTVtrAP.getItems();
 		if (!aItems.isEmpty()) {

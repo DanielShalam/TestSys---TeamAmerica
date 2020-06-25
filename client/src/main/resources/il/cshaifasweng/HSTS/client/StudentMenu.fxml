@@ -232,5 +232,6 @@
             </Label>
          </children></AnchorPane>
       <AnchorPane prefHeight="578.0" prefWidth="640.0" visible="false" />
+      <Button fx:id="copyRtrnBtn" layoutX="285.0" layoutY="491.0" mnemonicParsing="false" onAction="#returnFromCopy" prefHeight="26.0" prefWidth="68.0" text="Return" visible="false" />
    </children>
 </AnchorPane>

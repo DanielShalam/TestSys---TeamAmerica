@@ -61,15 +61,12 @@ public class LoginController {
 
 		switch (userReceviedRole) {
 		case STUDENT:
-			client.setClientRole(Role.STUDENT);
 			App.setRoot("StudentMenu");
 			break;
 		case TEACHER:
-			client.setClientRole(Role.TEACHER);
 			App.setRoot("TeacherMenu");
 			break;
 		case PRINCIPLE:
-			client.setClientRole(Role.PRINCIPLE);
 			App.setRoot("PrincipleMenu");
 			break;
 		case INVALID:

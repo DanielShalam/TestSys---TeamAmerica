@@ -161,11 +161,10 @@ public class ConnectToDB {
     	Session temp_session = ConnectToDB.sessionFactory.openSession();
         temp_session.beginTransaction();
         
-
         int studentId = (int) carrier.carrierMessageMap.get("studentId");
 		int examinationId = (int) carrier.carrierMessageMap.get("examinationId");
 		User user =  temp_session.get(User.class, studentId);		 
-		System.out.println("pre for loop");
+
 		for(ExaminationStudent exmnStudent: user.getExaminationList()) {
 			if (exmnStudent.getExaminationId() == examinationId) {
         		ExaminationStudent exmnToSubmit = (ExaminationStudent)carrier.carrierMessageMap.get("exmnStudent");
@@ -183,6 +182,7 @@ public class ConnectToDB {
         			exmnStudent.setExaminationStatus(ExaminationStatus.FINISHED);	
         			exmnStudent.setSavedExamination(exmnToSubmit.getSavedExamination());
         		}
+        		temp_session.update(exmnStudent);
         	}        	
     	}
         temp_session.getTransaction().commit();
@@ -193,7 +193,6 @@ public class ConnectToDB {
     
 	// Function to update existing object
     public static <T> void update(T o){
-    	System.out.println("Updating");
         Session temp_session = ConnectToDB.sessionFactory.openSession();
         temp_session.beginTransaction();
     	temp_session.merge(o);

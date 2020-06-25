@@ -229,6 +229,10 @@ public class Examination implements Serializable {
 	public Set<ExaminationStudent> getExamineesList() {
 		return examineesList;
 	}
+	
+	public void timeAddition(Duration duration) {
+		this.examEndTime = examEndTime.plus(duration);
+	}
 
 	public void setExamineesList(Set<ExaminationStudent> examineesList) {
 		this.examineesList = examineesList;
