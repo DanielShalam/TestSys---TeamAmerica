@@ -267,21 +267,23 @@ public class SimpleClient extends AbstractClient  {
 			examCarrier.carrierMessageMap.put("teacher", teacherId);
 			examCarrier.carrierMessageMap.put("status", examinationStatus);
 			examCarrier.carrierMessageMap.put("message", "get all course student examinations");
-		}
-		else if (message.equals("get all teacher student examinations")) {
+		} else if (message.equals("get all teacher student examinations")) {
 			examCarrier.carrierMessageMap.put("teacher", teacherId);
 			examCarrier.carrierMessageMap.put("status", examinationStatus);
 			examCarrier.carrierMessageMap.put("message", "get all teacher student examinations");
-			
 		} else if (message.equals("grade student examination")) {
 			examCarrier.carrierMessageMap.put("student examination", studentExamination);
 			examCarrier.carrierMessageMap.put("message", "grade student examination");
-		}
-		
-		else if (message.equals("get final course student examinations")) {
+		} else if (message.equals("get final course student examinations")) {
 			examCarrier.carrierMessageMap.put("courseId", courseId);
 			examCarrier.carrierMessageMap.put("teacherId", teacherId);
 			examCarrier.carrierMessageMap.put("message", "get final course student examinations");
+		} else if (message.equals("get final course student examinations")) {
+			examCarrier.carrierMessageMap.put("courseId", courseId);
+			examCarrier.carrierMessageMap.put("teacherId", teacherId);
+			examCarrier.carrierMessageMap.put("message", "get final course student examinations");
+		} else if (message.equals("get all student examinations")) {
+			examCarrier.carrierMessageMap.put("message", "get all student examinations");
 		}
 		
 		try {
