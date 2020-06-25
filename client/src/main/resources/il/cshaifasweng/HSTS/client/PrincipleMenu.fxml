@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -12,6 +16,28 @@
 
 <AnchorPane maxHeight="579.0" maxWidth="721.0" prefHeight="577.0" prefWidth="721.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.HSTS.client.PrincipleMenuController">
    <children>
+      <AnchorPane fx:id="viewQuestionsAP" prefHeight="577.0" prefWidth="721.0" visible="false">
+         <children>
+            <TableView fx:id="viewQuestionsTV" layoutX="26.0" layoutY="152.0" prefHeight="317.0" prefWidth="677.0">
+              <columns>
+                  <TableColumn fx:id="courseIdTCqTV" prefWidth="66.0" text="Course ID" />
+                <TableColumn fx:id="questionTCqTV" prefWidth="116.0" text="Question" />
+                  <TableColumn fx:id="answer1TCqTV" prefWidth="58.0" text="Answer 1" />
+                  <TableColumn fx:id="answer2TCqTV" prefWidth="65.0" text="Answer 2" />
+                  <TableColumn fx:id="answer3TCqTV" prefWidth="62.0" text="Answer 3" />
+                  <TableColumn fx:id="answer4TCqTV" prefWidth="62.0" text="Answer 4" />
+                  <TableColumn fx:id="correctAnswerTCqTV" prefWidth="99.0" text="Correct Answer" />
+                  <TableColumn fx:id="instructionsTCqTV" prefWidth="83.0" text="Instructions" />
+                  <TableColumn fx:id="teacherIDTCqTV" prefWidth="65.0" text="Teacher ID" />
+              </columns>
+            </TableView>
+            <Label layoutX="212.0" layoutY="56.0" text="View Questions">
+               <font>
+                  <Font name="System Bold" size="36.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
       <GridPane layoutY="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="720.0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -108,34 +134,112 @@
             </AnchorPane>
          </children>
       </GridPane>
-      <TableView fx:id="viewExamResultsTV" layoutX="25.0" layoutY="320.0" prefHeight="233.0" prefWidth="660.0" visible="false">
-        <columns>
-          <TableColumn fx:id="subjectTC" prefWidth="110.0" text="Subject" />
-          <TableColumn fx:id="courseTC" prefWidth="110.0" text="Course" />
-            <TableColumn fx:id="dateTC" prefWidth="110.0" text="Date" />
-            <TableColumn fx:id="gradeTC" prefWidth="110.0" text="Grade" />
-            <TableColumn fx:id="dateTC1" prefWidth="110.0" text="Student" />
-            <TableColumn fx:id="dateTC11" prefWidth="110.0" text="Teacher" />
-        </columns>
-      </TableView>
-      <TableView fx:id="viewQuestionsTV" layoutX="25.0" layoutY="320.0" prefHeight="233.0" prefWidth="660.0" visible="false">
-        <columns>
-            <TableColumn prefWidth="66.0" text="Subject" />
-            <TableColumn prefWidth="66.0" text="Course" />
-          <TableColumn prefWidth="66.0" text="Question" />
-            <TableColumn prefWidth="66.0" text="Answer 1" />
-            <TableColumn prefWidth="66.0" text="Answer 2" />
-            <TableColumn prefWidth="66.0" text="Answer 3" />
-            <TableColumn prefWidth="66.0" text="Answer 4" />
-            <TableColumn prefWidth="66.0" text="Correct Answer" />
-            <TableColumn prefWidth="66.0" text="Instructions" />
-            <TableColumn prefWidth="66.0" text="Teacher" />
-        </columns>
-      </TableView>
-      <TableView fx:id="viewExamsTV" layoutX="25.0" layoutY="320.0" prefHeight="233.0" prefWidth="660.0" visible="false">
-         <columns>
-            <TableColumn prefWidth="660.0" text="Exam" />
-         </columns>
-      </TableView>
+      <AnchorPane fx:id="viewExamResultsAP" prefHeight="577.0" prefWidth="720.0" visible="false">
+         <children>
+            <TableView fx:id="viewExamResultsTV" layoutX="31.0" layoutY="118.0" prefHeight="336.0" prefWidth="660.0">
+              <columns>
+                <TableColumn fx:id="courseIdTCresAP" prefWidth="88.0" text="Course ID" />
+                  <TableColumn fx:id="examinationIdTCresAP" prefWidth="115.0" text="Examination ID" />
+                  <TableColumn fx:id="gradeTCresAP" prefWidth="123.0" text="Grade" />
+                  <TableColumn fx:id="dateTCresAP" prefWidth="120.0" text="Date" />
+                  <TableColumn fx:id="studentIdTCresAP" prefWidth="104.0" text="Student ID" />
+                  <TableColumn fx:id="teacherIdTCresAP" prefWidth="109.0" text="Teacher ID" />
+              </columns>
+            </TableView>
+            <Label layoutX="203.0" layoutY="47.0" text="View Exam Results">
+               <font>
+                  <Font name="System Bold" size="36.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="viewExamsAP" prefHeight="577.0" prefWidth="720.0" visible="false">
+         <children>
+            <TableView fx:id="viewExamsTVeAP" layoutX="30.0" layoutY="136.0" prefHeight="233.0" prefWidth="660.0">
+               <columns>
+                  <TableColumn fx:id="examIdTCeAP" prefWidth="91.0" text="Exam ID" />
+                  <TableColumn fx:id="courseIdTCeAP" prefWidth="226.0" text="Course ID" />
+                  <TableColumn fx:id="teacherInstructionsTCeAP" prefWidth="170.0" text="Teacher Instructions" />
+                  <TableColumn fx:id="durationTCeAP" prefWidth="93.0" text="Duration" />
+                  <TableColumn fx:id="teacherIdTCeAP" prefWidth="78.0" text="Teacher ID" />
+               </columns>
+            </TableView>
+            <Label layoutX="260.0" layoutY="83.0" text="View Exams">
+               <font>
+                  <Font name="System Bold" size="36.0" />
+               </font>
+            </Label>
+            <Button fx:id="viewExamButton" layoutX="314.0" layoutY="392.0" mnemonicParsing="false" text="View Exam">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+         </children>
+      </AnchorPane>
+      <Button fx:id="goBackButton" layoutX="290.0" layoutY="507.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="142.0" text="Go Back" visible="false">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Button>
+      <AnchorPane prefHeight="577.0" prefWidth="720.0" visible="false">
+         <children>
+            <Label layoutX="158.0" layoutY="48.0" text="Time Addition Requests">
+               <font>
+                  <Font name="System Bold" size="36.0" />
+               </font>
+            </Label>
+            <TableView fx:id="timeRequestTVtrAP" layoutX="58.0" layoutY="127.0" prefHeight="200.0" prefWidth="616.0">
+              <columns>
+                <TableColumn fx:id="examIdTCtrAP" prefWidth="75.0" text="Exam ID" />
+                <TableColumn fx:id="durationTCtrAP" prefWidth="167.0" text="Requested Duration [MIN]" />
+                  <TableColumn fx:id="reasonTCtrAP" prefWidth="373.0" text="Request Reason" />
+              </columns>
+            </TableView>
+            <Button fx:id="approveRequestButton" layoutX="158.0" layoutY="368.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="108.0" text="Approve">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="declineRequestButton" layoutX="417.0" layoutY="368.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="108.0" text="Decline">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="viewExamsAP" prefHeight="677.0" prefWidth="1239.0" visible="false">
+         <children>
+            <Label layoutX="51.0" layoutY="120.0" text="Course:" />
+            <Label layoutX="51.0" layoutY="37.0" text="Exam">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <Label layoutX="648.0" layoutY="120.0" text="Created By:" />
+            <Label layoutX="51.0" layoutY="265.0" text="Student Instructions:" />
+            <Label layoutX="51.0" layoutY="367.0" text="Teacher Instructions:" />
+            <ChoiceBox fx:id="courseCBSetExamAP" layoutX="126.0" layoutY="116.0" prefWidth="150.0" />
+            <TextArea fx:id="studentInstructionsTASetExamAP" layoutX="51.0" layoutY="298.0" prefHeight="51.0" prefWidth="355.0" />
+            <TextArea fx:id="teacherInstructionsTASetExamAP" layoutX="51.0" layoutY="399.0" prefHeight="51.0" prefWidth="355.0" />
+            <TextField fx:id="examIDSetExamAP" disable="true" layoutX="418.0" layoutY="116.0" />
+            <TextField fx:id="examDurationTFSetExamAP" layoutX="52.0" layoutY="217.0" />
+            <Label layoutX="360.0" layoutY="120.0" text="Exam ID:" />
+            <TextField fx:id="teacherIDSetExamAP" disable="true" editable="false" layoutX="723.0" layoutY="116.0" />
+            <Label layoutX="51.0" layoutY="183.0" text="Exam Duration: [Min]" />
+            <TableView fx:id="examQuestionsTVsetExamAP" layoutX="441.0" layoutY="215.0" prefHeight="320.0" prefWidth="313.0">
+               <columns>
+                  <TableColumn fx:id="examQuestionIdTCSetExamAP" editable="false" prefWidth="75.0" sortable="false" text="Question ID" />
+                  <TableColumn fx:id="examQuestionTCSetExamAP" editable="false" prefWidth="236.0" sortable="false" text="Question" />
+               </columns>
+            </TableView>
+            <Label layoutX="441.0" layoutY="183.0" text="Exam Questions:" />
+            <Button fx:id="cancelButtonSetExamAP" layoutX="907.0" layoutY="625.0" mnemonicParsing="false" onAction="#cancelSetExam" prefHeight="30.0" prefWidth="172.0" text="Cancel">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Separator layoutX="30.0" layoutY="160.0" prefHeight="3.0" prefWidth="1183.0" />
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>

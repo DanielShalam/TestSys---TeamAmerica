@@ -1,33 +1,28 @@
 package il.cshaifasweng.HSTS.server;
 
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.transaction.Transactional;
 
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 
 import il.cshaifasweng.HSTS.entities.Course;
-import il.cshaifasweng.HSTS.entities.Exam;
 import il.cshaifasweng.HSTS.entities.Examination;
-import il.cshaifasweng.HSTS.entities.ExaminationStatus;
-import il.cshaifasweng.HSTS.entities.ExaminationStudent;
 import il.cshaifasweng.HSTS.entities.User;
+import net.bytebuddy.dynamic.scaffold.MethodRegistry.Handler.ForAbstractMethod;
 
 public class ServerExaminationController {			
 
 	public static String commitExaminationToDB(Examination examination) {
+		ServerExamsController.updateExam(examination.getExam());
 		Session session = ConnectToDB.getNewSession();
 		session.save(examination);
-		System.out.println("Extract course");
 		Course course = session.get(Course.class, examination.getCourseId());	// Add to course
-		System.out.println("Update course");
 		course.addExamination(examination);
-		System.out.println("Extract user");
 		User user = session.get(User.class, examination.getTeacherId());	// Add to course
-		System.out.println("Update user");
 		user.addInstigateExamination(examination);
 		session.update(user);
 		session.update(course);
@@ -75,11 +70,15 @@ public class ServerExaminationController {
 		Session tempSession = ConnectToDB.getNewSession();
 		User user = tempSession.get(User.class, teacherId);
 		Set<Examination> examinations = user.getExaminationInstigated(); 	// Getting examination by teacher
-		System.out.println(examinations.size());
+		Set<Examination> eSet = new HashSet<Examination>();
+		for(Examination exmn: examinations) {
+			if(LocalTime.now().isAfter(exmn.getExamStartTime()) && LocalTime.now().isBefore(exmn.getExamEndTime())) {
+				eSet.add(exmn);
+			}
+		}
 		ConnectToDB.closeOuterSession(tempSession);
-		return examinations;
+		return eSet;
 	}
-	
 	
 	public static Set<Examination> getExaminationByCourse(int courseID){
 		Session tempSession = ConnectToDB.getNewSession();
@@ -93,7 +92,6 @@ public class ServerExaminationController {
 	
 	// Delete exam from database using its id
 	public static String deleteExamByEntity(Examination examination) {
-		//TODO Validation of usedInExamination - Client or Server?
 		ConnectToDB.deleteByInstance(Examination.class, examination);
 		return "Exam deleted successfully. ";
 	}

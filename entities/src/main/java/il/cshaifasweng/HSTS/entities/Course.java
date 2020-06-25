@@ -61,7 +61,9 @@ public class Course implements Serializable {
 	private Set<Examination> examinationList;
 	
 	public Set<Examination> getExaminationList() {
-		return examinationList;
+		Set<Examination> examinations = new HashSet<Examination>();
+		examinations.addAll(examinationList);
+		return examinations;
 	}
 
 	public void setExaminationList(Set<Examination> examinationList) {

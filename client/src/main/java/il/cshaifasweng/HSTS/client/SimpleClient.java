@@ -16,6 +16,7 @@ import il.cshaifasweng.HSTS.entities.ExaminationStatus;
 
 import il.cshaifasweng.HSTS.entities.ExaminationStudent;
 import il.cshaifasweng.HSTS.entities.Question;
+import il.cshaifasweng.HSTS.entities.Role;
 
 
 public class SimpleClient extends AbstractClient  {
@@ -24,7 +25,8 @@ public class SimpleClient extends AbstractClient  {
 	private ArrayList<Carrier> expected = new ArrayList<Carrier>(3);
 	private Carrier received;
 	private int waitTime = 50;
-	
+	private Role clientRole = null;
+
 	private SimpleClient(String host, int port) {
 		super(host, port);
 	}
@@ -43,9 +45,12 @@ public class SimpleClient extends AbstractClient  {
 		}
 		else {
 			received = (Carrier) message;
-			if (received.carrierMessageMap.get("message").equals("principle approval")) {
-				Duration newDuration = (Duration) received.carrierMessageMap.get("duration");
-				StudentMenuController.examination.setExamEndTime(newDuration);
+			if (received.carrierMessageMap.get("message").equals("principle approval") && clientRole == Role.STUDENT && StudentMenuController.examination != null) 
+			{	
+				int examId = (int) received.carrierMessageMap.get("exam");
+				if(StudentMenuController.examination.getExamination_id() == examId) {
+					StudentMenuController.examination.setExamEndTime((Duration) received.carrierMessageMap.get("duration"));					
+				}
 			}
 		}
 	}
@@ -219,7 +224,7 @@ public class SimpleClient extends AbstractClient  {
 		}
 		
 		try {
-			examCarrier = (Carrier) this.sendAndWaitForReply(examCarrier, examCarrier);
+			this.sendToServer(examCarrier);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -243,9 +248,16 @@ public class SimpleClient extends AbstractClient  {
 			examCarrier.carrierMessageMap.put("teacher", teacherId);
 			examCarrier.carrierMessageMap.put("status", examinationStatus);
 			examCarrier.carrierMessageMap.put("message", "get all teacher student examinations");
+			
 		} else if (message.equals("grade student examination")) {
 			examCarrier.carrierMessageMap.put("student examination", studentExamination);
 			examCarrier.carrierMessageMap.put("message", "grade student examination");
+		}
+		
+		else if (message.equals("get final course student examinations")) {
+			examCarrier.carrierMessageMap.put("courseId", courseId);
+			examCarrier.carrierMessageMap.put("teacherId", teacherId);
+			examCarrier.carrierMessageMap.put("message", "get final course student examinations");
 		}
 		
 		try {
@@ -312,6 +324,10 @@ public class SimpleClient extends AbstractClient  {
 		// TODO Auto-generated method stub	
 		System.out.println("Disconnected from server. ");
 		super.connectionClosed();
+	}
+
+	public void setClientRole(Role role) {
+		this.clientRole = role;
 	}
 
 }

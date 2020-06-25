@@ -44,6 +44,7 @@ public class ConnectToDB {
 		configuration.addAnnotatedClass(AddTimeRequest.class);
 		configuration.addAnnotatedClass(ExaminationStudent.class);
 		configuration.addAnnotatedClass(Subject.class);
+
 		/* TODO - add Entities here: "configuration.addAnnotatedClass..." */
 		
 		serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
@@ -366,7 +367,7 @@ public class ConnectToDB {
 
 			Carrier carry = new Carrier();
 			
-			InitializeDB initializeDataDb = new InitializeDB(session);
+//			InitializeDB initializeDataDb = new InitializeDB(session);
 			session.getTransaction().commit();
 			
 //			printUsers();	

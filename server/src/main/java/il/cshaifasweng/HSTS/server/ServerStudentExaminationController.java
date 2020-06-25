@@ -21,7 +21,6 @@ public class ServerStudentExaminationController {
 	
 	protected static ExaminationStudent commitToDB(Carrier carrier) {
 			
-
 		int studentId = (int) carrier.carrierMessageMap.get("studentId");
 		int examinationId = (int) carrier.carrierMessageMap.get("examinationId");
 		
@@ -51,16 +50,21 @@ public class ServerStudentExaminationController {
 								
 			default:
 				return null;
-
 		}
-		
+
+	}
+	
+	protected static void updateGrade(ExaminationStudent studentExam) {
+		studentExam.setExaminationStatus(ExaminationStatus.FINALIZED);
+		ConnectToDB.update(studentExam);
+
 	}
 	
 	// Function to calculate grade of student examination
 	private static ExaminationStudent calcGrades(ExaminationStudent studentExam) {
 		int grade = 0;
 		Exam exam = studentExam.getExamination().getExam();
-		Set<Question> examQuestions = exam.getQuestionList();
+		List<Question> examQuestions = exam.getQuestionList();
 		ArrayList<Question> questionList = new ArrayList<Question>(examQuestions);
 		List<Integer> studentAnswers = studentExam.getStudentsAnswers();
 
@@ -84,19 +88,19 @@ public class ServerStudentExaminationController {
 	}
 	
 	// ExaminationStudent for teacher to view scores
-	public static List<ExaminationStudent> getByTeacherExams(int teacherId) {
+	public static List<ExaminationStudent> getByTeacherExams(int teacherId, int courseId) {
 		Session session = ConnectToDB.getNewSession();
 		User user = session.get(User.class, teacherId);
+		Course course = session.get(Course.class, courseId);
 		List<ExaminationStudent> examinationStudents = new ArrayList<ExaminationStudent>();
 
-		for (Course course: user.getCoursesTeaching()) {
-			Set<Examination> examinations = course.getExaminationList(); 	// Getting examination by teacher
-			for (Examination examination: examinations) {
-				if(examination.getExam().getTeacherId() == teacherId) {
-					for(ExaminationStudent examinationStudent: examination.getExamineesList()) {
-						if(examinationStudent.getExaminationStatus() == ExaminationStatus.FINALIZED) {
-							examinationStudents.add(examinationStudent);
-						}
+		Set<Examination> examinations = course.getExaminationList(); 	// Getting examination by teacher
+		for (Examination examination: examinations) {
+			if(examination.getExam().getTeacherId() == teacherId) {
+				for(ExaminationStudent examinationStudent: examination.getExamineesList()) {
+					if(examinationStudent.getExaminationStatus() == ExaminationStatus.FINALIZED) {
+						examinationStudents.add(examinationStudent);
+
 					}
 				}
 			}
@@ -107,32 +111,40 @@ public class ServerStudentExaminationController {
 	}
 	
 	// ExaminationStudent to grade by teacher
-	public static List<ExaminationStudent> getByTeacher(int teacherId, ExaminationStatus status) {
+	public static List<ExaminationStudent> getByUser(int userId, ExaminationStatus status) {
 		Session session = ConnectToDB.getNewSession();
-		User user = session.get(User.class, teacherId);
-		Set<Examination> examinations = user.getExaminationInstigated(); 	// Getting examination by teacher
-		List<ExaminationStudent> examinationStudents = new ArrayList<ExaminationStudent>();
-		for (Examination examination: examinations) {
-			for(ExaminationStudent examinationStudent: examination.getExamineesList()) {
-				if(examinationStudent.getExaminationStatus() == status) {
-					examinationStudents.add(examinationStudent);
-				}
-			}
-		}
+
+		User user = session.get(User.class, userId);
+		Set<ExaminationStudent> examinations = user.getExaminationList(); 	// Getting examination by teacher
+//		List<ExaminationStudent> examinationStudents = new ArrayList<ExaminationStudent>();
+//		for (Examination examination: examinations) {
+//			for(ExaminationStudent examinationStudent: examination.getExamineesList()) {
+//				if(examinationStudent.getExaminationStatus() == status) {
+//					examinationStudents.add(examinationStudent);
+//				}
+//			}
+//		}
+		List<ExaminationStudent> eList = new ArrayList<ExaminationStudent>();
+		eList.addAll(examinations);
+
 		ConnectToDB.closeOuterSession(session);
-		return examinationStudents;
+		return eList;
 	}
 	
 	// ExaminationStudent to grade by teacher
-	public static List<ExaminationStudent> getByCourse(int courseId, ExaminationStatus status) {
+	public static List<ExaminationStudent> getByCourse(int teacherId, int courseId, ExaminationStatus status) {
 		Session session = ConnectToDB.getNewSession();
 		Course course = session.get(Course.class, courseId);
 		Set<Examination> examinations = course.getExaminationList(); 	// Getting examination by teacher
 		List<ExaminationStudent> examinationStudents = new ArrayList<ExaminationStudent>();
 		for (Examination examination: examinations) {
-			for(ExaminationStudent examinationStudent: examination.getExamineesList()) {
-				if(examinationStudent.getExaminationStatus() == status) {
-					examinationStudents.add(examinationStudent);
+
+			if(examination.getTeacherId() == teacherId) {
+				for(ExaminationStudent examinationStudent: examination.getExamineesList()) {
+					if(examinationStudent.getExaminationStatus() == status) {
+						examinationStudents.add(examinationStudent);
+					}
+
 				}
 			}
 		}

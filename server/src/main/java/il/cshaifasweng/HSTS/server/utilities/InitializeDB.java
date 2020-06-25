@@ -8,6 +8,7 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -249,7 +250,7 @@ public class InitializeDB {
 		String studentInstructions = "do the test";
 		String teacherInstructions = "this exam is not easy";
 		
-		Set<Question> questionList_1 = new LinkedHashSet<Question>();
+		List<Question> questionList_1 = new ArrayList<Question>();
 		questionList_1.add(question_1);
 		question_1.setUsedInTest(true);
 		questionList_1.add(question_5);
@@ -261,7 +262,7 @@ public class InitializeDB {
 
 		Exam exam_1 = new Exam(teacher_3.getUserId(), 1, questionList_1, scoringList, studentInstructions, teacherInstructions, duration_1);
 		
-		Set<Question> questionList_2 = new LinkedHashSet<Question>();
+		List<Question> questionList_2 = new ArrayList<Question>();
 		questionList_2.add(question_2);
 		question_2.setUsedInTest(true);
 		questionList_2.add(question_6);
@@ -273,7 +274,7 @@ public class InitializeDB {
 
 		Exam exam_2 = new Exam(teacher_1.getUserId(), 2, questionList_2, scoringList, studentInstructions, teacherInstructions, duration_1);
 		
-		Set<Question> questionList_3 = new LinkedHashSet<Question>();
+		List<Question> questionList_3 = new ArrayList<Question>();
 		questionList_3.add(question_3);
 		question_3.setUsedInTest(true);
 		questionList_3.add(question_10);
@@ -285,7 +286,7 @@ public class InitializeDB {
 
 		Exam exam_3 = new Exam(teacher_3.getUserId(), 3, questionList_3, scoringList, studentInstructions, teacherInstructions, duration_1);
 		
-		Set<Question> questionList_4 = new LinkedHashSet<Question>();
+		List<Question> questionList_4 = new ArrayList<Question>();
 		questionList_4.add(question_4);
 		question_4.setUsedInTest(true);
 		questionList_4.add(question_7);
@@ -339,6 +340,8 @@ public class InitializeDB {
 		teacherId = exam_1.getTeacherId();
 		examType = ExamType.COMPUTERIZED;
 		examDate = LocalDate.of(2020, Month.JUNE, 25);
+		examStartTime = LocalTime.now().minusMinutes(10);
+
 
 //		examStartTime = LocalTime.of(21,10);
 		examStartTime = LocalTime.now().minusMinutes(10);
@@ -363,7 +366,8 @@ public class InitializeDB {
 		examStartTime = LocalTime.now().minusMinutes(10);
 		Examination examintaion_3 = new Examination(execCode, teacherId, examType, examDate, examStartTime, exam_2);
 		course_2.addExamination(examintaion_3);
-
+		
+//		ExaminationStudent examinationStudent(examintaion_3, )
 		session.save(course_1);
 		session.save(course_2);
 		

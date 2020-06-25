@@ -3,6 +3,8 @@ package il.cshaifasweng.HSTS.client.utilities;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 
 import il.cshaifasweng.HSTS.client.LoginController;
@@ -54,7 +56,7 @@ public class WordHandler implements Serializable {
 		tempRun.setBold(true); 
 		tempRun.setUnderline(UnderlinePatterns.SINGLE);
 		labelParagraph.setAlignment(ParagraphAlignment.RIGHT);
-		Set<Question> questionsInExam= examination.getExam().getQuestionList();
+		List<Question> questionsInExam= examination.getExam().getQuestionList();
 		
 		XWPFParagraph questionParagraph = document.createParagraph();
 		XWPFRun questionRun = labelParagraph.createRun();

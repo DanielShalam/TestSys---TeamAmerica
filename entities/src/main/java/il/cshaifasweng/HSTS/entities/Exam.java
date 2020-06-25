@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -48,7 +49,7 @@ public class Exam implements Serializable {
 	@JoinTable(name = "exam_question", 
 	           joinColumns = { @JoinColumn(name = "exam_id") }, 
 	           inverseJoinColumns = { @JoinColumn(name = "question_id") })
-	private Set<Question> questionList = new LinkedHashSet<>(); 
+	private List<Question> questionList = new LinkedList<Question>();
 	
 	@Column(name = "scoring_list")
 	private Integer[] scoringList;
@@ -72,7 +73,7 @@ public class Exam implements Serializable {
 	public Exam(Exam other) {
 		this.teacherId = other.getTeacherId();
 		this.courseId = other.getCourseId();
-		this.questionList = other.getQuestionList();
+		this.questionList = (LinkedList<Question>) other.getQuestionList();
 		this.scoringList = other.getScoringList();
 		this.studentInstructions = other.getStudentInstructions();
 		this.teacherInstructions = other.getTeacherInstructions();
@@ -80,7 +81,7 @@ public class Exam implements Serializable {
 		this.usedInExamination = false;
 	}
 	
-	public Exam(int teacherId, int courseId, Set<Question> questionList, Integer[] scoringList,
+	public Exam(int teacherId, int courseId, List<Question> questionList, Integer[] scoringList,
 			String studentInstructions,String teacherInstructions, Duration assignedDuration ) {
 		this.teacherId = teacherId;
 		this.courseId = courseId;
@@ -117,11 +118,11 @@ public class Exam implements Serializable {
 		this.courseId = courseId;
 	}
 
-	public Set<Question> getQuestionList() {
+	public List<Question> getQuestionList() {
 		return questionList;
 	}
 
-	public void setQuestionList(Set<Question> questionList) {
+	public void setQuestionList(ArrayList<Question> questionList) {
 		this.questionList = questionList;
 	}
 

@@ -20,7 +20,7 @@ public class AddTimeRequest implements Serializable{
 	
 	@Column
 	private int examination_id;
-	
+
 	@Column (name = "request_name")
 	private String requestReason;
 	
@@ -85,5 +85,12 @@ public class AddTimeRequest implements Serializable{
 		this.approved = approved;
 	}
 	
+	public int getExamination_id() {
+		return examination_id;
+	}
+
+	public void setExamination_id(int examination_id) {
+		this.examination_id = examination_id;
+	}
 	
 }

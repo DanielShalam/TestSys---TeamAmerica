@@ -83,8 +83,10 @@ public class ServerExamsController {
 	
 	// Update existing exam without creating new instance
 	public static String updateExam(Exam exam) {
-		exam.setUsedInExamination(true);
-		ConnectToDB.update(exam);
+		if (!exam.isUsedInExamination()) {
+			exam.setUsedInExamination(true);
+			ConnectToDB.update(exam);
+		}
 		
 		return "Exam updated successfully. ";
 		
