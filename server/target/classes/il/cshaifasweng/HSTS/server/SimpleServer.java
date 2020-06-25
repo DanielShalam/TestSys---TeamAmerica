@@ -171,9 +171,6 @@ public class SimpleServer extends AbstractServer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-//				carrier.carrierMessageMap.put("message", "principle approval"); 
-//				carrier.carrierMessageMap.put("duration", Duration.ofMinutes(100000)); 
-//				sendToAllClients(carrier);
 				break;
 			
 			case "get all course questions":
@@ -510,6 +507,21 @@ public class SimpleServer extends AbstractServer {
 	protected void handleStudentExaminationMessage(Carrier carrier, ConnectionToClient client) {
 		String msg = (String) carrier.carrierMessageMap.get("message");
 		switch (msg) {
+			case "get all student examinations": {		
+				List<ExaminationStudent> esList = ServerStudentExaminationController.getAll();
+				carrier.carrierMessageMap.clear();
+				carrier.carrierMessageMap.put("message", msg);	
+				carrier.carrierMessageMap.put("examinations", esList);
+				carrier.carrierType = CarrierType.STUDENT_EXAMINATION;
+				
+				try {
+					client.sendToClient(carrier);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			}
 			case "get all course student examinations": {
 				int courseId = (int) carrier.carrierMessageMap.get("course");			
 				int teacherId = (int) carrier.carrierMessageMap.get("teacher");			

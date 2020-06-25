@@ -51,7 +51,11 @@ public class ServerStudentExaminationController {
 			default:
 				return null;
 		}
-
+	}
+	
+	protected static List<ExaminationStudent> getAll() {
+		List<ExaminationStudent> examinationStudents = ConnectToDB.getAll(ExaminationStudent.class);
+		return examinationStudents;
 	}
 	
 	protected static void updateGrade(ExaminationStudent studentExam) {
