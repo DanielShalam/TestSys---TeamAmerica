@@ -30,6 +30,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -706,7 +707,7 @@ client = LoginController.client;
 			}
 
 			List<ExaminationStudent> examList = (List<ExaminationStudent>) localCarrier.carrierMessageMap.get("studentExamination");
-			System.out.println(examList);
+
 			if (!examList.isEmpty()) {
 				loadPerformedExamData(examList);
 			} else {
@@ -774,7 +775,7 @@ client = LoginController.client;
     }
 
     void loadDataToCheckExamAP(ExaminationStudent sExamination) {
-		Set<Question> questionSet = new LinkedHashSet<>();
+    	List<Question> questionSet = new ArrayList<Question>();
 		questionSet.addAll(sExamination.getExamination().getExam().getQuestionList());
 		List<Question> questionList = new ArrayList<>();
 		List<Integer> studentAnswerList = sExamination.getStudentsAnswers();
@@ -845,7 +846,7 @@ client = LoginController.client;
     		int courseId = LoginController.userReceviedCourses.get(courseCBSetExamAP.getSelectionModel().getSelectedItem());
     		
     		List<Question> qList = examQuestionsTVsetExamAP.getItems();
-			Set<Question> questionSet = new LinkedHashSet<>();;
+    		List<Question> questionSet = new LinkedList<Question>();;
 			questionSet.addAll(qList);
 			/*for (Question q : qList) {
 				questionSet.add(q);
@@ -1034,7 +1035,7 @@ client = LoginController.client;
     }
     
     //Load data to table
-    void loadQuestionData(Set<Question> question_list, TableView<Question> TV) {
+    void loadQuestionData(ArrayList<Question> question_list, TableView<Question> TV) {
 
         for (Question questionItem : question_list)
         {
@@ -1080,7 +1081,7 @@ client = LoginController.client;
 	    studentInstructionsTASetExamAP.setText(exam.getStudentInstructions());
 	    teacherInstructionsTASetExamAP.setText(exam.getTeacherInstructions());
 	    
-	    Set<Question> questionList = new LinkedHashSet<>();
+	    List<Question> questionList = new ArrayList<Question>();
 	    questionList.addAll(exam.getQuestionList());
 	    Integer[] scoringList = exam.getScoringList();
 	    String[] scoringListString = new String[scoringList.length];
@@ -1212,16 +1213,16 @@ client = LoginController.client;
 		if (exam != null) {
 			//compare original questions with current questions
 			List<Question> qList = examQuestionsTVsetExamAP.getItems();
-			Set<Question> qSet = new LinkedHashSet<>();;
+			List<Question> qSet = new LinkedList<Question>();
 			qSet.addAll(qList);
 //			for (Question q : qList) {
 //				qSet.add(q);
 //			}
-			Set<Question> originalQuestionSet = exam.getQuestionList();
+			List<Question> originalQuestionSet = exam.getQuestionList();
 			
-			Boolean qSetsEqual = questionSetsEqual(qSet,originalQuestionSet);
+			Boolean qSetsEqual = questionSetsEqual(qSet,(List<Question>) originalQuestionSet);
 			if (qSetsEqual) {
-				qSetsEqual = questionSetsEqual(originalQuestionSet, qSet);
+				qSetsEqual = questionSetsEqual((List<Question>) originalQuestionSet, qSet);
 			}
 			
 			//check if exam was changed
@@ -1237,12 +1238,12 @@ client = LoginController.client;
 		return false;
     }
     
-    Boolean questionSetsEqual(Set<Question> qSet1, Set<Question> qSet2) {
+    Boolean questionSetsEqual(List<Question> originalQuestionSet, List<Question> qSet) {
     	
     	Boolean equals = false;
     	
-    	for (Question q1 : qSet1) {
-    		for (Question q2 : qSet2) {
+    	for (Question q1 : originalQuestionSet) {
+    		for (Question q2 : qSet) {
     			if (q1.getQuestionId() == q2.getQuestionId()) {
     				equals = true;
     			}

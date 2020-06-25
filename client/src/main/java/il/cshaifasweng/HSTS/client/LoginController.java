@@ -27,7 +27,7 @@ public class LoginController {
 	static public String userReceviedfullName = null;
 	static public Integer userReceviedID = null;
 	static public HashMap<String, Integer> userReceviedCourses = null;
-	Role userReceviedRole=  null;
+	Role userReceviedRole = null;
 	
     @FXML // fx:id="usernameTF"
     private TextField usernameTF; // Value injected by FXMLLoader
@@ -46,7 +46,7 @@ public class LoginController {
 
     @FXML
     void validate(ActionEvent event) throws IOException {
-    	
+    	// TODO delete when connecting to remote
     	client = SimpleClient.getClient();
     	client.openConnection();
     	
@@ -63,12 +63,15 @@ public class LoginController {
 
 		switch (userReceviedRole) {
 		case STUDENT:
+			client.setClientRole(Role.STUDENT);
 			App.setRoot("StudentMenu");
 			break;
 		case TEACHER:
+			client.setClientRole(Role.TEACHER);
 			App.setRoot("TeacherMenu");
 			break;
 		case PRINCIPLE:
+			client.setClientRole(Role.PRINCIPLE);
 			App.setRoot("PrincipleMenu");
 			break;
 		case INVALID:
