@@ -477,7 +477,7 @@ public class SimpleServer extends AbstractServer {
 				List<AddTimeRequest> requests = ServerTimeRequestController.getAllTimeRequests();
 				carrier.carrierMessageMap.clear();
 				carrier.carrierMessageMap.put("message", msg);		
-				carrier.carrierMessageMap.put("requests", requests);		
+				carrier.carrierMessageMap.put("requests", requests);
 				carrier.carrierType = CarrierType.TIME_REQUEST;		
 				try {
 					client.sendToClient(carrier);
@@ -488,16 +488,17 @@ public class SimpleServer extends AbstractServer {
 				break;
 			}
 			
-			case "principle answer for request": {
+			case "principle answer for requests": {
 				AddTimeRequest request = (AddTimeRequest) carrier.carrierMessageMap.get("request");
 				// Update by principle answer
 				ServerTimeRequestController.setPrincipleAnswer(request);
+
 				if (request.isApproved()) {
 					carrier.carrierMessageMap.clear();
 					carrier.carrierMessageMap.put("message", msg);
 					carrier.carrierMessageMap.put("duration", request.getRequestedDuration());
 					carrier.carrierMessageMap.put("exam", request.getExamination_id());
-					sendToAllClients(request.getRequestedDuration());
+					sendToAllClients(carrier);
 				}
 				break;
 			}

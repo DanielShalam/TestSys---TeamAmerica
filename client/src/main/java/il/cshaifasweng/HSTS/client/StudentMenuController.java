@@ -263,7 +263,7 @@ public class StudentMenuController implements Initializable{
     
     @FXML
     private Label courseLB1;
-
+    
     @FXML
     void getFullDetails(ActionEvent event) {
     	ExaminationStudent eStudent = gradesTV.getSelectionModel().getSelectedItem();
@@ -300,6 +300,7 @@ public class StudentMenuController implements Initializable{
     @FXML
     void getGrades(ActionEvent event) {
     	mainMenuAP.setVisible(false);
+    	gradesTV.getItems().clear();
     	gradesAP.setVisible(true);
     	courseLB1.setText("");
     	tStartLB.setText("");
@@ -318,8 +319,14 @@ public class StudentMenuController implements Initializable{
     
     @FXML
     void gradesReturn(ActionEvent event) {
-    	mainMenuAP.setVisible(false);
-    	gradesAP.setVisible(true);
+    	gradesAP.setVisible(false);
+    	mainMenuAP.setVisible(true);
+    	courseLB1.setText("");
+    	tStartLB.setText("");
+    	tEndLB.setText("");
+    	notesLB.setText("");
+    	notesTA.setVisible(false);
+    	notesTA.setText("");
     }
     
     @FXML
@@ -329,7 +336,11 @@ public class StudentMenuController implements Initializable{
     
     
     private void loadGradesTable(List<ExaminationStudent> studentList) {
-    	gradesTV.getItems().addAll(studentList);
+    	for (ExaminationStudent eStudent: studentList) {
+    		if(eStudent.getGrade()>=0) {
+    	    	gradesTV.getItems().add(eStudent);
+    		}
+    	}
     }
 
     
