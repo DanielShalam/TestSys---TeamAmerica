@@ -313,6 +313,15 @@ public class SimpleClient extends AbstractClient  {
 			System.out.println("get course examinations");
 			studentCarrier.carrierMessageMap.put("message", message);
 			studentCarrier.carrierMessageMap.put("course", id);		// AMIT changed "ID" to "course"
+			
+			try {
+				studentCarrier = (Carrier) this.sendAndWaitForReply(studentCarrier, studentCarrier);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
 			break;
 			
 		case "start student examination":	
@@ -320,6 +329,14 @@ public class SimpleClient extends AbstractClient  {
 			studentCarrier.carrierMessageMap.put("message", message);
 			studentCarrier.carrierMessageMap.put("examinationId", examination.getExamination_id());		
 			studentCarrier.carrierMessageMap.put("studentId", id);
+			
+			try {
+				studentCarrier = (Carrier) this.sendAndWaitForReply(studentCarrier, studentCarrier);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			break;
 		
 		case "submit student examination":
@@ -327,16 +344,18 @@ public class SimpleClient extends AbstractClient  {
 			studentCarrier.carrierMessageMap.put("message", message);
 			studentCarrier.carrierMessageMap.put("examinationId", examination.getExamination_id());		
 			studentCarrier.carrierMessageMap.put("studentId", id);
+			
+			try {
+				this.sendToServer(studentCarrier);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			break;
 					
 		}
 		
-		try {
-			studentCarrier = (Carrier) this.sendAndWaitForReply(studentCarrier, studentCarrier);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		return studentCarrier;
 	}
 	

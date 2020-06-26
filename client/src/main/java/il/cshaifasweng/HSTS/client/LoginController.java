@@ -5,18 +5,14 @@
 package il.cshaifasweng.HSTS.client;
 
 import il.cshaifasweng.HSTS.entities.Carrier;
-import il.cshaifasweng.HSTS.entities.Course;
 import il.cshaifasweng.HSTS.entities.Role;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.Parent;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-
 import javafx.event.ActionEvent;
 
 

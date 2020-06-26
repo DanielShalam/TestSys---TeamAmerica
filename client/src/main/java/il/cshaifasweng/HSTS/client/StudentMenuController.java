@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import org.apache.poi.ss.formula.functions.IfFunc;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
 import il.cshaifasweng.HSTS.client.utilities.WordHandler;
@@ -74,8 +75,9 @@ public class StudentMenuController implements Initializable{
 	private boolean forcedToFinish = false;
 	private boolean isCopy = false;
 	List<Integer> studentAnswersCopy;
-
-    
+	Timeline animation;
+	private boolean isForced = false;
+	
     @FXML
     private AnchorPane instAP;
     
@@ -499,11 +501,12 @@ public class StudentMenuController implements Initializable{
         manualLB.setAlignment(Pos.CENTER);
         startManualExam();
         // Timer
-		Timeline animation = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+		animation = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 	              @Override public void handle(ActionEvent actionEvent) {
 	            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), examination.getExamEndTime()).toSeconds();
 	            	  
 	            	  if (elapsedTime <= 0) {	// Time is up
+	            		  animation.stop();
 		                  submitBtn.setDisable(true);
 		                  downloadExamBtn.setDisable(true);
 		                  manualLB.setText("Exam time is over. "); 
@@ -549,12 +552,13 @@ public class StudentMenuController implements Initializable{
     	showQuestion();
     	
         // Timer
-		Timeline animation = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+		animation = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 	              @Override public void handle(ActionEvent actionEvent) {
 	            	  long elapsedTime = java.time.Duration.between(LocalTime.now(), examination.getExamEndTime()).toSeconds();
 
 	            	  if (elapsedTime <= 0) {	// Time is up
-	            		  startOrSubmitBtn.setDisable(true);
+	            		  animation.stop();
+	            		  submitBtn.setDisable(true);
 	            		  forceSubmitCompExam();
 	            	  }
 	            	  else {	// Every 1 second
@@ -572,8 +576,8 @@ public class StudentMenuController implements Initializable{
     }
     
     void forceSubmitCompExam() {
-		forcedToFinish = true;
-		submitCompExam();
+    	isForced = true;
+    	submitCompExam();
 	}
     
     
@@ -741,7 +745,12 @@ public class StudentMenuController implements Initializable{
         Collections.addAll(answersList, studentAnswers); 
         
         ExaminationStudent exmnStudent = (ExaminationStudent) localCarrier.carrierMessageMap.get("exmnStudent");
-    	exmnStudent.setActualExamEndTime(LocalTime.now()); 	
+        if(isForced) {
+        	exmnStudent.setActualExamEndTime(examination.getExamEndTime()); 	
+        }
+        else {
+        	exmnStudent.setActualExamEndTime(LocalTime.now()); 	        	
+        }
     	exmnStudent.setForcedToFinish(forcedToFinish);
     	exmnStudent.setExaminationStatus(ExaminationStatus.FINISHED);
     	exmnStudent.setStudentsAnswers(answersList);
@@ -753,13 +762,17 @@ public class StudentMenuController implements Initializable{
     	client.handleMessageFromClientStudentController("submit student examination", 
 				LoginController.userReceviedID,  examination, localCarrier);
     	
-    	
     	Alert alert = new Alert(AlertType.INFORMATION);
     	alert.setTitle(null);
     	alert.setHeaderText(null);
     	alert.setContentText("Test submmited succesfully - good luck!");
-    	alert.showAndWait();
-    	
+    	if(isForced) {
+    		alert.show();
+    	}
+    	else {
+        	alert.showAndWait();    		
+    	}
+    	isForced = false;
     	// need to go back to main screen
     	returnToInstAP();
     	
