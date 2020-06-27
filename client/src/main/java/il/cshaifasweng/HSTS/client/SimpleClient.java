@@ -76,7 +76,7 @@ public class SimpleClient extends AbstractClient  {
 	
 	    this.sendToServer(message);
 	
-	    while (!expected.isEmpty() || this.cancel)
+	    while (!expected.isEmpty() && !this.cancel)
 	    {
 	      wait(waitTime);
 	    }
