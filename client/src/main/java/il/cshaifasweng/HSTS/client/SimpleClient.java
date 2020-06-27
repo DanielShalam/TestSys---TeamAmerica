@@ -27,9 +27,11 @@ public class SimpleClient extends AbstractClient  {
 	private ArrayList<Carrier> expected = new ArrayList<Carrier>(3);
 	private Carrier received;
 	private int waitTime = 50;
+	private boolean cancel = false;
 
 	private SimpleClient(String host, int port) {
 		super(host, port);
+		cancel = false;
 	}
 	
 	private synchronized void receiveCarrier(Object message){
@@ -74,9 +76,13 @@ public class SimpleClient extends AbstractClient  {
 	
 	    this.sendToServer(message);
 	
-	    while (!expected.isEmpty())
+	    while (!expected.isEmpty() || this.cancel)
 	    {
 	      wait(waitTime);
+	    }
+	    if (cancel) {
+	    	cancel = true;
+	    	System.out.println("Server disconnected, message did not recived. ");
 	    }
 	    
         return received;
@@ -370,6 +376,7 @@ public class SimpleClient extends AbstractClient  {
 	protected void connectionClosed() {
 		// TODO Auto-generated method stub	
 		System.out.println("Disconnected from server. ");
+		cancel = true;
 		super.connectionClosed();
 	}
 
